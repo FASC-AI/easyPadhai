@@ -14,6 +14,16 @@ class SelectSubject extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.theme,
         systemOverlayStyle: SystemUiOverlayStyle.light,
+        leading: IconButton(
+          icon: Image.asset(
+            'assets/back.png',
+            fit: BoxFit.fill,
+            width: MediaQuery.of(context).size.width * .06,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         title: Text(
           'Select Your Subject',
           style: TextStyle(

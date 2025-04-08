@@ -1,7 +1,8 @@
+import 'package:easy_padhai/auth/google_signin_helper.dart';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
-import 'package:easy_padhai/custom_widgets/custom_button.dart';
 import 'package:easy_padhai/route/route_name.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,6 +16,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  final GoogleSignInHelper _googleSignInHelper = GoogleSignInHelper();
 
   AuthController authController = Get.find();
   final formKey = GlobalKey<FormState>();
@@ -47,73 +49,46 @@ class _LoginState extends State<Login> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * .02,
+                          ),
                           Center(
                             child: Image.asset(
                               'assets/logo.png',
-                              width: MediaQuery.of(context).size.width * .3,
+                              width: MediaQuery.of(context).size.width * .2,
                               fit: BoxFit.contain,
                             ),
                           ),
 
-                          // const CustomText(text: 'Email'),
-                          // SizedBox(
-                          //   height: MediaQuery.of(context).size.height * .01,
-                          // ),
-                          // CustomInput(
-                          //   label: 'Enter Email',
-                          //   controller: emailController,
-                          // ),
-                          // SizedBox(
-                          //   height: MediaQuery.of(context).size.height * .025,
-                          // ),
-                          // Text('Password',
-                          //     overflow: TextOverflow.ellipsis,
-                          //     style: TextStyle(
-                          //         color: AppColors.white,
-                          //         fontWeight: FontWeight.normal,
-                          //         fontSize:
-                          //             MediaQuery.of(context).size.width * .03)),
-                          // SizedBox(
-                          //   height: MediaQuery.of(context).size.height * .005,
-                          // ),
-                          // CustomInput(
-                          //   label: 'Enter Password',
-                          //   isPassword: true,
-                          //   controller: passwordController,
-                          // ),
-                          // SizedBox(
-                          //   height: MediaQuery.of(context).size.height * .025,
-                          // ),
-                          // Row(
-                          //   mainAxisAlignment: MainAxisAlignment.end,
-                          //   children: [
-                          //     GestureDetector(
-                          //       onTap: () {
-                          //         Get.toNamed(RouteName.forgotPassword);
-                          //       },
-                          //       child: const CustomText(
-                          //         text: 'Forgot Password?',
-                          //         isw500: true,
-                          //       ),
-                          //     ),
-                          //     SizedBox(
-                          //       width: MediaQuery.of(context).size.width * .05,
-                          //     ),
-                          //     GestureDetector(
-                          //         onTap: () {
-                          //           Get.toNamed(RouteName.signUp);
-                          //         },
-                          //         child: const CustomText(
-                          //             text: 'Sign up?', isw500: true)),
-                          //   ],
-                          // ),
                           SizedBox(
-                            height: MediaQuery.of(context).size.height * .25,
+                            height: MediaQuery.of(context).size.height * .02,
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * .8,
+                            child: Center(
+                              child: Text(
+                                textAlign: TextAlign.center,
+                                "Sign In",
+                                style: TextStyle(
+                                    color: AppColors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize:
+                                        MediaQuery.of(context).size.width *
+                                            .06),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * .12,
                           ),
 
                           GestureDetector(
                             onTap: () async {
-                              Get.toNamed(RouteName.setMPin);
+                              final User? user =
+                                  await _googleSignInHelper.signInWithGoogle();
+                              if (user != null) {
+                                Get.toNamed(RouteName.setMPin);
+                              }
                             },
                             child: Container(
                               width: MediaQuery.of(context).size.width,
@@ -151,12 +126,43 @@ class _LoginState extends State<Login> {
                           SizedBox(
                             height: MediaQuery.of(context).size.height * .02,
                           ),
-                          Center(
-                            child: CustomButton(
-                              text: 'Login with Email',
-                              onTap: () async {
-                                Get.toNamed(RouteName.email);
-                              },
+
+                          GestureDetector(
+                            onTap: () async {
+                              Get.toNamed(RouteName.email);
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height * .06,
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.white),
+                                  borderRadius: BorderRadius.circular(
+                                      MediaQuery.of(context).size.width * .1),
+                                  color: Colors.transparent),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    'assets/gmail.png',
+                                    width: MediaQuery.of(context).size.width *
+                                        .035,
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * .02,
+                                  ),
+                                  Text(
+                                    'Login with Email',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        color: AppColors.white,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize:
+                                            MediaQuery.of(context).size.width *
+                                                .03),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
 

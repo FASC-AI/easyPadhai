@@ -15,43 +15,41 @@ class SetMPin extends StatefulWidget {
 }
 
 class _SetMPinState extends State<SetMPin> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-
-  final FocusNode _focusOne = FocusNode();
-  final FocusNode _focusTwo = FocusNode();
-  final FocusNode _focusThree = FocusNode();
-  final FocusNode _focusFour = FocusNode();
-
-  final TextEditingController _fieldOne = TextEditingController();
-  final TextEditingController _fieldTwo = TextEditingController();
-  final TextEditingController _fieldThree = TextEditingController();
-  final TextEditingController _fieldFour = TextEditingController();
-
-  final TextEditingController _fieldOneC = TextEditingController();
-  final TextEditingController _fieldTwoC = TextEditingController();
-  final TextEditingController _fieldThreeC = TextEditingController();
-  final TextEditingController _fieldFourC = TextEditingController();
-
   AuthController authController = Get.find();
   final formKey = GlobalKey<FormState>();
 
-  final FocusNode _focusOneC = FocusNode();
-  final FocusNode _focusTwoC = FocusNode();
-  final FocusNode _focusThreeC = FocusNode();
-  final FocusNode _focusFourC = FocusNode();
+  String firstPin = "";
+  String confirmPin = "";
+
+  final FocusNode _lastFirstPinNode = FocusNode();
+  final FocusNode _firstConfirmPinNode = FocusNode();
+  final FocusNode _lastConfirmPinNode = FocusNode();
+
+  void handleFirstPinSubmit(String pin) {
+    setState(() {
+      firstPin = pin;
+    });
+    _firstConfirmPinNode.requestFocus();
+  }
+
+  void handleConfirmPinSubmit(String pin) {
+    setState(() {
+      confirmPin = pin;
+    });
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    if (firstPin == confirmPin) {
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("PINs don't match. Please try again.")));
+    }
+  }
 
   @override
   void dispose() {
-    _focusOne.dispose();
-    _focusTwo.dispose();
-    _focusThree.dispose();
-    _focusFour.dispose();
-
-    _focusOneC.dispose();
-    _focusTwoC.dispose();
-    _focusThreeC.dispose();
-    _focusFourC.dispose();
+    _lastFirstPinNode.dispose();
+    _firstConfirmPinNode.dispose();
+    _lastConfirmPinNode.dispose();
     super.dispose();
   }
 
@@ -111,7 +109,7 @@ class _SetMPinState extends State<SetMPin> {
                       Center(
                         child: Image.asset(
                           'assets/logo.png',
-                          width: MediaQuery.of(context).size.width * .3,
+                          width: MediaQuery.of(context).size.width * .2,
                           fit: BoxFit.contain,
                         ),
                       ),
@@ -144,15 +142,10 @@ class _SetMPinState extends State<SetMPin> {
                       SizedBox(
                         height: MediaQuery.of(context).size.height * .015,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          OtpPasscode(_fieldOne, true, focusNode: _focusOne),
-                          OtpPasscode(_fieldTwo, false, focusNode: _focusTwo),
-                          OtpPasscode(_fieldThree, false,
-                              focusNode: _focusThree),
-                          OtpPasscode(_fieldFour, false, focusNode: _focusFour),
-                        ],
+                      OtpPasscode(
+                        onCompleted: handleFirstPinSubmit,
+                        digits: 4,
+                        lastFocusNode: _lastFirstPinNode,
                       ),
                       SizedBox(
                         height: MediaQuery.of(context).size.height * .035,
@@ -166,42 +159,28 @@ class _SetMPinState extends State<SetMPin> {
                       SizedBox(
                         height: MediaQuery.of(context).size.height * .015,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          OtpPasscode(
-                            _fieldOneC,
-                            true,
-                            focusNode: _focusOneC,
-                          ),
-                          OtpPasscode(
-                            _fieldTwoC,
-                            false,
-                            focusNode: _focusTwoC,
-                          ),
-                          OtpPasscode(
-                            _fieldThreeC,
-                            false,
-                            focusNode: _focusThreeC,
-                          ),
-                          OtpPasscode(
-                            _fieldFourC,
-                            false,
-                            focusNode: _focusFourC,
-                          ),
-                        ],
+                      OtpPasscode(
+                        onCompleted: handleConfirmPinSubmit,
+                        digits: 4,
+                        firstFocusNode: _firstConfirmPinNode,
+                        lastFocusNode: _lastConfirmPinNode,
+                        autoFocusFirst: false,
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * .025,
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * .025,
+                        height: MediaQuery.of(context).size.height * .05,
                       ),
                       Center(
                         child: CustomButton(
                           text: 'Continue',
                           onTap: () async {
-                            Get.toNamed(RouteName.login);
+                            if (firstPin.isNotEmpty && firstPin == confirmPin) {
+                              Get.toNamed(RouteName.subjectSelect);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content:
+                                          Text("Please enter matching PINs")));
+                            }
                           },
                         ),
                       ),

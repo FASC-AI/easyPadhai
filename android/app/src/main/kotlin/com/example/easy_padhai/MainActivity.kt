@@ -1,4 +1,4 @@
-package com.example.easy_padhai
+package com.troology.easypadhai
 
 import io.flutter.embedding.android.FlutterActivity
 

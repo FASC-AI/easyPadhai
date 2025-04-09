@@ -130,7 +130,7 @@ class _VerifyMPinState extends State<VerifyMpin> {
                         child: CustomButton(
                           text: 'Continue',
                           onTap: () async {
-                            Get.toNamed(RouteName.subjectSelect);
+                            Get.toNamed(RouteName.classSelect);
                           },
                         ),
                       ),

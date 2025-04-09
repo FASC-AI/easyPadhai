@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "276680617082-if45pppvkdj16n4lgsa5td5uhkv7ocq3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.troology.easypadhai",
+            "certificate_hash": "30c477944e30b6be51127e76c26949f8b442689d"
+          }
+        },
+        {
           "client_id": "276680617082-m3fpdovue3fohgiei8k4d5rpcjjt5kjl.apps.googleusercontent.com",
           "client_type": 3
         }

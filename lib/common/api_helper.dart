@@ -5,7 +5,6 @@ import 'package:easy_padhai/route/route_name.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-
 class ApiHelper {
   Future<dynamic> get(
       String url, Map<String, dynamic>? queryParameters, String tokenId) async {

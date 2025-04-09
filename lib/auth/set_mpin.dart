@@ -174,7 +174,7 @@ class _SetMPinState extends State<SetMPin> {
                           text: 'Continue',
                           onTap: () async {
                             if (firstPin.isNotEmpty && firstPin == confirmPin) {
-                              Get.toNamed(RouteName.subjectSelect);
+                              Get.toNamed(RouteName.classSelect);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(

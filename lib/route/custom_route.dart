@@ -1,3 +1,4 @@
+import 'package:easy_padhai/auth/select_class.dart';
 import 'package:easy_padhai/auth/verify_mpin.dart';
 import 'package:easy_padhai/auth/login_screen.dart';
 import 'package:easy_padhai/auth/set_mpin.dart';
@@ -38,7 +39,8 @@ class CustomRoute {
         return const SetMPin();
       case RouteName.subjectSelect:
         return const SelectSubject();
-
+      case RouteName.classSelect:
+        return const SelectClass();
       case RouteName.noInternet:
         return NoInternet();
       case RouteName.noService:

@@ -45,13 +45,13 @@ class CustomBottomNavBar extends StatelessWidget {
           isActive: currentIndex == 0,
         ),
         _buildNavItem(
-          iconPath: 'assets/create.svg',
-          activeIconPath: 'assets/add.svg',
+          iconPath: 'assets/batch.svg',
+          activeIconPath: 'assets/batchb.svg',
           label: 'Create Batch',
           isActive: currentIndex == 1,
         ),
         _buildNavItem(
-          iconPath: 'assets/join_grey.svg',
+          iconPath: 'assets/add.svg',
           activeIconPath: 'assets/addb.svg',
           label: 'Join Batch',
           isActive: currentIndex == 2,

@@ -7,6 +7,7 @@ import 'package:easy_padhai/auth/sign_in.dart';
 import 'package:easy_padhai/auth/splash_screen.dart';
 import 'package:easy_padhai/common/no_internet.dart';
 import 'package:easy_padhai/common/no_service.dart';
+import 'package:easy_padhai/dashboard/teacher_home.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:easy_padhai/services/connectivity_provider.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,10 @@ class CustomRoute {
     switch (routeName) {
       case RouteName.splash:
         return const SplashScreen();
+      case RouteName.noInternet:
+        return NoInternet();
+      case RouteName.noService:
+        return const NoService();
       case RouteName.login:
         return const Login();
       case RouteName.verifyMpin:
@@ -41,10 +46,8 @@ class CustomRoute {
         return const SelectSubject();
       case RouteName.classSelect:
         return const SelectClass();
-      case RouteName.noInternet:
-        return NoInternet();
-      case RouteName.noService:
-        return const NoService();
+      case RouteName.teacherHome:
+        return TeacherHome();
     }
     return const SplashScreen();
   }

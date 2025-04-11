@@ -1,0 +1,132 @@
+import 'package:easy_padhai/controller/dashboard_controller.dart';
+import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+
+// ignore: must_be_immutable
+class TeacherHome extends StatelessWidget {
+  DashboardController dashboardController = Get.find();
+  TeacherHome({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleAvatar(
+            backgroundColor: Colors.white,
+            child: SvgPicture.asset('assets/logo.svg', height: 20),
+          ),
+        ),
+        title: const Text(
+          'Easy Padhai',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                'assets/banner.png',
+                height: size.height * 0.18,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Tue, 21 Dec',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.notifications, color: Colors.blue),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          "Welcome to Easy Padhai! We're thrilled to have you as a teacher. Start inspiring and guiding your students — let’s make learning impactful together!",
+                          style: TextStyle(color: Colors.grey.shade700),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: size.height * 0.15,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  buildClassCard(
+                      '10-C', 'RPS International School', 'assets/class1.jpg'),
+                  const SizedBox(width: 10),
+                  buildClassCard('10-B', '', 'assets/class2.jpg'),
+                  const SizedBox(width: 10),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Obx(() => CustomBottomNavBar(
+            currentIndex: dashboardController.currentIndex.value,
+            onTap: dashboardController.changeIndex,
+          )),
+    );
+  }
+
+  Widget buildClassCard(String title, String subtitle, String imagePath) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: 160,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(imagePath),
+            fit: BoxFit.cover,
+          ),
+        ),
+        padding: const EdgeInsets.all(12),
+        alignment: Alignment.bottomLeft,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold)),
+            if (subtitle.isNotEmpty)
+              Text(subtitle,
+                  style: const TextStyle(color: Colors.white70, fontSize: 12)),
+          ],
+        ),
+      ),
+    );
+  }
+}

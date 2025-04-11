@@ -6,10 +6,10 @@ class CustomBottomNavBar extends StatelessWidget {
   final Function(int) onTap;
 
   const CustomBottomNavBar({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   BottomNavigationBarItem _buildNavItem({
     required String iconPath,
@@ -63,8 +63,8 @@ class CustomBottomNavBar extends StatelessWidget {
           isActive: currentIndex == 3,
         ),
         _buildNavItem(
-          iconPath: 'assets/personnavb.svg',
-          activeIconPath: 'assets/personnav.svg',
+          iconPath: 'assets/personnav.svg',
+          activeIconPath: 'assets/personnavb.svg',
           label: 'Profile',
           isActive: currentIndex == 4,
         ),

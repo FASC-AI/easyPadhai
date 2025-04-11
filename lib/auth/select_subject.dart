@@ -1,8 +1,11 @@
 import 'package:easy_padhai/auth/subject_view.dart';
 import 'package:easy_padhai/common/constant.dart';
+import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_button.dart';
+import 'package:easy_padhai/route/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 class SelectSubject extends StatelessWidget {
   const SelectSubject({super.key});
@@ -48,6 +51,10 @@ class SelectSubject extends StatelessWidget {
             right: MediaQuery.of(context).size.width * .125,
             child: CustomButton(
               text: 'Confirm Subject',
+              onTap: () {
+                Get.lazyPut(() => DashboardController());
+                Get.offAllNamed(RouteName.teacherHome);
+              },
             ),
           )
         ],

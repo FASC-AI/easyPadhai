@@ -7,14 +7,14 @@ import 'package:easy_padhai/route/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SetMPin extends StatefulWidget {
-  const SetMPin({super.key});
+class ForgotPIN extends StatefulWidget {
+  const ForgotPIN({super.key});
 
   @override
-  State<SetMPin> createState() => _SetMPinState();
+  State<ForgotPIN> createState() => _ForgotPINState();
 }
 
-class _SetMPinState extends State<SetMPin> {
+class _ForgotPINState extends State<ForgotPIN> {
   AuthController authController = Get.find();
   final formKey = GlobalKey<FormState>();
 
@@ -79,32 +79,32 @@ class _SetMPinState extends State<SetMPin> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Get.back();
-                        },
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              'assets/back.png',
-                              fit: BoxFit.fill,
-                              width: MediaQuery.of(context).size.width * .06,
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .02,
-                            ),
-                            Text(
-                              "Back",
-                              style: TextStyle(
-                                  color: AppColors.white,
-                                  fontSize:
-                                      MediaQuery.of(context).size.width * .035),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     Get.back();
+                      //   },
+                      //   child: Row(
+                      //     children: [
+                      //       Image.asset(
+                      //         'assets/back.png',
+                      //         fit: BoxFit.fill,
+                      //         width: MediaQuery.of(context).size.width * .06,
+                      //       ),
+                      //       SizedBox(
+                      //         width: MediaQuery.of(context).size.width * .02,
+                      //       ),
+                      //       Text(
+                      //         "Back",
+                      //         style: TextStyle(
+                      //             color: AppColors.white,
+                      //             fontSize:
+                      //                 MediaQuery.of(context).size.width * .035),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.width * .1,
+                        height: MediaQuery.of(context).size.width * .15,
                       ),
                       Center(
                         child: Image.asset(
@@ -121,7 +121,7 @@ class _SetMPinState extends State<SetMPin> {
                         child: Center(
                           child: Text(
                             textAlign: TextAlign.center,
-                            "Hi, Abhishek Kumar!",
+                            "Reset Pin",
                             style: TextStyle(
                                 color: AppColors.white,
                                 fontWeight: FontWeight.bold,
@@ -137,7 +137,7 @@ class _SetMPinState extends State<SetMPin> {
                         padding: EdgeInsets.only(
                           left: MediaQuery.of(context).size.width * .025,
                         ),
-                        child: const CustomText(text: 'PIN'),
+                        child: const CustomText(text: 'Pin'),
                       ),
                       SizedBox(
                         height: MediaQuery.of(context).size.height * .01,
@@ -154,7 +154,7 @@ class _SetMPinState extends State<SetMPin> {
                         padding: EdgeInsets.only(
                           left: MediaQuery.of(context).size.width * .025,
                         ),
-                        child: const CustomText(text: 'Confirm PIN'),
+                        child: const CustomText(text: 'Confirm Pin'),
                       ),
                       SizedBox(
                         height: MediaQuery.of(context).size.height * .01,
@@ -171,7 +171,7 @@ class _SetMPinState extends State<SetMPin> {
                       ),
                       Center(
                         child: CustomButton(
-                          text: 'Continue',
+                          text: 'Reset',
                           onTap: () async {
                             if (firstPin.isNotEmpty && firstPin == confirmPin) {
                               Get.toNamed(RouteName.classSelect);

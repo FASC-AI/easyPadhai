@@ -38,11 +38,11 @@ class CustomInput extends StatefulWidget {
     this.isPrefixText = false,
     this.prefixText = '',
     this.prefixIconSized = 25,
-    this.labelColor = AppColors.white,
+    this.labelColor = AppColors.grey7,
     this.fillColor = Colors.transparent,
-    this.textFiledColor = AppColors.white,
+    this.textFiledColor = AppColors.grey7,
     this.inputType = TextInputType.text,
-    this.wholeBackground = AppColors.white,
+    this.wholeBackground = AppColors.grey7,
     this.autoFocus = false,
     this.isPrefix = true,
     this.readOnly = false,
@@ -101,7 +101,7 @@ class _CustomInputState extends State<CustomInput> {
                     enabled: widget.enable,
                     obscureText: isHide,
                     style: TextStyle(
-                        color: AppColors.white,
+                        color: AppColors.grey7,
                         fontSize: MediaQuery.of(context).size.width * .033),
                     validator: widget.validation,
                     textInputAction: widget.isParagraph
@@ -112,7 +112,7 @@ class _CustomInputState extends State<CustomInput> {
                         ? TextInputType.multiline
                         : widget.inputType,
                     controller: widget.controller,
-                    cursorColor: Colors.white,
+                    cursorColor: AppColors.grey7,
                     decoration: InputDecoration(
                         fillColor: widget.fillColor,
                         filled: true,
@@ -163,9 +163,9 @@ class _CustomInputState extends State<CustomInput> {
                                     isHide
                                         ? Icons.visibility_off_outlined
                                         : Icons.visibility_outlined,
-                                    color: AppColors.white,
+                                    color: AppColors.grey4,
                                     size:
-                                        MediaQuery.of(context).size.width * .05,
+                                        MediaQuery.of(context).size.width * .06,
                                   ),
                                 ),
                               )
@@ -174,15 +174,15 @@ class _CustomInputState extends State<CustomInput> {
                                     padding: const EdgeInsets.only(right: 10),
                                     child: Icon(
                                       widget.customSuffixIcon,
-                                      color: AppColors.white,
+                                      color: AppColors.grey4,
                                       size: MediaQuery.of(context).size.width *
-                                          .05,
+                                          .06,
                                     ),
                                   )
                                 : null,
                         hintText: widget.label,
                         hintStyle: TextStyle(
-                            color: AppColors.white,
+                            color: AppColors.grey4,
                             fontSize: MediaQuery.of(context).size.width * .03)),
                   ),
                 ),

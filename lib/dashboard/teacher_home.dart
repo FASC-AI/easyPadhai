@@ -1,7 +1,7 @@
+import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 // ignore: must_be_immutable
@@ -15,35 +15,35 @@ class TeacherHome extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: AppColors.theme,
         elevation: 0,
         leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            backgroundColor: Colors.white,
-            child: SvgPicture.asset('assets/logo.svg', height: 20),
+          padding:
+              EdgeInsets.only(left: MediaQuery.of(context).size.width * .05),
+          child: Image.asset(
+            'assets/logoh.png',
           ),
         ),
         title: const Text(
           'Easy Padhai',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * .025),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(20),
               child: Image.asset(
                 'assets/banner.png',
-                height: size.height * 0.18,
-                width: double.infinity,
+                height: size.height * 0.25,
+                width: size.width,
                 fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(height: 16),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -81,10 +81,9 @@ class TeacherHome extends StatelessWidget {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
-                  buildClassCard(
-                      '10-C', 'RPS International School', 'assets/class1.jpg'),
+                  buildClassCard('10-C', '', 'assets/subject.png'),
                   const SizedBox(width: 10),
-                  buildClassCard('10-B', '', 'assets/class2.jpg'),
+                  buildClassCard('10-B', '', 'assets/subject.png'),
                   const SizedBox(width: 10),
                 ],
               ),

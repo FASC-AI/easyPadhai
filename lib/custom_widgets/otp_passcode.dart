@@ -94,7 +94,7 @@ class _OtpPasscodeState extends State<OtpPasscode> {
               width: MediaQuery.of(context).size.width * .16,
               height: MediaQuery.of(context).size.width * .15,
               margin: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * .015),
+                  horizontal: MediaQuery.of(context).size.width * .025),
               child: Center(
                 child: TextField(
                   controller: _controllers[index],

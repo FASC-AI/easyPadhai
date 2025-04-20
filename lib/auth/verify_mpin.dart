@@ -124,7 +124,27 @@ class _VerifyMPinState extends State<VerifyMpin> {
                         lastFocusNode: lastPinNode,
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * .05,
+                        height: MediaQuery.of(context).size.height * .02,
+                      ),
+                      GestureDetector(
+                          onTap: () {
+                            Get.toNamed(RouteName.forgotPin);
+                          },
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * .85,
+                            child: Text(
+                              "Forgot PIN?",
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * .03),
+                            ),
+                          )),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * .02,
                       ),
                       Center(
                         child: CustomButton(

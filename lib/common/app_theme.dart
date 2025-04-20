@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static ThemeData get baseTheme {
     return ThemeData(
+      fontFamily: 'Roboto',
       primaryColor: AppColors.backGroundColor,
       primarySwatch: Colors.blue,
       scaffoldBackgroundColor: AppColors.white,

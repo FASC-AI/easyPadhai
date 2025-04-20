@@ -42,7 +42,7 @@ class SelectClass extends StatelessWidget {
               child: CustomButton(
                 text: 'Confirm Class',
                 onTap: () {
-                  Get.toNamed(RouteName.subjectSelect);
+                  Get.toNamed(RouteName.sectionSelect);
                 },
               ))
         ],

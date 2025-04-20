@@ -1,3 +1,4 @@
+import 'package:easy_padhai/auth/section_view.dart';
 import 'package:easy_padhai/auth/subject_view.dart';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
@@ -7,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-class SelectSubject extends StatelessWidget {
-  const SelectSubject({super.key});
+class SelectSection extends StatelessWidget {
+  const SelectSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,7 @@ class SelectSubject extends StatelessWidget {
           },
         ),
         title: Text(
-          'Select Your Subject',
+          'Select Your Section',
           style: TextStyle(
             color: AppColors.white,
             fontSize: MediaQuery.of(context).size.width * .04,
@@ -43,17 +44,16 @@ class SelectSubject extends StatelessWidget {
             child: Padding(
                 padding:
                     EdgeInsets.all(MediaQuery.of(context).size.width * .03),
-                child: const SubjectView()),
+                child: const SectionView()),
           ),
           Positioned(
             left: MediaQuery.of(context).size.width * .125,
             bottom: MediaQuery.of(context).size.width * .05,
             right: MediaQuery.of(context).size.width * .125,
             child: CustomButton(
-              text: 'Confirm Subject',
+              text: 'Confirm Section',
               onTap: () {
-                Get.lazyPut(() => DashboardController()); 
-                Get.toNamed(RouteName.selectInstitution);
+                Get.toNamed(RouteName.subjectSelect);
               },
             ),
           )

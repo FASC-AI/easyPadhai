@@ -114,7 +114,7 @@ class _LoginState extends State<Login> {
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                         color: AppColors.black,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.normal,
                                         fontSize:
                                             MediaQuery.of(context).size.width *
                                                 .03),
@@ -144,19 +144,19 @@ class _LoginState extends State<Login> {
                                 children: [
                                   Image.asset(
                                     'assets/gmail.png',
-                                    width: MediaQuery.of(context).size.width *
-                                        .035,
+                                    width:
+                                        MediaQuery.of(context).size.width * .04,
                                   ),
                                   SizedBox(
                                     width:
                                         MediaQuery.of(context).size.width * .02,
                                   ),
                                   Text(
-                                    'Login with Email',
+                                    'Continue with Email',
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                         color: AppColors.white,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.normal,
                                         fontSize:
                                             MediaQuery.of(context).size.width *
                                                 .03),

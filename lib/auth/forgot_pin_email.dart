@@ -7,14 +7,14 @@ import 'package:easy_padhai/route/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class Email extends StatefulWidget {
-  const Email({super.key});
+class ForgotPinEmail extends StatefulWidget {
+  const ForgotPinEmail({super.key});
 
   @override
-  State<Email> createState() => _EmailState();
+  State<ForgotPinEmail> createState() => _ForgotPinEmailState();
 }
 
-class _EmailState extends State<Email> {
+class _ForgotPinEmailState extends State<ForgotPinEmail> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -89,7 +89,7 @@ class _EmailState extends State<Email> {
                         child: Center(
                           child: Text(
                             textAlign: TextAlign.center,
-                            "Sign In",
+                            "Forgot Pin",
                             style: TextStyle(
                                 color: AppColors.white,
                                 fontWeight: FontWeight.bold,
@@ -99,7 +99,7 @@ class _EmailState extends State<Email> {
                         ),
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * .125,
+                        height: MediaQuery.of(context).size.height * .15,
                       ),
 
                       const CustomText(text: 'Email'),
@@ -111,27 +111,8 @@ class _EmailState extends State<Email> {
                         controller: emailController,
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * .02,
+                        height: MediaQuery.of(context).size.height * .025,
                       ),
-
-                      GestureDetector(
-                          onTap: () {
-                            Get.toNamed(RouteName.forgotPinEmail);
-                          },
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width * .85,
-                            child: Text(
-                              "Forgot PIN?",
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.end,
-                              style: TextStyle(
-                                  color: AppColors.white,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize:
-                                      MediaQuery.of(context).size.width * .03),
-                            ),
-                          )),
-
                       // Text('Password',
                       //     overflow: TextOverflow.ellipsis,
                       //     style: TextStyle(
@@ -170,14 +151,13 @@ class _EmailState extends State<Email> {
                       //   ),
                       // ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * .02,
+                        height: MediaQuery.of(context).size.height * .025,
                       ),
                       Center(
                         child: CustomButton(
                           text: 'Continue',
                           onTap: () async {
-                            // Get.toNamed(RouteName.verifyMpin);
-                            showCustomPopup(context);
+                            Get.toNamed(RouteName.forgotPin);
                           },
                         ),
                       ),
@@ -272,29 +252,11 @@ void showCustomPopup(BuildContext context) {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                child: Padding(
-                  padding: EdgeInsets.only(
-                      left: MediaQuery.of(context).size.width * .035),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.arrow_back_ios_new,
-                        size: MediaQuery.of(context).size.width * .045,
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * .015,
-                      ),
-                      Text(
-                        "Back",
-                        style: TextStyle(
-                          fontSize: MediaQuery.of(context).size.width * .035,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new),
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
               ),
               SizedBox(

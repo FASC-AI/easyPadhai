@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:easy_padhai/controller/auth_controller.dart';
+import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:easy_padhai/services/local_storage_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -22,12 +24,19 @@ class _SplashScreenState extends State<SplashScreen> {
   dynamic loginData;
 
   bool isloading = false;
+  bool showFirstImage = true;
 
   String? data;
 
   @override
   void initState() {
     super.initState();
+    // Trigger the fade animation after 1 second
+    Timer(const Duration(seconds: 1), () {
+      setState(() {
+        showFirstImage = false;
+      });
+    });
 
     startTimeiOS();
   }
@@ -38,19 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> navigationPage() async {
-    // if (authController.version.value.isNotEmpty) {
-    //   data = await localStorageServiceUser.getLocalAuthUser();
-    //   if (data != null) {
-    //     loginData = await localStorageService.getLocalAuthData();
-    //     if (loginData != null) {
-    //       Get.offAllNamed(RouteName.login);
-    //     } else {
-    //       Get.offNamed(RouteName.login);
-    //     }
-    //   } else {
     Get.offNamed(RouteName.login);
-    //   }
-    // }
   }
 
   @override
@@ -58,16 +55,39 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: Stack(children: [
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: Image.asset(
-              'assets/splashbg.png',
-              fit: BoxFit.fill,
+        child: Stack(
+          children: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Image.asset(
+                'assets/bg.png',
+                fit: BoxFit.fill,
+              ),
             ),
-          ),
-        ]),
+            Center(
+              child: AnimatedCrossFade(
+                duration: const Duration(milliseconds: 2000),
+                firstChild: Image.asset(
+                  'assets/logos.png',
+                  width: 200,
+                  height: 200,
+                ),
+                secondChild: Image.asset(
+                  'assets/logoss.png',
+                  width: 200,
+                  height: 200,
+                ),
+                crossFadeState: showFirstImage
+                    ? CrossFadeState.showFirst
+                    : CrossFadeState.showSecond,
+                firstCurve: Curves.easeInOut,
+                secondCurve: Curves.easeInOut,
+                sizeCurve: Curves.easeInOut,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

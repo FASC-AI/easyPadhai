@@ -1,3 +1,4 @@
+import 'package:easy_padhai/common/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -35,8 +36,8 @@ class CustomBottomNavBar extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       selectedFontSize: 12,
       unselectedFontSize: 12,
-      selectedItemColor: Colors.blue,
-      unselectedItemColor: Colors.black,
+      selectedItemColor: AppColors.theme,
+      unselectedItemColor: AppColors.grey5,
       items: [
         _buildNavItem(
           iconPath: 'assets/home.svg',

@@ -1,9 +1,8 @@
 import 'package:easy_padhai/common/constant.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
-class ClassView extends StatelessWidget {
-  const ClassView({super.key});
+class SectionView extends StatelessWidget {
+  const SectionView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,44 +29,19 @@ class ClassView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    SvgPicture.asset(
-                      'assets/classi.svg',
-                      width: MediaQuery.of(context).size.width * .125,
+                    Image.asset(
+                      'assets/book.png',
+                      width: MediaQuery.of(context).size.width * .1,
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * .05,
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Class ',
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                color: AppColors.theme,
-                                fontWeight: FontWeight.w500,
-                                fontSize:
-                                    MediaQuery.of(context).size.width * .04)),
-                        Row(
-                          children: [
-                            SvgPicture.asset(
-                              'assets/person.svg',
-                              width: MediaQuery.of(context).size.width * .035,
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .015,
-                            ),
-                            Text('31 Students',
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    color: AppColors.grey6,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize:
-                                        MediaQuery.of(context).size.width *
-                                            .03)),
-                          ],
-                        ),
-                      ],
-                    ),
+                    Text('A',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            color: AppColors.theme,
+                            fontWeight: FontWeight.w500,
+                            fontSize: MediaQuery.of(context).size.width * .04)),
                   ],
                 ),
                 Transform.scale(

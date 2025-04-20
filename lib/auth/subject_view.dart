@@ -15,7 +15,10 @@ class SubjectView extends StatelessWidget {
           return Container(
             padding: EdgeInsets.all(MediaQuery.of(context).size.width * .025),
             margin: EdgeInsets.only(
-                bottom: MediaQuery.of(context).size.width * .03),
+              
+                bottom: index == 9
+                    ? MediaQuery.of(context).size.width * .2
+                    : MediaQuery.of(context).size.width * .03),
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
                 color: AppColors.white,

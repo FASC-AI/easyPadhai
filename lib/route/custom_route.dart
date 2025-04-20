@@ -1,4 +1,10 @@
+import 'package:easy_padhai/auth/forgot_pin.dart';
+import 'package:easy_padhai/auth/forgot_pin_email.dart';
+import 'package:easy_padhai/auth/institution_registration.dart';
+import 'package:easy_padhai/auth/section_view.dart';
 import 'package:easy_padhai/auth/select_class.dart';
+import 'package:easy_padhai/auth/select_institution.dart';
+import 'package:easy_padhai/auth/select_section.dart';
 import 'package:easy_padhai/auth/verify_mpin.dart';
 import 'package:easy_padhai/auth/login_screen.dart';
 import 'package:easy_padhai/auth/set_mpin.dart';
@@ -42,12 +48,22 @@ class CustomRoute {
         return const Email();
       case RouteName.setMPin:
         return const SetMPin();
+      case RouteName.forgotPin:
+        return const ForgotPIN();
+      case RouteName.forgotPinEmail:
+        return const ForgotPinEmail();
       case RouteName.subjectSelect:
         return const SelectSubject();
       case RouteName.classSelect:
         return const SelectClass();
+      case RouteName.sectionSelect:
+        return const SelectSection();
       case RouteName.teacherHome:
         return TeacherHome();
+      case RouteName.selectInstitution:
+        return const SelectInstitution();
+        case RouteName.registerInstitution:
+        return const InstitutionRegistration();
     }
     return const SplashScreen();
   }

@@ -3,7 +3,6 @@ import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_button.dart';
 import 'package:easy_padhai/custom_widgets/otp_passcode.dart';
 import 'package:easy_padhai/custom_widgets/text.dart';
-import 'package:easy_padhai/route/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -121,7 +120,8 @@ class _SetMPinState extends State<SetMPin> {
                         child: Center(
                           child: Text(
                             textAlign: TextAlign.center,
-                            "Hi, Abhishek Kumar!",
+                            overflow: TextOverflow.ellipsis,
+                            "Hi, ${authController.userName}",
                             style: TextStyle(
                                 color: AppColors.white,
                                 fontWeight: FontWeight.bold,
@@ -174,7 +174,7 @@ class _SetMPinState extends State<SetMPin> {
                           text: 'Continue',
                           onTap: () async {
                             if (firstPin.isNotEmpty && firstPin == confirmPin) {
-                              Get.toNamed(RouteName.classSelect);
+                              await authController.postSetVerifymPin(firstPin);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(

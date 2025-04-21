@@ -1,15 +1,16 @@
 import 'package:easy_padhai/auth/section_view.dart';
-import 'package:easy_padhai/auth/subject_view.dart';
 import 'package:easy_padhai/common/constant.dart';
-import 'package:easy_padhai/controller/dashboard_controller.dart';
+import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_button.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+// ignore: must_be_immutable
 class SelectSection extends StatelessWidget {
-  const SelectSection({super.key});
+  SelectSection({super.key});
+  AuthController authController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -39,12 +40,9 @@ class SelectSection extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Padding(
-                padding:
-                    EdgeInsets.all(MediaQuery.of(context).size.width * .03),
-                child: const SectionView()),
+          Padding(
+            padding: EdgeInsets.all(MediaQuery.of(context).size.width * .03),
+            child: SectionView(),
           ),
           Positioned(
             left: MediaQuery.of(context).size.width * .125,
@@ -52,11 +50,29 @@ class SelectSection extends StatelessWidget {
             right: MediaQuery.of(context).size.width * .125,
             child: CustomButton(
               text: 'Confirm Section',
-              onTap: () {
-                Get.toNamed(RouteName.subjectSelect);
+              onTap: () async {
+                authController.selectedSectionIds.isNotEmpty
+                    ? {
+                        await authController.getsectionList(''),
+                        Get.toNamed(RouteName.subjectSelect)
+                      }
+                    : Get.snackbar(
+                        '',
+                        '',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: AppColors.red,
+                        titleText: const SizedBox.shrink(),
+                        messageText: const Text(
+                          'Please select atleast 1 section',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                      );
               },
             ),
-          )
+          ),
         ],
       ),
     );

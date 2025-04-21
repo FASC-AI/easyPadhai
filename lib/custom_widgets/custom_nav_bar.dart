@@ -33,6 +33,7 @@ class CustomBottomNavBar extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: onTap,
+      backgroundColor: Colors.white,
       type: BottomNavigationBarType.fixed,
       selectedFontSize: 12,
       unselectedFontSize: 12,

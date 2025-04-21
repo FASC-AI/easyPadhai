@@ -174,6 +174,7 @@ class _ForgotPINState extends State<ForgotPIN> {
                           text: 'Reset',
                           onTap: () async {
                             if (firstPin.isNotEmpty && firstPin == confirmPin) {
+                              await authController.getClassList('');
                               Get.toNamed(RouteName.classSelect);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(

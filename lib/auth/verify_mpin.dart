@@ -21,9 +21,10 @@ class _VerifyMPinState extends State<VerifyMpin> {
   AuthController authController = Get.find();
   final formKey = GlobalKey<FormState>();
   final FocusNode lastPinNode = FocusNode();
+  String mPin = "";
 
   void handleOtpSubmit(String otp) {
-    print("OTP Entered: $otp");
+    mPin = otp;
   }
 
   @override
@@ -98,14 +99,18 @@ class _VerifyMPinState extends State<VerifyMpin> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width * .8,
                         child: Center(
-                          child: Text(
-                            textAlign: TextAlign.center,
-                            "Hi, Abhishek Kumar!",
-                            style: TextStyle(
-                                color: AppColors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize:
-                                    MediaQuery.of(context).size.width * .06),
+                          child: Obx(
+                            () => Text(
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              "Hi, ${authController.userName}",
+                              style: TextStyle(
+                                
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * .06),
+                            ),
                           ),
                         ),
                       ),
@@ -150,7 +155,7 @@ class _VerifyMPinState extends State<VerifyMpin> {
                         child: CustomButton(
                           text: 'Continue',
                           onTap: () async {
-                            Get.toNamed(RouteName.classSelect);
+                            await authController.postSetVerifymPin(mPin);
                           },
                         ),
                       ),

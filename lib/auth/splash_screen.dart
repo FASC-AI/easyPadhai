@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'package:easy_padhai/controller/auth_controller.dart';
-import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:easy_padhai/services/local_storage_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -31,8 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Trigger the fade animation after 1 second
-    Timer(const Duration(seconds: 1), () {
+    Timer(const Duration(seconds: 2), () {
       setState(() {
         showFirstImage = false;
       });

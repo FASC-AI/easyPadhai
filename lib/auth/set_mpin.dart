@@ -87,7 +87,7 @@ class _SetMPinState extends State<SetMPin> {
                             Image.asset(
                               'assets/back.png',
                               fit: BoxFit.fill,
-                              width: MediaQuery.of(context).size.width * .06,
+                              width: MediaQuery.of(context).size.width * .065,
                             ),
                             SizedBox(
                               width: MediaQuery.of(context).size.width * .02,

@@ -55,10 +55,10 @@ class SectionView extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                         color: AppColors.theme,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.w600,
                                         fontSize:
                                             MediaQuery.of(context).size.width *
-                                                .04)),
+                                                .042)),
                               ],
                             ),
                             Obx(

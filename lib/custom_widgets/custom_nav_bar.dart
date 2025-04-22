@@ -19,10 +19,13 @@ class CustomBottomNavBar extends StatelessWidget {
     required bool isActive,
   }) {
     return BottomNavigationBarItem(
-      icon: SvgPicture.asset(
-        isActive ? activeIconPath : iconPath,
-        height: 24,
-        width: 24,
+      icon: Padding(
+        padding: const EdgeInsets.only(bottom: 5),
+        child: SvgPicture.asset(
+          isActive ? activeIconPath : iconPath,
+          height: 24,
+          width: 24,
+        ),
       ),
       label: label,
     );
@@ -35,8 +38,10 @@ class CustomBottomNavBar extends StatelessWidget {
       onTap: onTap,
       backgroundColor: Colors.white,
       type: BottomNavigationBarType.fixed,
-      selectedFontSize: 12,
-      unselectedFontSize: 12,
+      selectedFontSize: MediaQuery.of(context).size.width * .03,
+      unselectedFontSize: MediaQuery.of(context).size.width * .03,
+      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+      selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
       selectedItemColor: AppColors.theme,
       unselectedItemColor: AppColors.grey5,
       items: [
@@ -47,14 +52,14 @@ class CustomBottomNavBar extends StatelessWidget {
           isActive: currentIndex == 0,
         ),
         _buildNavItem(
-          iconPath: 'assets/batch.svg',
-          activeIconPath: 'assets/batchb.svg',
+          iconPath: 'assets/add.svg',
+          activeIconPath: 'assets/addb.svg',
           label: 'Create Batch',
           isActive: currentIndex == 1,
         ),
         _buildNavItem(
-          iconPath: 'assets/add.svg',
-          activeIconPath: 'assets/addb.svg',
+          iconPath: 'assets/batch.svg',
+          activeIconPath: 'assets/batchb.svg',
           label: 'Join Batch',
           isActive: currentIndex == 2,
         ),

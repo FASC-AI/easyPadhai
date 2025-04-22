@@ -56,7 +56,7 @@ class _ForgotPinEmailState extends State<ForgotPinEmail> {
                             Image.asset(
                               'assets/back.png',
                               fit: BoxFit.fill,
-                              width: MediaQuery.of(context).size.width * .06,
+                              width: MediaQuery.of(context).size.width * .065,
                             ),
                             SizedBox(
                               width: MediaQuery.of(context).size.width * .02,
@@ -92,7 +92,7 @@ class _ForgotPinEmailState extends State<ForgotPinEmail> {
                             "Forgot Pin",
                             style: TextStyle(
                                 color: AppColors.white,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                                 fontSize:
                                     MediaQuery.of(context).size.width * .06),
                           ),
@@ -308,9 +308,9 @@ void showCustomPopup(BuildContext context) {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                               color: AppColors.black,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                               fontSize:
-                                  MediaQuery.of(context).size.width * .03),
+                                  MediaQuery.of(context).size.width * .035),
                         ),
                       ],
                     ),

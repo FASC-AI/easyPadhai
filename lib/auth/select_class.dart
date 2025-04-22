@@ -19,13 +19,14 @@ class SelectClass extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.theme,
         systemOverlayStyle: SystemUiOverlayStyle.light,
+        
         automaticallyImplyLeading: false,
         title: Text(
           'Select Your Class',
           style: TextStyle(
             color: AppColors.white,
-            fontSize: MediaQuery.of(context).size.width * .04,
-            fontWeight: FontWeight.w500,
+            fontSize: MediaQuery.of(context).size.width * .045,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),

@@ -52,7 +52,7 @@ class CustomRoute {
       case RouteName.forgotPinEmail:
         return const ForgotPinEmail();
       case RouteName.subjectSelect:
-        return const SelectSubject();
+        return  SelectSubject();
       case RouteName.classSelect:
         return SelectClass();
       case RouteName.sectionSelect:

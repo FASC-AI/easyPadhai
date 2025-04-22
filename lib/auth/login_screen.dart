@@ -92,7 +92,7 @@ class _LoginState extends State<Login> {
                             },
                             child: Container(
                               width: MediaQuery.of(context).size.width,
-                              height: MediaQuery.of(context).size.height * .06,
+                              height: MediaQuery.of(context).size.height * .07,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(
                                       MediaQuery.of(context).size.width * .1),
@@ -103,7 +103,7 @@ class _LoginState extends State<Login> {
                                   Image.asset(
                                     'assets/google.png',
                                     width:
-                                        MediaQuery.of(context).size.width * .05,
+                                        MediaQuery.of(context).size.width * .06,
                                   ),
                                   SizedBox(
                                     width:
@@ -113,11 +113,12 @@ class _LoginState extends State<Login> {
                                     'Continue with Google',
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
+                                        fontFamily: 'Roboto',
                                         color: AppColors.black,
-                                        fontWeight: FontWeight.normal,
+                                        fontWeight: FontWeight.w600,
                                         fontSize:
                                             MediaQuery.of(context).size.width *
-                                                .03),
+                                                .033),
                                   ),
                                 ],
                               ),
@@ -133,7 +134,7 @@ class _LoginState extends State<Login> {
                             },
                             child: Container(
                               width: MediaQuery.of(context).size.width,
-                              height: MediaQuery.of(context).size.height * .06,
+                              height: MediaQuery.of(context).size.height * .07,
                               decoration: BoxDecoration(
                                   border: Border.all(color: Colors.white),
                                   borderRadius: BorderRadius.circular(
@@ -145,7 +146,7 @@ class _LoginState extends State<Login> {
                                   Image.asset(
                                     'assets/gmail.png',
                                     width:
-                                        MediaQuery.of(context).size.width * .04,
+                                        MediaQuery.of(context).size.width * .05,
                                   ),
                                   SizedBox(
                                     width:
@@ -156,10 +157,10 @@ class _LoginState extends State<Login> {
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                         color: AppColors.white,
-                                        fontWeight: FontWeight.normal,
+                                        fontWeight: FontWeight.w600,
                                         fontSize:
                                             MediaQuery.of(context).size.width *
-                                                .03),
+                                                .033),
                                   ),
                                 ],
                               ),

@@ -1,9 +1,11 @@
+import 'package:easy_padhai/auth/google_signin_helper.dart';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_button.dart';
 import 'package:easy_padhai/custom_widgets/custom_input.dart';
 import 'package:easy_padhai/custom_widgets/text.dart';
 import 'package:easy_padhai/route/route_name.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -56,7 +58,7 @@ class _EmailState extends State<Email> {
                             Image.asset(
                               'assets/back.png',
                               fit: BoxFit.fill,
-                              width: MediaQuery.of(context).size.width * .06,
+                              width: MediaQuery.of(context).size.width * .065,
                             ),
                             SizedBox(
                               width: MediaQuery.of(context).size.width * .02,
@@ -126,9 +128,9 @@ class _EmailState extends State<Email> {
                               textAlign: TextAlign.end,
                               style: TextStyle(
                                   color: AppColors.white,
-                                  fontWeight: FontWeight.normal,
+                                  fontWeight: FontWeight.w600,
                                   fontSize:
-                                      MediaQuery.of(context).size.width * .03),
+                                      MediaQuery.of(context).size.width * .032),
                             ),
                           )),
 
@@ -177,7 +179,22 @@ class _EmailState extends State<Email> {
                           text: 'Continue',
                           onTap: () async {
                             // Get.toNamed(RouteName.verifyMpin);
-                            showCustomPopup(context);
+                            emailController.text.isNotEmpty
+                                ? showCustomPopup(context)
+                                : Get.snackbar(
+                                    '',
+                                    '',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: AppColors.red,
+                                    titleText: const SizedBox.shrink(),
+                                    messageText: const Text(
+                                      'Enter email Id',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  );
                           },
                         ),
                       ),
@@ -255,6 +272,9 @@ class _EmailState extends State<Email> {
 }
 
 void showCustomPopup(BuildContext context) {
+  final GoogleSignInHelper googleSignInHelper = GoogleSignInHelper();
+
+  AuthController authController = Get.find();
   showDialog(
     context: context,
     barrierDismissible: true,
@@ -321,11 +341,15 @@ void showCustomPopup(BuildContext context) {
                     horizontal: MediaQuery.of(context).size.width * .05),
                 child: GestureDetector(
                   onTap: () async {
-                    Get.toNamed(RouteName.setMPin);
+                    final User? user =
+                        await googleSignInHelper.signInWithGoogle();
+                    if (user != null) {
+                      await authController.googleSignin();
+                    }
                   },
                   child: Container(
                     width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * .06,
+                    height: MediaQuery.of(context).size.height * .065,
                     decoration: BoxDecoration(
                         border: Border.all(color: AppColors.greyLite),
                         borderRadius: BorderRadius.circular(
@@ -336,7 +360,7 @@ void showCustomPopup(BuildContext context) {
                       children: [
                         Image.asset(
                           'assets/google.png',
-                          width: MediaQuery.of(context).size.width * .05,
+                          width: MediaQuery.of(context).size.width * .055,
                         ),
                         SizedBox(
                           width: MediaQuery.of(context).size.width * .01,
@@ -346,9 +370,9 @@ void showCustomPopup(BuildContext context) {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                               color: AppColors.black,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                               fontSize:
-                                  MediaQuery.of(context).size.width * .03),
+                                  MediaQuery.of(context).size.width * .032),
                         ),
                       ],
                     ),

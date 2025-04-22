@@ -38,11 +38,11 @@ class CustomInput extends StatefulWidget {
     this.isPrefixText = false,
     this.prefixText = '',
     this.prefixIconSized = 25,
-    this.labelColor = AppColors.grey7,
+    this.labelColor = AppColors.grey,
     this.fillColor = Colors.transparent,
-    this.textFiledColor = AppColors.grey7,
+    this.textFiledColor = AppColors.white,
     this.inputType = TextInputType.text,
-    this.wholeBackground = AppColors.grey7,
+    this.wholeBackground = AppColors.white,
     this.autoFocus = false,
     this.isPrefix = true,
     this.readOnly = false,
@@ -101,7 +101,7 @@ class _CustomInputState extends State<CustomInput> {
                     enabled: widget.enable,
                     obscureText: isHide,
                     style: TextStyle(
-                        color: AppColors.grey7,
+                        color: AppColors.black,
                         fontSize: MediaQuery.of(context).size.width * .033),
                     validator: widget.validation,
                     textInputAction: widget.isParagraph
@@ -112,7 +112,7 @@ class _CustomInputState extends State<CustomInput> {
                         ? TextInputType.multiline
                         : widget.inputType,
                     controller: widget.controller,
-                    cursorColor: AppColors.grey7,
+                    cursorColor: AppColors.white,
                     decoration: InputDecoration(
                         fillColor: widget.fillColor,
                         filled: true,
@@ -141,12 +141,12 @@ class _CustomInputState extends State<CustomInput> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: const BorderSide(
-                              color: AppColors.grey7, width: 1.0),
+                              color: AppColors.grey, width: 1.0),
                         ),
                         disabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: const BorderSide(
-                              color: AppColors.grey7, width: 1.0),
+                              color: AppColors.grey, width: 1.0),
                         ),
                         suffixIconConstraints:
                             const BoxConstraints(maxHeight: 25, maxWidth: 30),
@@ -182,7 +182,7 @@ class _CustomInputState extends State<CustomInput> {
                                 : null,
                         hintText: widget.label,
                         hintStyle: TextStyle(
-                            color: AppColors.grey4,
+                            color: AppColors.grey,
                             fontSize: MediaQuery.of(context).size.width * .03)),
                   ),
                 ),

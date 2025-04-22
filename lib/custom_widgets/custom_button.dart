@@ -42,8 +42,8 @@ class CustomButton extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                         color: AppColors.white,
-                        fontWeight: FontWeight.w500,
-                        fontSize: MediaQuery.of(context).size.width * .03),
+                        fontWeight: FontWeight.w600,
+                        fontSize: MediaQuery.of(context).size.width * .032),
                   ),
           ),
         ),

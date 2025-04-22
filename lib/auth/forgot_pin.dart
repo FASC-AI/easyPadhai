@@ -124,7 +124,7 @@ class _ForgotPINState extends State<ForgotPIN> {
                             "Reset Pin",
                             style: TextStyle(
                                 color: AppColors.white,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                                 fontSize:
                                     MediaQuery.of(context).size.width * .06),
                           ),

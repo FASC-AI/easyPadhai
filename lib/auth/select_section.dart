@@ -19,22 +19,25 @@ class SelectSection extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.theme,
         systemOverlayStyle: SystemUiOverlayStyle.light,
+        leadingWidth: MediaQuery.of(context).size.width * .13,
         leading: IconButton(
+          padding: EdgeInsets.zero,
           icon: Image.asset(
             'assets/back.png',
-            fit: BoxFit.fill,
-            width: MediaQuery.of(context).size.width * .06,
+            fit: BoxFit.contain,
+            width: MediaQuery.of(context).size.width * .07,
           ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
+        titleSpacing: 0,
         title: Text(
           'Select Your Section',
           style: TextStyle(
             color: AppColors.white,
-            fontSize: MediaQuery.of(context).size.width * .04,
-            fontWeight: FontWeight.w500,
+            fontSize: MediaQuery.of(context).size.width * .045,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -53,7 +56,7 @@ class SelectSection extends StatelessWidget {
               onTap: () async {
                 authController.selectedSectionIds.isNotEmpty
                     ? {
-                        await authController.getsectionList(''),
+                        await authController.getsubjectList(''),
                         Get.toNamed(RouteName.subjectSelect)
                       }
                     : Get.snackbar(
@@ -63,7 +66,7 @@ class SelectSection extends StatelessWidget {
                         backgroundColor: AppColors.red,
                         titleText: const SizedBox.shrink(),
                         messageText: const Text(
-                          'Please select atleast 1 section',
+                          'Please select atleast 1 subject',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,

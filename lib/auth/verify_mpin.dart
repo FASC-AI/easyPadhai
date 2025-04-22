@@ -105,7 +105,6 @@ class _VerifyMPinState extends State<VerifyMpin> {
                               overflow: TextOverflow.ellipsis,
                               "Hi, ${authController.userName}",
                               style: TextStyle(
-                                
                                   color: AppColors.white,
                                   fontWeight: FontWeight.bold,
                                   fontSize:
@@ -143,9 +142,9 @@ class _VerifyMPinState extends State<VerifyMpin> {
                               textAlign: TextAlign.end,
                               style: TextStyle(
                                   color: AppColors.white,
-                                  fontWeight: FontWeight.normal,
+                                  fontWeight: FontWeight.w600,
                                   fontSize:
-                                      MediaQuery.of(context).size.width * .03),
+                                      MediaQuery.of(context).size.width * .032),
                             ),
                           )),
                       SizedBox(

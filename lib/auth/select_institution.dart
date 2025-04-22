@@ -1,4 +1,6 @@
+import 'package:easy_padhai/auth/popups/institutes_popup.dart';
 import 'package:easy_padhai/common/constant.dart';
+import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_button.dart';
 import 'package:easy_padhai/custom_widgets/custom_input.dart';
 import 'package:easy_padhai/route/route_name.dart';
@@ -6,8 +8,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-class SelectInstitution extends StatelessWidget {
+class SelectInstitution extends StatefulWidget {
   const SelectInstitution({super.key});
+
+  @override
+  State<SelectInstitution> createState() => _SelectInstitutionState();
+}
+
+class _SelectInstitutionState extends State<SelectInstitution> {
+  TextEditingController instituteController = TextEditingController();
+  AuthController authController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -16,22 +26,25 @@ class SelectInstitution extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.theme,
         systemOverlayStyle: SystemUiOverlayStyle.light,
+        leadingWidth: MediaQuery.of(context).size.width * .13,
         leading: IconButton(
+          padding: EdgeInsets.zero,
           icon: Image.asset(
             'assets/back.png',
             fit: BoxFit.fill,
-            width: MediaQuery.of(context).size.width * .06,
+            width: MediaQuery.of(context).size.width * .065,
           ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
+        titleSpacing: 0,
         title: Text(
           'Select Your Institute',
           style: TextStyle(
             color: AppColors.white,
-            fontSize: MediaQuery.of(context).size.width * .04,
-            fontWeight: FontWeight.w500,
+            fontSize: MediaQuery.of(context).size.width * .045,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -42,19 +55,39 @@ class SelectInstitution extends StatelessWidget {
               horizontal: MediaQuery.of(context).size.width * .035,
               vertical: MediaQuery.of(context).size.height * .025,
             ),
-            child: CustomInput(
-              label: 'Select Your Institution',
-              enable: false,
-              validation: (value) {
-                if (value!.isEmpty) {
-                  return 'Vehicle is required';
+            child: GestureDetector(
+              onTap: () async {
+                await authController.getInstitutes();
+                bool? result = await showDialog(
+                  // ignore: use_build_context_synchronously
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const InstitutesPopup();
+                  },
+                  barrierDismissible: true,
+                );
+                if (result == true) {
+                  setState(() {
+                    instituteController.text =
+                        authController.instituteName.toString();
+                  });
                 }
-                return null;
               },
-              inputType: TextInputType.text,
-              customSuffixIcon: Icons.keyboard_arrow_down,
-              wholeBackground: AppColors.white,
-              isPrefix: false,
+              child: CustomInput(
+                label: 'Select Your Institution',
+                enable: false,
+                controller: instituteController,
+                validation: (value) {
+                  if (value!.isEmpty) {
+                    return 'Vehicle is required';
+                  }
+                  return null;
+                },
+                inputType: TextInputType.text,
+                customSuffixIcon: Icons.keyboard_arrow_down,
+                wholeBackground: AppColors.white,
+                isPrefix: false,
+              ),
             ),
           ),
           Padding(
@@ -83,8 +116,8 @@ class SelectInstitution extends StatelessWidget {
                 textAlign: TextAlign.end,
                 style: TextStyle(
                     color: AppColors.theme,
-                    fontWeight: FontWeight.normal,
-                    fontSize: MediaQuery.of(context).size.width * .03),
+                    fontWeight: FontWeight.w600,
+                    fontSize: MediaQuery.of(context).size.width * .032),
               ),
             ),
           ),

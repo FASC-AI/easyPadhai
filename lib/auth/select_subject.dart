@@ -1,5 +1,6 @@
 import 'package:easy_padhai/auth/subject_view.dart';
 import 'package:easy_padhai/common/constant.dart';
+import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_button.dart';
 import 'package:easy_padhai/route/route_name.dart';
@@ -7,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+// ignore: must_be_immutable
 class SelectSubject extends StatelessWidget {
-  const SelectSubject({super.key});
+  SelectSubject({super.key});
+  AuthController authController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -17,43 +20,60 @@ class SelectSubject extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.theme,
         systemOverlayStyle: SystemUiOverlayStyle.light,
+        leadingWidth: MediaQuery.of(context).size.width * .13,
         leading: IconButton(
+          padding: EdgeInsets.zero,
           icon: Image.asset(
             'assets/back.png',
             fit: BoxFit.fill,
-            width: MediaQuery.of(context).size.width * .06,
+            width: MediaQuery.of(context).size.width * .07,
           ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
+        titleSpacing: 0,
         title: Text(
           'Select Your Subject',
           style: TextStyle(
             color: AppColors.white,
-            fontSize: MediaQuery.of(context).size.width * .04,
-            fontWeight: FontWeight.w500,
+            fontSize: MediaQuery.of(context).size.width * .045,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
       body: Stack(
         children: [
-          SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Padding(
-                padding:
-                    EdgeInsets.all(MediaQuery.of(context).size.width * .03),
-                child: const SubjectView()),
-          ),
+          Padding(
+              padding: EdgeInsets.all(MediaQuery.of(context).size.width * .03),
+              child: SubjectView()),
           Positioned(
             left: MediaQuery.of(context).size.width * .125,
             bottom: MediaQuery.of(context).size.width * .05,
             right: MediaQuery.of(context).size.width * .125,
             child: CustomButton(
               text: 'Confirm Subject',
-              onTap: () {
-                Get.lazyPut(() => DashboardController()); 
-                Get.toNamed(RouteName.selectInstitution);
+              onTap: () async {
+                authController.selectedSubjectIds.isNotEmpty
+                    ? {
+                        await authController.getInstitutes(),
+                        Get.lazyPut(() => DashboardController()),
+                        Get.toNamed(RouteName.selectInstitution),
+                      }
+                    : Get.snackbar(
+                        '',
+                        '',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: AppColors.red,
+                        titleText: const SizedBox.shrink(),
+                        messageText: const Text(
+                          'Please select atleast 1 subject',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                      );
               },
             ),
           )

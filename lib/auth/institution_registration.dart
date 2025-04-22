@@ -30,22 +30,25 @@ class _InstitutionRegistrationState extends State<InstitutionRegistration> {
       appBar: AppBar(
         backgroundColor: AppColors.theme,
         systemOverlayStyle: SystemUiOverlayStyle.light,
+        leadingWidth: MediaQuery.of(context).size.width * .13,
         leading: IconButton(
+          padding: EdgeInsets.zero,
           icon: Image.asset(
             'assets/back.png',
             fit: BoxFit.fill,
-            width: width * 0.06,
+            width: width * 0.07,
           ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
+        titleSpacing: 0,
         title: Text(
           'Institution Registration Request',
           style: TextStyle(
             color: AppColors.white,
-            fontSize: width * 0.04,
-            fontWeight: FontWeight.w500,
+            fontSize: width * 0.045,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -71,22 +74,37 @@ class _InstitutionRegistrationState extends State<InstitutionRegistration> {
             _buildLabel("Type", width),
             Row(
               children: [
-                Radio<String>(
-                  value: "School",
-                  groupValue: _institutionType,
-                  onChanged: (value) {
-                    setState(() => _institutionType = value);
-                  },
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Radio<String>(
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                      value: "School",
+                      groupValue: _institutionType,
+                      onChanged: (value) {
+                        setState(() => _institutionType = value);
+                      },
+                    ),
+                    Text("School", style: TextStyle(fontSize: width * 0.04)),
+                  ],
                 ),
-                Text("School", style: TextStyle(fontSize: width * 0.04)),
-                Radio<String>(
-                  value: "Coaching",
-                  groupValue: _institutionType,
-                  onChanged: (value) {
-                    setState(() => _institutionType = value);
-                  },
+                const SizedBox(width: 20),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Radio<String>(
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                      value: "Coaching",
+                      groupValue: _institutionType,
+                      onChanged: (value) {
+                        setState(() => _institutionType = value);
+                      },
+                    ),
+                    Text("Coaching", style: TextStyle(fontSize: width * 0.04)),
+                  ],
                 ),
-                Text("Coaching", style: TextStyle(fontSize: width * 0.04)),
               ],
             ),
             SizedBox(height: height * 0.02),
@@ -126,13 +144,16 @@ class _InstitutionRegistrationState extends State<InstitutionRegistration> {
   }
 
   Widget _buildLabel(String text, double width) {
-    return Text(
-      text,
-      overflow: TextOverflow.ellipsis,
-      style: TextStyle(
-        color: AppColors.black,
-        fontWeight: FontWeight.normal,
-        fontSize: width * 0.03,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5),
+      child: Text(
+        text,
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: AppColors.grey,
+          fontWeight: FontWeight.normal,
+          fontSize: width * 0.03,
+        ),
       ),
     );
   }
@@ -164,6 +185,10 @@ class _InstitutionRegistrationState extends State<InstitutionRegistration> {
   Widget _buildDropdown(
       String? selectedValue, void Function(String?)? onChanged) {
     return DropdownButtonFormField<String>(
+      icon: const Icon(
+        Icons.keyboard_arrow_down,
+        color: AppColors.grey,
+      ),
       value: selectedValue,
       decoration: InputDecoration(
         contentPadding:
@@ -171,7 +196,6 @@ class _InstitutionRegistrationState extends State<InstitutionRegistration> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Colors.grey),
-          
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),

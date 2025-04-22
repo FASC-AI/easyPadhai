@@ -4,9 +4,11 @@ import 'package:easy_padhai/common/api_urls.dart';
 import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/model/class_list_model.dart';
+import 'package:easy_padhai/model/institution_list_model.dart';
 import 'package:easy_padhai/model/login_model.dart';
 import 'package:easy_padhai/model/register_model.dart';
 import 'package:easy_padhai/model/section_list_model.dart';
+import 'package:easy_padhai/model/subject_list_model.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,15 +24,24 @@ class AuthController extends GetxController {
   RxString userType = ''.obs;
   RxString userName = ''.obs;
   RxString userId = ''.obs;
+  RxString instituteId = ''.obs;
+  RxString instituteName = ''.obs;
 
   List<ClassesData> classesdataList = [];
   List<SectionData> sectiondataList = [];
+  List<SubjectList> subjectdataList = [];
+  List<InstitutesList> institutiondataList = [];
 
   var selectedClassIds = <String>[].obs;
   var selectedSectionIds = <String>[].obs;
+  var selectedSubjectIds = <String>[].obs;
 
   RxBool isLoading1 = false.obs;
   RxBool isLoading2 = false.obs;
+  RxBool isLoading3 = false.obs;
+  RxBool isLoading4 = false.obs;
+    RxBool isLoading5 = false.obs;
+
 
   void toggleClassSelection(String classId) {
     if (selectedClassIds.contains(classId)) {
@@ -45,6 +56,14 @@ class AuthController extends GetxController {
       selectedSectionIds.remove(sectionId);
     } else {
       selectedSectionIds.add(sectionId);
+    }
+  }
+
+  void toggleSubjectSelection(String subjectId) {
+    if (selectedSubjectIds.contains(subjectId)) {
+      selectedSubjectIds.remove(subjectId);
+    } else {
+      selectedSubjectIds.add(subjectId);
     }
   }
 
@@ -192,4 +211,112 @@ class AuthController extends GetxController {
       }
     }
   }
+
+  getsubjectList(String search) async {
+    isLoading3(false);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParams = {"search": search};
+    final countryJson =
+        await apiHelper.get(ApiUrls.subjectList, queryParams, data);
+    if (countryJson != null && countryJson != false) {
+      SubjectListModel response = SubjectListModel.fromJson(countryJson);
+      if (response.status == true) {
+        subjectdataList = response.data?.subject ?? [];
+
+        isLoading3(true);
+        return subjectdataList;
+      } else {
+        isLoading3(true);
+      }
+    }
+  }
+
+  getInstitutes() async {
+    isLoading4(false);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {};
+    final countryJson =
+        await apiHelper.get(ApiUrls.institutionList, queryParameter, data);
+    if (countryJson != null && countryJson != false) {
+      InstitutionListModel response =
+          InstitutionListModel.fromJson(countryJson);
+      if (response.status == true) {
+        institutiondataList = response.data!.institutes!;
+        isLoading4(true);
+        return institutiondataList;
+      } else {
+        isLoading4(true);
+      }
+    }
+  }
+
+  searchInstitutes(String query) async {
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {};
+    String titleLower = '';
+    final categoryDataJson =
+        await apiHelper.get(ApiUrls.institutionList, queryParameter, data);
+    if (categoryDataJson != null) {
+      if (categoryDataJson['status'] == true) {
+        var response = InstitutionListModel.fromJson(categoryDataJson);
+        if (response.status == true) {
+          return response.data!.institutes!.map((e) => e).where((e) {
+            if (response.data != null) {
+              titleLower = e.institutesName!.toLowerCase();
+            }
+            final searchLower = query.toLowerCase();
+            return titleLower.contains(searchLower);
+          }).toList();
+        }
+      }
+    }
+  }
+
+  getStateList() async {
+    isLoading5(false);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {};
+    final countryJson =
+        await apiHelper.get(ApiUrls.stateList, queryParameter, data);
+    if (countryJson != null && countryJson != false) {
+      InstitutionListModel response =
+          InstitutionListModel.fromJson(countryJson);
+      if (response.status == true) {
+        institutiondataList = response.data!.institutes!;
+        isLoading5(true);
+        return institutiondataList;
+      } else {
+        isLoading5(true);
+      }
+    }
+  }
+
+  searchState(String query) async {
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {};
+    String titleLower = '';
+    final categoryDataJson =
+        await apiHelper.get(ApiUrls.stateList, queryParameter, data);
+    if (categoryDataJson != null) {
+      if (categoryDataJson['status'] == true) {
+        var response = InstitutionListModel.fromJson(categoryDataJson);
+        if (response.status == true) {
+          return response.data!.institutes!.map((e) => e).where((e) {
+            if (response.data != null) {
+              titleLower = e.institutesName!.toLowerCase();
+            }
+            final searchLower = query.toLowerCase();
+            return titleLower.contains(searchLower);
+          }).toList();
+        }
+      }
+    }
+  }
+
+
 }

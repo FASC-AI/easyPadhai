@@ -29,6 +29,9 @@ class ApiUrls {
   static const String googleLogin = 'api/v1/auth/google-login';
   static const String setverifyMpin = 'api/v1/auth/set-verify-mpin/';
   static const String classList = 'api/v1/class/list';
-    static const String sectionList = 'api/v1/section/list';
-
+  static const String sectionList = 'api/v1/section/list';
+  static const String subjectList = 'api/v1/subject/list';
+  static const String institutionList = 'api/v1/institutes/list';
+  static const String dictrictList = 'api/v1/district';
+  static const String stateList = 'api/v1/state';
 }

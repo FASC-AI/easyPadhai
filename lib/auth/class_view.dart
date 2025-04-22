@@ -56,10 +56,14 @@ class ClassView extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                         color: AppColors.theme,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.w600,
                                         fontSize:
                                             MediaQuery.of(context).size.width *
-                                                .04)),
+                                                .042)),
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * .005,
+                                ),
                                 Row(
                                   children: [
                                     SvgPicture.asset(
@@ -79,7 +83,7 @@ class ClassView extends StatelessWidget {
                                             fontSize: MediaQuery.of(context)
                                                     .size
                                                     .width *
-                                                .03)),
+                                                .032)),
                                   ],
                                 ),
                               ],

@@ -26,12 +26,12 @@ class TeacherHome extends StatelessWidget {
         ),
         title: const Text(
           'Easy Padhai',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.of(context).size.width * .025),
+            horizontal: MediaQuery.of(context).size.width * .05),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

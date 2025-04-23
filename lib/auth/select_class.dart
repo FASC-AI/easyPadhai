@@ -19,7 +19,6 @@ class SelectClass extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.theme,
         systemOverlayStyle: SystemUiOverlayStyle.light,
-        
         automaticallyImplyLeading: false,
         title: Text(
           'Select Your Class',
@@ -49,7 +48,7 @@ class SelectClass extends StatelessWidget {
                   authController.selectedClassIds.isNotEmpty
                       ? {
                           await authController.getsectionList(''),
-                          Get.toNamed(RouteName.sectionSelect)
+                          await authController.postUpdateAuthInfo('class')
                         }
                       : Get.snackbar(
                           '',

@@ -1,3 +1,4 @@
+import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -27,30 +28,8 @@ class _InstitutionRegistrationState extends State<InstitutionRegistration> {
 
     return Scaffold(
       backgroundColor: AppColors.bgColor,
-      appBar: AppBar(
-        backgroundColor: AppColors.theme,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        leadingWidth: MediaQuery.of(context).size.width * .13,
-        leading: IconButton(
-          padding: EdgeInsets.zero,
-          icon: Image.asset(
-            'assets/back.png',
-            fit: BoxFit.fill,
-            width: width * 0.07,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        titleSpacing: 0,
-        title: Text(
-          'Institution Registration Request',
-          style: TextStyle(
-            color: AppColors.white,
-            fontSize: width * 0.045,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+      appBar: const CustomAppBar(
+        text: 'Institution Registration request',
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: width * 0.04),
@@ -176,7 +155,7 @@ class _InstitutionRegistrationState extends State<InstitutionRegistration> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Colors.grey, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.theme, width: 1.5),
         ),
       ),
     );

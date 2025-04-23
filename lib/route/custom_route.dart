@@ -12,6 +12,8 @@ import 'package:easy_padhai/auth/sign_in.dart';
 import 'package:easy_padhai/auth/splash_screen.dart';
 import 'package:easy_padhai/common/no_internet.dart';
 import 'package:easy_padhai/common/no_service.dart';
+import 'package:easy_padhai/dashboard/profile.dart';
+import 'package:easy_padhai/dashboard/profile_edit.dart';
 import 'package:easy_padhai/dashboard/teacher_home.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:easy_padhai/services/connectivity_provider.dart';
@@ -52,7 +54,7 @@ class CustomRoute {
       case RouteName.forgotPinEmail:
         return const ForgotPinEmail();
       case RouteName.subjectSelect:
-        return  SelectSubject();
+        return SelectSubject();
       case RouteName.classSelect:
         return SelectClass();
       case RouteName.sectionSelect:
@@ -63,6 +65,11 @@ class CustomRoute {
         return const SelectInstitution();
       case RouteName.registerInstitution:
         return const InstitutionRegistration();
+
+      case RouteName.profile:
+        return Profile();
+      case RouteName.profileEdit:
+        return const ProfileEdit();
     }
     return const SplashScreen();
   }

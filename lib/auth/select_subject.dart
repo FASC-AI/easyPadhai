@@ -58,7 +58,7 @@ class SelectSubject extends StatelessWidget {
                     ? {
                         await authController.getInstitutes(),
                         Get.lazyPut(() => DashboardController()),
-                        Get.toNamed(RouteName.selectInstitution),
+                       await authController.postUpdateAuthInfo('subject')
                       }
                     : Get.snackbar(
                         '',

@@ -34,4 +34,5 @@ class ApiUrls {
   static const String institutionList = 'api/v1/institutes/list';
   static const String dictrictList = 'api/v1/district';
   static const String stateList = 'api/v1/state';
+  static const String updateProfile = 'api/v1/profile';
 }

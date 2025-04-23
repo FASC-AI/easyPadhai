@@ -1,0 +1,164 @@
+import 'package:easy_padhai/common/constant.dart';
+import 'package:easy_padhai/controller/dashboard_controller.dart';
+import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
+import 'package:easy_padhai/route/route_name.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+
+// ignore: must_be_immutable
+class Profile extends StatelessWidget {
+  DashboardController dashboardController = Get.find();
+  Profile({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.theme,
+        elevation: 0,
+        titleSpacing: 0,
+        title: Padding(
+          padding:
+              EdgeInsets.only(left: MediaQuery.of(context).size.width * .05),
+          child: const Text(
+            'Profile',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          Container(
+            width: size.width,
+            height: size.height * .28,
+            color: AppColors.theme,
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 40,
+                  backgroundImage: AssetImage('assets/pic.png'),
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'Abhishek Kumar Jha',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'abhishek.j@gmail.com',
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                profileTile(
+                  context,
+                  iconPath: 'assets/editprofile.svg',
+                  title: 'Edit Profile',
+                  onTap: () {
+                    Get.toNamed(RouteName.profileEdit);
+                  },
+                ),
+                profileTile(
+                  context,
+                  iconPath: 'assets/leader.svg',
+                  title: 'Leader Board',
+                  onTap: () {},
+                ),
+                const Spacer(),
+                profileTile(
+                  context,
+                  iconPath: 'assets/logout.svg',
+                  title: 'Logout',
+                  onTap: () {},
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: Obx(() => CustomBottomNavBar(
+            currentIndex: dashboardController.currentIndex.value,
+            onTap: dashboardController.changeIndex,
+          )),
+    );
+  }
+
+  Widget buildClassCard(String title, String subtitle, String imagePath) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: 160,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(imagePath),
+            fit: BoxFit.cover,
+          ),
+        ),
+        padding: const EdgeInsets.all(12),
+        alignment: Alignment.bottomLeft,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold)),
+            if (subtitle.isNotEmpty)
+              Text(subtitle,
+                  style: const TextStyle(color: Colors.white70, fontSize: 12)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget profileTile(BuildContext context,
+      {required String iconPath,
+      required String title,
+      required VoidCallback onTap}) {
+    final size = MediaQuery.of(context).size;
+
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+            horizontal: size.width * .05, vertical: size.height * 0.015),
+        child: Row(
+          children: [
+            SvgPicture.asset(
+              iconPath,
+              width: size.width * .055,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                    fontSize: size.width * .04,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.grey5),
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios,
+                size: size.width * .04, color: AppColors.grey5),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -4,6 +4,7 @@ import 'package:easy_padhai/common/api_urls.dart';
 import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/model/class_list_model.dart';
+import 'package:easy_padhai/model/common_model.dart';
 import 'package:easy_padhai/model/institution_list_model.dart';
 import 'package:easy_padhai/model/login_model.dart';
 import 'package:easy_padhai/model/register_model.dart';
@@ -40,8 +41,7 @@ class AuthController extends GetxController {
   RxBool isLoading2 = false.obs;
   RxBool isLoading3 = false.obs;
   RxBool isLoading4 = false.obs;
-    RxBool isLoading5 = false.obs;
-
+  RxBool isLoading5 = false.obs;
 
   void toggleClassSelection(String classId) {
     if (selectedClassIds.contains(classId)) {
@@ -318,5 +318,66 @@ class AuthController extends GetxController {
     }
   }
 
+  postUpdateAuthInfo(String type) async {
+    isLoading.value = true;
+    dynamic data;
+    data = await token();
+    if (data != null) {
+      dynamic queryParameters = {};
+      type == 'class'
+          ? queryParameters = {
+              "classes": selectedClassIds,
+            }
+          : type == "section"
+              ? queryParameters = {
+                  "sections": selectedSectionIds,
+                }
+              : type == "subject"
+                  ? queryParameters = {
+                      "subjects": selectedSubjectIds,
+                    }
+                  : type == "institute"
+                      ? queryParameters = {
+                          "institution": instituteId.value,
+                        }
+                      : queryParameters = {};
 
+      final signUpJson =
+          await apiHelper.post(ApiUrls.updateProfile, queryParameters, data);
+      if (signUpJson != null && signUpJson != false) {
+        CommonModel response = CommonModel.fromJson(signUpJson);
+        if (response.status == true) {
+          isLoading.value = false;
+
+          type == 'class'
+              ? Get.toNamed(RouteName.sectionSelect)
+              : type == "section"
+                  ? Get.toNamed(RouteName.subjectSelect)
+                  : type == "subject"
+                      ? Get.toNamed(RouteName.selectInstitution)
+                      : type == "institute"
+                          ? Get.offAllNamed(RouteName.teacherHome)
+                          : queryParameters = {};
+        } else {
+          Get.snackbar(
+            '',
+            '',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.red,
+            titleText: const SizedBox.shrink(),
+            messageText: Text(
+              response.message.toString(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+          );
+          isLoading.value = false;
+        }
+      }
+      isLoading.value = false;
+    }
+    isLoading.value = false;
+  }
 }

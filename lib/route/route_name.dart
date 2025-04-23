@@ -14,4 +14,6 @@ class RouteName {
   static const String teacherHome = 'TeacherHome';
   static const String selectInstitution = 'SelectInstitution';
   static const String registerInstitution = 'RegisterInstitution';
+  static const String profile = 'Profile';
+  static const String profileEdit = 'ProfileEdit';
 }

@@ -97,8 +97,8 @@ class _SelectInstitutionState extends State<SelectInstitution> {
             ),
             child: CustomButton(
               text: 'Confirm Institution',
-              onTap: () {
-                Get.offAllNamed(RouteName.teacherHome);
+              onTap: () async {
+                await authController.postUpdateAuthInfo('institute');
               },
             ),
           ),

@@ -57,7 +57,7 @@ class SelectSection extends StatelessWidget {
                 authController.selectedSectionIds.isNotEmpty
                     ? {
                         await authController.getsubjectList(''),
-                        Get.toNamed(RouteName.subjectSelect)
+                        await authController.postUpdateAuthInfo('section')
                       }
                     : Get.snackbar(
                         '',

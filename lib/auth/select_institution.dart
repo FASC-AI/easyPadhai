@@ -2,7 +2,7 @@ import 'package:easy_padhai/auth/popups/institutes_popup.dart';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_button.dart';
-import 'package:easy_padhai/custom_widgets/custom_input.dart';
+import 'package:easy_padhai/custom_widgets/custom_input2.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -69,11 +69,11 @@ class _SelectInstitutionState extends State<SelectInstitution> {
                 if (result == true) {
                   setState(() {
                     instituteController.text =
-                        authController.instituteName.toString();
+                        authController.instituteName.value.toString();
                   });
                 }
               },
-              child: CustomInput(
+              child: CustomInput2(
                 label: 'Select Your Institution',
                 enable: false,
                 controller: instituteController,

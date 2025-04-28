@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 
 class CustomInput2 extends StatefulWidget {
   final String label;
-  final String hint;
   final TextEditingController? controller;
   final bool isPassword;
   final Color labelColor;
@@ -31,18 +30,17 @@ class CustomInput2 extends StatefulWidget {
   final bool isParagraph;
 
   const CustomInput2({
-    Key? key,
+    super.key,
     required this.label,
-    this.hint = '',
     this.controller,
     this.isPassword = false,
     this.onChange,
     this.isPrefixText = false,
     this.prefixText = '',
     this.prefixIconSized = 25,
-    this.labelColor = AppColors.black2,
-    this.fillColor = Colors.white,
-    this.textFiledColor = AppColors.grey,
+    this.labelColor = AppColors.grey,
+    this.fillColor = Colors.transparent,
+    this.textFiledColor = AppColors.white,
     this.inputType = TextInputType.text,
     this.wholeBackground = AppColors.white,
     this.autoFocus = false,
@@ -58,21 +56,19 @@ class CustomInput2 extends StatefulWidget {
     this.focusNode,
     this.customSuffixIcon,
     this.isParagraph = false,
-  }) : super(key: key);
+  });
 
   @override
-  State<CustomInput2> createState() => _CustomInputState();
+  State<CustomInput2> createState() => _CustomInput2State();
 }
 
-class _CustomInputState extends State<CustomInput2> {
+class _CustomInput2State extends State<CustomInput2> {
   bool isHide = true;
-  late TextEditingController _controller;
 
   @override
   void initState() {
-    super.initState();
     isHide = widget.isPassword;
-    _controller = widget.controller ?? TextEditingController();
+    super.initState();
   }
 
   @override
@@ -82,153 +78,117 @@ class _CustomInputState extends State<CustomInput2> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.label != '')
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
-              border: Border.all(
-                color: AppColors.grey7,
-                width: 1.0,
-              ),
-            ),
-            padding: EdgeInsets.all(MediaQuery.of(context).size.width * .015),
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        widget.isPrefix
-                            ? widget.isPrefixText == false
-                                ? Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              .015),
-                                      child: Icon(
-                                        widget.icon,
-                                        size: widget.prefixIconSized,
-                                        color: AppColors.grey,
-                                      ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: widget.isParagraph
+                      ? MediaQuery.of(context).size.height * .2
+                      : null,
+                  child: TextFormField(
+                    focusNode: widget.focusNode,
+                    scrollPadding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    inputFormatters: widget.inputFormatters ??
+                        [
+                          LengthLimitingTextInputFormatter(widget.maxLength),
+                        ],
+                        
+                    maxLines: widget.isParagraph ? null : 1,
+                    minLines: widget.isParagraph ? 5 : 1,
+                    maxLength: widget.maxLength,
+                    enabled: widget.enable,
+                    obscureText: isHide,
+                    style: TextStyle(
+                        color: AppColors.black,
+                        fontSize: MediaQuery.of(context).size.width * .033),
+                    validator: widget.validation,
+                    textInputAction: widget.isParagraph
+                        ? TextInputAction.newline
+                        : TextInputAction.next,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    keyboardType: widget.isParagraph
+                        ? TextInputType.multiline
+                        : widget.inputType,
+                    controller: widget.controller,
+                    cursorColor: AppColors.white,
+                    decoration: InputDecoration(
+                        fillColor: widget.fillColor,
+                        filled: true,
+                        isDense: false,
+                        alignLabelWithHint: true,
+                        contentPadding: widget.isParagraph
+                            ? const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 10)
+                            : const EdgeInsets.only(left: 10, right: 5),
+                        counterText: widget.isParagraph ? null : '',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                              color: AppColors.grey7, width: 1.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                              color: AppColors.white, width: 1.0),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                              color: AppColors.red, width: 1.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                              color: AppColors.grey, width: 1.0),
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                              color: AppColors.grey, width: 1.0),
+                        ),
+                        suffixIconConstraints:
+                            const BoxConstraints(maxHeight: 25, maxWidth: 30),
+                        suffixIcon: widget.isPassword
+                            ? Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: InkWell(
+                                  onTap: (() {
+                                    setState(() {
+                                      isHide = !isHide;
+                                    });
+                                  }),
+                                  child: Icon(
+                                    isHide
+                                        ? Icons.visibility_off_outlined
+                                        : Icons.visibility_outlined,
+                                    color: AppColors.grey4,
+                                    size:
+                                        MediaQuery.of(context).size.width * .06,
+                                  ),
+                                ),
+                              )
+                            : widget.customSuffixIcon != null
+                                ? Padding(
+                                    padding: const EdgeInsets.only(right: 10),
+                                    child: Icon(
+                                      widget.customSuffixIcon,
+                                      color: AppColors.grey4,
+                                      size: MediaQuery.of(context).size.width *
+                                          .06,
                                     ),
                                   )
-                                : Center(
-                                    child: Text(widget.prefixText,
-                                        style: const TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 175, 169, 169))),
-                                  )
-                            : const SizedBox(),
-                        widget.isPrefix
-                            ? const SizedBox(width: 5)
-                            : const SizedBox(),
-                        Expanded(
-                          child: TextFormField(
-                            focusNode: widget.focusNode,
-                            maxLength: widget.maxLength,
-                            scrollPadding: EdgeInsets.only(
-                                bottom:
-                                    MediaQuery.of(context).viewInsets.bottom),
-                            inputFormatters: widget.inputFormatters,
-                            maxLines: widget.isParagraph ? null : 1,
-                            minLines: widget.isParagraph ? 5 : 1,
-                            enabled: widget.enable,
-                            obscureText: isHide,
-                            style: TextStyle(
-                                color: AppColors.black,
-                                fontSize:
-                                    MediaQuery.of(context).size.width * .033),
-                            validator: widget.validation,
-                            textInputAction: TextInputAction.next,
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            keyboardType: widget.inputType,
-                            controller: _controller,
-                            decoration: InputDecoration(
-                              fillColor: widget.fillColor,
-                              filled: true,
-                              isDense: false,
-                              errorBorder: const UnderlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.transparent),
-                              ),
-                              focusedErrorBorder: const UnderlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.transparent),
-                              ),
-                              contentPadding:
-                                  const EdgeInsets.only(left: 10, right: 5),
-                              border: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: AppColors.white, width: 1.0),
-                              ),
-                              focusedBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: AppColors.white, width: 1.0),
-                              ),
-                              enabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: AppColors.white, width: 1.0),
-                              ),
-                              disabledBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: AppColors.white, width: 1.0),
-                              ),
-                              suffixIconConstraints: const BoxConstraints(
-                                  maxHeight: 25, maxWidth: 30),
-                              labelText: widget.label,
-                              labelStyle: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: widget.labelColor,
-                                  fontSize:
-                                      MediaQuery.of(context).size.width * .035),
-                              suffixIcon: widget.isPassword
-                                  ? Padding(
-                                      padding: const EdgeInsets.only(right: 10),
-                                      child: InkWell(
-                                        onTap: (() {
-                                          setState(() {
-                                            isHide = !isHide;
-                                          });
-                                        }),
-                                        child: Icon(
-                                          isHide
-                                              ? Icons.visibility_off_outlined
-                                              : Icons.visibility_outlined,
-                                          color: AppColors.grey4,
-                                          size: 23,
-                                        ),
-                                      ),
-                                    )
-                                  : widget.customSuffixIcon != null
-                                      ? Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 10),
-                                          child: Icon(
-                                            widget.customSuffixIcon,
-                                            color: AppColors.grey,
-                                            size: 23,
-                                          ),
-                                        )
-                                      : null,
-                              hintText: widget.hint,
-                              hintStyle: TextStyle(
-                                  fontSize:
-                                      MediaQuery.of(context).size.width * .03),
-                              counterText: widget.isParagraph ? null : '',
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                                : null,
+                        hintText: widget.label,
+                        hintStyle: TextStyle(
+                            color: AppColors.grey,
+                            fontSize: MediaQuery.of(context).size.width * .03)),
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
       ],
     );

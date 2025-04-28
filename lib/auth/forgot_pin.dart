@@ -137,7 +137,7 @@ class _ForgotPINState extends State<ForgotPIN> {
                         padding: EdgeInsets.only(
                           left: MediaQuery.of(context).size.width * .025,
                         ),
-                        child: const CustomText(text: 'Pin'),
+                        child: const CustomText(text: 'New Pin'),
                       ),
                       SizedBox(
                         height: MediaQuery.of(context).size.height * .01,

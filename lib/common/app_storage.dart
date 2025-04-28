@@ -9,3 +9,11 @@ userid() {
 token() {
   return box.read('token') ?? '';
 }
+
+userName() {
+  return box.read('username') ?? '';
+}
+
+userEmail() {
+  return box.read('email') ?? '';
+}

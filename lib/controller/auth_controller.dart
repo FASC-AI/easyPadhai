@@ -3,6 +3,7 @@ import 'package:easy_padhai/common/api_helper.dart';
 import 'package:easy_padhai/common/api_urls.dart';
 import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/common/constant.dart';
+import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/model/class_list_model.dart';
 import 'package:easy_padhai/model/common_model.dart';
 import 'package:easy_padhai/model/institution_list_model.dart';
@@ -67,14 +68,15 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<void> googleSignin() async {
+  googleSignin(String method) async {
     isLoading1.value = true;
     final User? user = await _googleSignInHelper.signInWithGoogle();
     if (user != null) {
       dynamic queryParameters = {
         "email": user.email,
         "name": user.displayName,
-        "picture": user.photoURL
+        "picture": user.photoURL,
+        "signInMethod": method
       };
       final signUpJson = await apiHelper.postwithoutToken(
           ApiUrls.googleLogin, queryParameters);
@@ -89,6 +91,7 @@ class AuthController extends GetxController {
               : Get.toNamed(RouteName.setMPin);
 
           isLoading1.value = false;
+          return response;
         } else {
           Get.snackbar(
             '',
@@ -105,6 +108,7 @@ class AuthController extends GetxController {
             ),
           );
           isLoading1.value = false;
+          return response;
         }
       } else {
         Get.snackbar(
@@ -126,6 +130,44 @@ class AuthController extends GetxController {
     }
   }
 
+  emailSignin(String method, String email) async {
+    isLoading.value = true;
+    if (email.isNotEmpty) {
+      dynamic queryParameters = {"email": email, "signInMethod": method};
+      final signUpJson = await apiHelper.postwithoutToken(
+          ApiUrls.googleLogin, queryParameters);
+      if (signUpJson != null) {
+        RegisterModel response = RegisterModel.fromJson(signUpJson);
+        if (response.code == 200) {
+          userId.value = response.data!.id!;
+          userName.value = response.data!.name!;
+
+          isLoading.value = false;
+          return response;
+        } else {
+          isLoading.value = false;
+          return response;
+        }
+      } else {
+        Get.snackbar(
+          '',
+          '',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.red,
+          titleText: const SizedBox.shrink(),
+          messageText: const Text(
+            'Please try again!',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        );
+        isLoading.value = false;
+      }
+    }
+  }
+
   postSetVerifymPin(String mPin) async {
     isLoading.value = true;
 
@@ -143,11 +185,23 @@ class AuthController extends GetxController {
                 ? Get.toNamed(RouteName.sectionSelect)
                 : response.data!.isProfileSet!.subject == false
                     ? Get.toNamed(RouteName.subjectSelect)
-                    : response.data!.userRole == "Teacher"
+                    : response.data!.userRole == "teacher"
                         ? response.data!.isProfileSet!.institution == false
                             ? Get.toNamed(RouteName.selectInstitution)
-                            : Get.offAllNamed(RouteName.teacherHome)
-                        : Get.offAllNamed(RouteName.teacherHome);
+                            : {
+                                Get.lazyPut(() => DashboardController()),
+                                box.write('username', response.data!.token),
+                                box.write('email', response.data!.token),
+                                box.write('propic', response.data!.token),
+                                Get.offAllNamed(RouteName.teacherHome)
+                              }
+                        : {
+                            Get.lazyPut(() => DashboardController()),
+                            box.write('username', response.data!.token),
+                            box.write('email', response.data!.token),
+                            box.write('propic', response.data!.token),
+                            Get.offAllNamed(RouteName.teacherHome)
+                          };
 
         isLoading.value = false;
       } else {

@@ -1,4 +1,6 @@
+import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/common/constant.dart';
+import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
 import 'package:easy_padhai/route/route_name.dart';
@@ -81,7 +83,9 @@ class Profile extends StatelessWidget {
                   context,
                   iconPath: 'assets/logout.svg',
                   title: 'Logout',
-                  onTap: () {},
+                  onTap: () {
+                    showLogoutDialog(context);
+                  },
                 ),
                 const SizedBox(height: 16),
               ],
@@ -94,6 +98,43 @@ class Profile extends StatelessWidget {
             onTap: dashboardController.changeIndex,
           )),
     );
+  }
+
+  Future<void> showLogoutDialog(BuildContext context) async {
+    return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: AppColors.theme,
+            title: const Text('Logout Confirmation',
+                style: TextStyle(color: Colors.white)),
+            content: const Text(
+              'Are you sure you want to logout?',
+              style: TextStyle(color: Colors.white),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child:
+                    const Text('Cancel', style: TextStyle(color: Colors.white)),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  await box.erase();
+                  Get.delete<AuthController>();
+                  Get.lazyPut(() => AuthController());
+                  Get.lazyPut(() => DashboardController());
+
+                  Get.offAllNamed(RouteName.login);
+                },
+                child: const Text('Logout',
+                    style: TextStyle(color: AppColors.theme)),
+              ),
+            ],
+          );
+        });
   }
 
   Widget buildClassCard(String title, String subtitle, String imagePath) {

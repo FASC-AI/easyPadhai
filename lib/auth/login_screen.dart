@@ -87,7 +87,7 @@ class _LoginState extends State<Login> {
                               final User? user =
                                   await _googleSignInHelper.signInWithGoogle();
                               if (user != null) {
-                                await authController.googleSignin();
+                                await authController.googleSignin('google');
                               }
                             },
                             child: Container(

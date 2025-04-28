@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/route/route_name.dart';
@@ -45,9 +46,12 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> navigationPage() async {
-    // Get.offNamed(RouteName.login);
-    Get.lazyPut(() => DashboardController());
-    Get.offNamed(RouteName.teacherHome);
+    token() != null && token() != ''
+        ? {
+            Get.lazyPut(() => DashboardController()),
+            Get.offNamed(RouteName.teacherHome)
+          }
+        : Get.offNamed(RouteName.login);
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_button.dart';
 import 'package:easy_padhai/custom_widgets/custom_input.dart';
 import 'package:easy_padhai/custom_widgets/text.dart';
+import 'package:easy_padhai/model/register_model.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class _EmailState extends State<Email> {
 
   AuthController authController = Get.find();
   final formKey = GlobalKey<FormState>();
+  RegisterModel? response;
 
   @override
   Widget build(BuildContext context) {
@@ -180,7 +182,13 @@ class _EmailState extends State<Email> {
                           onTap: () async {
                             // Get.toNamed(RouteName.verifyMpin);
                             emailController.text.isNotEmpty
-                                ? showCustomPopup(context)
+                                ? {
+                                    response = await authController.emailSignin(
+                                        'email', emailController.text),
+                                    response!.status == true
+                                        ? Get.toNamed(RouteName.verifyMpin)
+                                        : showCustomPopup(context)
+                                  }
                                 : Get.snackbar(
                                     '',
                                     '',
@@ -344,7 +352,7 @@ void showCustomPopup(BuildContext context) {
                     final User? user =
                         await googleSignInHelper.signInWithGoogle();
                     if (user != null) {
-                      await authController.googleSignin();
+                      await authController.googleSignin('google');
                     }
                   },
                   child: Container(

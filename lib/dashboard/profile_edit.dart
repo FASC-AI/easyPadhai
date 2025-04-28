@@ -1,16 +1,26 @@
+import 'package:easy_padhai/auth/popups/institutes_popup2.dart';
 import 'package:easy_padhai/common/constant.dart';
+import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
 import 'package:easy_padhai/custom_widgets/custom_button.dart';
+import 'package:easy_padhai/custom_widgets/custom_input2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
-class ProfileEdit extends StatelessWidget {
+class ProfileEdit extends StatefulWidget {
   const ProfileEdit({super.key});
 
+  @override
+  State<ProfileEdit> createState() => _ProfileEditState();
+}
+
+class _ProfileEditState extends State<ProfileEdit> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
+    TextEditingController instituteController = TextEditingController();
+    DashboardController dashboardController = Get.find();
 
     return Scaffold(
         backgroundColor: Colors.white,
@@ -41,9 +51,21 @@ class ProfileEdit extends StatelessWidget {
               ),
             ),
             Positioned(
-                top: height * 0.1,
-                left: (width - (width * 0.05)) / 2,
-                child: Container(decoration: BoxDecoration( ), child: Icon(Icons.edit))),
+                top: height * 0.085,
+                left: (width - (width * 0.18)) / 1.5,
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(color: Colors.white)),
+                    child: Padding(
+                      padding: EdgeInsets.all(
+                          MediaQuery.of(context).size.width * .01),
+                      child: const Icon(
+                        Icons.edit_outlined,
+                        color: AppColors.theme,
+                      ),
+                    ))),
             Positioned.fill(
               top: height * 0.135,
               child: SingleChildScrollView(
@@ -63,14 +85,49 @@ class ProfileEdit extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: height * 0.02),
-                    _buildLabel('Full name', width),
-                    _buildTextField(hint: 'Abhishek Kumar Jha'),
+                    _buildLabel('Full name', width, context: context),
+                    _buildTextField(
+                        hint: 'Abhishek Kumar Jha', context: context),
                     SizedBox(height: height * 0.015),
-                    _buildLabel('Class', width),
+                    _buildLabel('Class', width, context: context),
                     _buildClassChips(width),
                     SizedBox(height: height * 0.015),
-                    _buildLabel('Institutions', width),
-                    _buildDropdown(width),
+                    _buildLabel('Instituton', width, context: context),
+                    GestureDetector(
+                      onTap: () async {
+                        await dashboardController.getInstitutes();
+                        bool? result = await showDialog(
+                          // ignore: use_build_context_synchronously
+                          context: context,
+                          builder: (BuildContext context) {
+                            return const InstitutesPopup2();
+                          },
+                          barrierDismissible: true,
+                        );
+                        if (result == true) {
+                          setState(() {
+                            instituteController.text = dashboardController
+                                .instituteName.value
+                                .toString();
+                          });
+                        }
+                      },
+                      child: CustomInput2(
+                        label: 'Select Your Institution',
+                        enable: false,
+                        controller: instituteController,
+                        validation: (value) {
+                          if (value!.isEmpty) {
+                            return 'Institution is required';
+                          }
+                          return null;
+                        },
+                        inputType: TextInputType.text,
+                        customSuffixIcon: Icons.keyboard_arrow_down,
+                        wholeBackground: AppColors.white,
+                        isPrefix: false,
+                      ),
+                    ),
                     Padding(
                       padding: EdgeInsets.only(top: width * .02),
                       child: Align(
@@ -86,26 +143,40 @@ class ProfileEdit extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: height * 0.015),
-                    _buildLabel('Phone', width),
-                    _buildTextField(hint: '+91-8882130397'),
+                    _buildLabel(
+                      'Phone',
+                      width,
+                      context: context,
+                    ),
+                    _buildTextField(
+                        hint: '+91-8882130397',
+                        context: context,
+                        isPin: true,
+                        maxNum: 10),
                     SizedBox(height: height * 0.015),
-                    _buildLabel('Email', width),
-                    _buildTextField(hint: 'abhishek.kj@gmail.com'),
+                    _buildLabel('Email', width, context: context),
+                    _buildTextField(
+                        hint: 'abhishek.kj@gmail.com', context: context),
                     SizedBox(height: height * 0.015),
-                    _buildLabel('Address', width),
-                    _buildTextField(hint: 'C-1/502, Phase-4, Aya Nagar,'),
+                    _buildLabel('Address', width, context: context),
+                    _buildTextField(
+                        hint: 'C-1/502, Phase-4, Aya Nagar,', context: context),
                     SizedBox(height: height * 0.015),
-                    _buildLabel('Address 2', width),
-                    _buildTextField(hint: ''),
+                    _buildLabel('Address 2', width, context: context),
+                    _buildTextField(hint: '', context: context),
                     SizedBox(height: height * 0.015),
-                    _buildLabel('State', width),
-                    _buildTextField(hint: 'Haryana'),
+                    _buildLabel('State', width, context: context),
+                    _buildTextField(hint: 'Haryana', context: context),
                     SizedBox(height: height * 0.015),
-                    _buildLabel('District', width),
-                    _buildTextField(hint: 'Gurugram'),
+                    _buildLabel('District', width, context: context),
+                    _buildTextField(hint: 'Gurugram', context: context),
                     SizedBox(height: height * 0.015),
-                    _buildLabel('Pin Code', width),
-                    _buildTextField(hint: '110047'),
+                    _buildLabel('Pin Code', width, context: context),
+                    _buildTextField(
+                        hint: '110047',
+                        context: context,
+                        isPin: true,
+                        maxNum: 6),
                     SizedBox(height: height * 0.12),
                   ],
                 ),
@@ -122,7 +193,8 @@ class ProfileEdit extends StatelessWidget {
         ));
   }
 
-  Widget _buildLabel(String text, double width) {
+  Widget _buildLabel(String text, double width,
+      {required BuildContext context}) {
     return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
@@ -138,12 +210,19 @@ class ProfileEdit extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField({required String hint}) {
+  Widget _buildTextField(
+      {required String hint,
+      required BuildContext context,
+      bool? isPin,
+      int? maxNum}) {
     return TextFormField(
       initialValue: hint,
+      keyboardType: isPin == true ? TextInputType.number : null,
+      maxLength: isPin == true ? maxNum : null,
       decoration: InputDecoration(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * .035,
+            vertical: MediaQuery.of(context).size.width * .02),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Colors.grey),
@@ -171,31 +250,6 @@ class ProfileEdit extends StatelessWidget {
                 onDeleted: () {},
               ))
           .toList(),
-    );
-  }
-
-  Widget _buildDropdown(double width) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Colors.grey),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Colors.grey),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: Colors.blue),
-        ),
-      ),
-      items: ['Institution 1', 'Institution 2']
-          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-          .toList(),
-      onChanged: (value) {},
     );
   }
 }

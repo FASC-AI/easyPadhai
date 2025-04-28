@@ -38,7 +38,7 @@ class CustomInput extends StatefulWidget {
     this.isPrefixText = false,
     this.prefixText = '',
     this.prefixIconSized = 25,
-    this.labelColor = AppColors.grey,
+    this.labelColor = AppColors.white2,
     this.fillColor = Colors.transparent,
     this.textFiledColor = AppColors.white,
     this.inputType = TextInputType.text,
@@ -101,7 +101,7 @@ class _CustomInputState extends State<CustomInput> {
                     enabled: widget.enable,
                     obscureText: isHide,
                     style: TextStyle(
-                        color: AppColors.black,
+                        color: AppColors.white,
                         fontSize: MediaQuery.of(context).size.width * .033),
                     validator: widget.validation,
                     textInputAction: widget.isParagraph
@@ -126,7 +126,7 @@ class _CustomInputState extends State<CustomInput> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: const BorderSide(
-                              color: AppColors.grey7, width: 1.0),
+                              color: AppColors.white2, width: 1.0),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -141,12 +141,12 @@ class _CustomInputState extends State<CustomInput> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: const BorderSide(
-                              color: AppColors.grey, width: 1.0),
+                              color: AppColors.white2, width: 1.0),
                         ),
                         disabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: const BorderSide(
-                              color: AppColors.grey, width: 1.0),
+                              color: AppColors.white2, width: 1.0),
                         ),
                         suffixIconConstraints:
                             const BoxConstraints(maxHeight: 25, maxWidth: 30),
@@ -182,7 +182,7 @@ class _CustomInputState extends State<CustomInput> {
                                 : null,
                         hintText: widget.label,
                         hintStyle: TextStyle(
-                            color: AppColors.grey,
+                            color: AppColors.white2,
                             fontSize: MediaQuery.of(context).size.width * .03)),
                   ),
                 ),

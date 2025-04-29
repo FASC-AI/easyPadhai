@@ -88,6 +88,7 @@ class _CustomInput2State extends State<CustomInput2> {
                       ? MediaQuery.of(context).size.height * .2
                       : null,
                   child: TextFormField(
+                    onTap: widget.onTap,
                     focusNode: widget.focusNode,
                     scrollPadding: EdgeInsets.only(
                         bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -95,7 +96,6 @@ class _CustomInput2State extends State<CustomInput2> {
                         [
                           LengthLimitingTextInputFormatter(widget.maxLength),
                         ],
-                        
                     maxLines: widget.isParagraph ? null : 1,
                     minLines: widget.isParagraph ? 5 : 1,
                     maxLength: widget.maxLength,

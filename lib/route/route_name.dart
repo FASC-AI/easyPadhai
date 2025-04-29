@@ -16,4 +16,7 @@ class RouteName {
   static const String registerInstitution = 'RegisterInstitution';
   static const String profile = 'Profile';
   static const String profileEdit = 'ProfileEdit';
+  static const String studentHome = 'StudentHome';
+  static const String joinBatch = 'JoinBatch';
+  static const String support = 'Support';
 }

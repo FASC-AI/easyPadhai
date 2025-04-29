@@ -3,6 +3,7 @@ import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
+import 'package:easy_padhai/custom_widgets/custum_nav_bar2.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -38,25 +39,25 @@ class Profile extends StatelessWidget {
             width: size.width,
             height: size.height * .28,
             color: AppColors.theme,
-            child: const Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircleAvatar(
                   radius: 40,
-                  backgroundImage: AssetImage('assets/pic.png'),
+                  backgroundImage: NetworkImage(box.read('propic') ?? ''),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
-                  'Abhishek Kumar Jha',
-                  style: TextStyle(
+                  box.read('username') ?? '',
+                  style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  'abhishek.j@gmail.com',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                  box.read('email') ?? '',
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
             ),
@@ -93,10 +94,15 @@ class Profile extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: Obx(() => CustomBottomNavBar(
-            currentIndex: dashboardController.currentIndex.value,
-            onTap: dashboardController.changeIndex,
-          )),
+      bottomNavigationBar: userRole() == 'student'
+          ? Obx(() => CustomBottomNavBar2(
+                currentIndex: dashboardController.currentIndex.value,
+                onTap: dashboardController.changeIndex1,
+              ))
+          : Obx(() => CustomBottomNavBar(
+                currentIndex: dashboardController.currentIndex.value,
+                onTap: dashboardController.changeIndex,
+              )),
     );
   }
 

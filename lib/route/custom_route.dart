@@ -14,6 +14,7 @@ import 'package:easy_padhai/common/no_internet.dart';
 import 'package:easy_padhai/common/no_service.dart';
 import 'package:easy_padhai/dashboard/profile.dart';
 import 'package:easy_padhai/dashboard/profile_edit.dart';
+import 'package:easy_padhai/dashboard/student_home.dart';
 import 'package:easy_padhai/dashboard/teacher_home.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:easy_padhai/services/connectivity_provider.dart';
@@ -65,6 +66,8 @@ class CustomRoute {
         return const SelectInstitution();
       case RouteName.registerInstitution:
         return const InstitutionRegistration();
+      case RouteName.studentHome:
+        return StudentHome();
 
       case RouteName.profile:
         return Profile();

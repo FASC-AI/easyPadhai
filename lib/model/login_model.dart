@@ -31,14 +31,25 @@ class LoginData {
   String? id;
   String? userRole;
   IsProfileSet? isProfileSet;
+  String? email;
+  String? picture;
 
-  LoginData({this.token, this.name, this.id, this.userRole, this.isProfileSet});
+  LoginData(
+      {this.token,
+      this.name,
+      this.id,
+      this.userRole,
+      this.email,
+      this.picture,
+      this.isProfileSet});
 
   LoginData.fromJson(Map<String, dynamic> json) {
     token = json['token'];
     name = json['name'] != null ? Name.fromJson(json['name']) : null;
     id = json['id'];
     userRole = json['userRole'];
+    email = json['email'];
+    picture = json['picture'];
     isProfileSet = json['isProfileSet'] != null
         ? IsProfileSet.fromJson(json['isProfileSet'])
         : null;
@@ -52,6 +63,8 @@ class LoginData {
     }
     data['id'] = id;
     data['userRole'] = userRole;
+    data['email'] = this.email;
+    data['picture'] = this.picture;
     if (isProfileSet != null) {
       data['isProfileSet'] = isProfileSet!.toJson();
     }

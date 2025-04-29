@@ -25,8 +25,7 @@ class _MyAppState extends State<MyApp> {
       create: (context) => ConnectivityProvider(),
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        
-        title: "UPSRTC",
+        title: "Easy Padhai",
         theme: AppTheme.baseTheme,
         onGenerateRoute: CustomRoute.allRoutes,
         initialRoute: RouteName.splash,

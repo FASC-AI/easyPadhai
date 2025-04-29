@@ -6,6 +6,10 @@ userid() {
   return box.read('userid') ?? '';
 }
 
+userRole() {
+  return box.read('userRole') ?? '';
+}
+
 token() {
   return box.read('token') ?? '';
 }

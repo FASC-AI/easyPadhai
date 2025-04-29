@@ -170,6 +170,7 @@ class AuthController extends GetxController {
 
   postSetVerifymPin(String mPin) async {
     isLoading.value = true;
+    print("userId: $userId");
 
     dynamic queryParameters = {"mpin": mPin};
     final signUpJson = await apiHelper.postwithoutToken(
@@ -178,7 +179,7 @@ class AuthController extends GetxController {
       LoginModel response = LoginModel.fromJson(signUpJson);
       if (response.status == true) {
         box.write('token', response.data!.token);
-
+        //   print("token:  ${token()}");
         response.data!.isProfileSet!.classSet == false
             ? {await getClassList(''), Get.toNamed(RouteName.classSelect)}
             : response.data!.isProfileSet!.section == false
@@ -190,17 +191,20 @@ class AuthController extends GetxController {
                             ? Get.toNamed(RouteName.selectInstitution)
                             : {
                                 Get.lazyPut(() => DashboardController()),
-                                box.write('username', response.data!.token),
-                                box.write('email', response.data!.token),
-                                box.write('propic', response.data!.token),
+                                box.write(
+                                    'username', response.data!.name!.english),
+                                box.write('email', response.data!.email),
+                                box.write('userRole', response.data!.userRole),
+                                box.write('propic', response.data!.picture),
                                 Get.offAllNamed(RouteName.teacherHome)
                               }
                         : {
                             Get.lazyPut(() => DashboardController()),
-                            box.write('username', response.data!.token),
-                            box.write('email', response.data!.token),
-                            box.write('propic', response.data!.token),
-                            Get.offAllNamed(RouteName.teacherHome)
+                            box.write('username', response.data!.name!.english),
+                            box.write('email', response.data!.email),
+                            box.write('userRole', response.data!.userRole),
+                            box.write('propic', response.data!.picture),
+                            Get.offAllNamed(RouteName.studentHome)
                           };
 
         isLoading.value = false;
@@ -408,7 +412,8 @@ class AuthController extends GetxController {
               : type == "section"
                   ? Get.toNamed(RouteName.subjectSelect)
                   : type == "subject"
-                      ? Get.toNamed(RouteName.selectInstitution)
+                      ? Get.toNamed(RouteName
+                          .selectInstitution) // have to chk student or teacher
                       : type == "institute"
                           ? Get.offAllNamed(RouteName.teacherHome)
                           : queryParameters = {};

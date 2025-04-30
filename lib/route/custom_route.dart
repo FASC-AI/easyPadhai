@@ -12,6 +12,7 @@ import 'package:easy_padhai/auth/sign_in.dart';
 import 'package:easy_padhai/auth/splash_screen.dart';
 import 'package:easy_padhai/common/no_internet.dart';
 import 'package:easy_padhai/common/no_service.dart';
+import 'package:easy_padhai/dashboard/leaderboard_screen.dart';
 import 'package:easy_padhai/dashboard/profile.dart';
 import 'package:easy_padhai/dashboard/profile_edit.dart';
 import 'package:easy_padhai/dashboard/student_home.dart';
@@ -73,6 +74,8 @@ class CustomRoute {
         return Profile();
       case RouteName.profileEdit:
         return const ProfileEdit();
+      case RouteName.leaderboard:
+        return const LeaderboardScreen();
     }
     return const SplashScreen();
   }

@@ -46,9 +46,10 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> navigationPage() async {
-  //  print("token: ${token()}");
+      print("token: ${token()}");
     token() != null && token() != ''
         ? {
+            Get.lazyPut(() => AuthController()),
             Get.lazyPut(() => DashboardController()),
             userRole() == 'student'
                 ? Get.offNamed(RouteName.studentHome)

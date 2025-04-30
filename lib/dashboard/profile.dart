@@ -77,7 +77,9 @@ class Profile extends StatelessWidget {
                   context,
                   iconPath: 'assets/leader.svg',
                   title: 'Leader Board',
-                  onTap: () {},
+                  onTap: () {
+                    Get.toNamed(RouteName.leaderboard);
+                  },
                 ),
                 const Spacer(),
                 profileTile(

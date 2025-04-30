@@ -238,6 +238,10 @@ class ApiHelper {
         var responseJson =
             response.body.isEmpty ? null : jsonDecode(response.body);
         return responseJson;
+      case 409:
+        var responseJson =
+            response.body.isEmpty ? null : jsonDecode(response.body);
+        return responseJson;
       default:
         var responseJson = response.body.isEmpty ? null : null;
         return responseJson;

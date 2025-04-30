@@ -44,6 +44,18 @@ class AuthController extends GetxController {
   RxBool isLoading4 = false.obs;
   RxBool isLoading5 = false.obs;
 
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+    if (classesdataList.isEmpty) {
+      getClassList('');
+    }
+    if (sectiondataList.isEmpty) {
+      getsectionList('');
+    }
+  }
+
   void toggleClassSelection(String classId) {
     if (selectedClassIds.contains(classId)) {
       selectedClassIds.remove(classId);
@@ -384,16 +396,17 @@ class AuthController extends GetxController {
       dynamic queryParameters = {};
       type == 'class'
           ? queryParameters = {
-              "classes": selectedClassIds,
+              "classId": selectedClassIds,
             }
           : type == "section"
               ? queryParameters = {
                   "sections": selectedSectionIds,
                 }
-              : type == "subject"
+              : type == "subjectId"
                   ? queryParameters = {
                       "subjects": selectedSubjectIds,
                     }
+                    
                   : type == "institute"
                       ? queryParameters = {
                           "institution": instituteId.value,

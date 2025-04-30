@@ -1,6 +1,7 @@
 import 'package:easy_padhai/common/api_helper.dart';
 import 'package:easy_padhai/common/api_urls.dart';
 import 'package:easy_padhai/common/app_storage.dart';
+import 'package:easy_padhai/model/batch_model.dart';
 import 'package:easy_padhai/model/institution_list_model.dart';
 import 'package:easy_padhai/model/profile_model.dart';
 import 'package:easy_padhai/route/route_name.dart';
@@ -122,6 +123,35 @@ class DashboardController extends GetxController {
         return profileModel;
       } else {
         isLoading(false);
+      }
+    }
+    isLoading(false);
+  }
+
+  postbatch(String cls, String sec, String code) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "subjectId": cls,
+      "classId": sec,
+      "code": code,
+    };
+    print(queryParameter);
+    final profileJson =
+        await apiHelper.post(ApiUrls.crbatch, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      BatchModel response = BatchModel.fromJson(profileJson);
+      if (response.status == true) {
+        BatchModel dta = response;
+        // Update box storage with profile data
+        isLoading(false);
+        return dta;
+      } else {
+        Get.snackbar("Message", "Batch code already created!",
+            snackPosition: SnackPosition.BOTTOM);
+        isLoading(false);
+        return response;
       }
     }
     isLoading(false);

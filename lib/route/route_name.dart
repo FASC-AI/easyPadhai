@@ -19,4 +19,5 @@ class RouteName {
   static const String studentHome = 'StudentHome';
   static const String joinBatch = 'JoinBatch';
   static const String support = 'Support';
+  static const String leaderboard = 'Leaderboard';
 }

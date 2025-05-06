@@ -46,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> navigationPage() async {
-      print("token: ${token()}");
+    print("user name: ${token()}");
     token() != null && token() != ''
         ? {
             Get.lazyPut(() => AuthController()),

@@ -1,4 +1,5 @@
 import 'package:easy_padhai/auth/popups/institutes_popup2.dart';
+import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
@@ -38,7 +39,8 @@ class _ProfileEditState extends State<ProfileEdit> {
           dashboardController.profileModel?.data?.userDetails?.name ?? '';
       emailController.text =
           dashboardController.profileModel?.data?.userDetails?.email ?? '';
-      instituteController.text = dashboardController.instituteName.value;
+      //  instituteController.text =
+      //   dashboardController.instituteName.value;
     });
   }
 
@@ -185,12 +187,8 @@ class _ProfileEditState extends State<ProfileEdit> {
                     radius: width * 0.12,
                     backgroundImage: _imageFile != null
                         ? FileImage(_imageFile!)
-                        : (dashboardController.profileModel?.data?.picture !=
-                                        null &&
-                                    dashboardController
-                                        .profileModel!.data!.picture!.isNotEmpty
-                                ? NetworkImage(dashboardController
-                                    .profileModel!.data!.picture!)
+                        : (userPic().isNotEmpty
+                                ? NetworkImage(userPic())
                                 : const AssetImage('assets/pic.png'))
                             as ImageProvider,
                     onBackgroundImageError: (exception, stackTrace) {
@@ -255,7 +253,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                   _buildLabel('Class', width, context: context),
                   _buildClassChips(width),
                   SizedBox(height: height * 0.015),
-                  if (dashboardController.profileModel?.data?.userRole !=
+                  if (dashboardController.profileModel?.data?.userDetails!.role! !=
                       'student') ...[
                     _buildLabel('Institution', width, context: context),
                     GestureDetector(

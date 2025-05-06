@@ -1,21 +1,22 @@
 import 'dart:async';
-import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
-import 'package:easy_padhai/custom_widgets/custom_searchbar.dart';
 import 'package:easy_padhai/model/institution_list_model.dart';
 import 'package:easy_padhai/model/state_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:easy_padhai/common/constant.dart';
 
-class StateView extends StatefulWidget {
-  const StateView({super.key});
+import 'package:easy_padhai/custom_widgets/custom_searchbar.dart';
+
+class DistrictView1 extends StatefulWidget {
+  const DistrictView1({super.key});
 
   @override
-  State<StateView> createState() => _StateViewState();
+  State<DistrictView1> createState() => _DistrictViewState();
 }
 
-class _StateViewState extends State<StateView> {
+class _DistrictViewState extends State<DistrictView1> {
   final codeController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   AuthController authController = Get.find();
@@ -55,8 +56,8 @@ class _StateViewState extends State<StateView> {
     setState(() {
       isLoading = false;
     });
-    //  filteredData = await authController.searchInstitutes(query) ?? [];
-    filteredData = await authController.getStateList();
+    // filteredData = await authController.searchInstitutes(query) ?? [];
+    filteredData = await authController.getdistrictList();
     setState(() {
       isLoading = true;
     });
@@ -81,7 +82,7 @@ class _StateViewState extends State<StateView> {
                 Expanded(
                     child: Center(
                         child: Text(
-                  'Select State',
+                  'Select Institute',
                   style: TextStyle(
                       color: AppColors.black,
                       fontWeight: FontWeight.w500,
@@ -126,12 +127,12 @@ class _StateViewState extends State<StateView> {
                                               ? AppColors.theme
                                               : Colors.white,
                                           onTap: () async {
-                                            authController.stateName.value =
+                                            authController.districtName.value =
                                                 filteredData[index]
                                                     .name!
                                                     .english!
                                                     .toString();
-                                            authController.stateId.value =
+                                            authController.districtId.value =
                                                 filteredData[index]
                                                     .sId
                                                     .toString();
@@ -143,7 +144,7 @@ class _StateViewState extends State<StateView> {
                                           title: Text(
                                             filteredData[index]
                                                 .name!
-                                                .english
+                                                .english!
                                                 .toString(),
                                             style: TextStyle(
                                               fontSize: MediaQuery.of(context)

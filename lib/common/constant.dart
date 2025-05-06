@@ -44,9 +44,12 @@ class AppColors {
   static const Color productlite = Color(0xffF4F7FF);
   static const Color pinkButton = Color(0xffD95263);
   static const Color theme = Color(0xff1f7bbc);
+  static const Color lesson = Color(0xff186BA5);
   static const Color orangethemelite = Color.fromARGB(255, 253, 189, 128);
 
   static const Color blueButton = Color(0xff2180C3);
+  static const Color grad1 = Color(0xff2180C3);
+  static const Color grad2 = Color(0xff00355A);
 
   static LinearGradient gradient = const LinearGradient(colors: <Color>[
     Colors.red,

@@ -18,6 +18,10 @@ userName() {
   return box.read('username') ?? '';
 }
 
+userPic() {
+  return box.read('propic') ?? '';
+}
+
 userEmail() {
   return box.read('email') ?? '';
 }

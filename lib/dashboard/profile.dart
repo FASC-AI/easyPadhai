@@ -78,9 +78,22 @@ class Profile extends StatelessWidget {
                   iconPath: 'assets/leader.svg',
                   title: 'Leader Board',
                   onTap: () {
-                    Get.toNamed(RouteName.leaderboard);
+                   // Get.toNamed(RouteName.leaderboard);
+                    Get.toNamed(RouteName.registerInstitution);
                   },
                 ),
+                userRole() == 'teacher'
+                    ? profileTile(
+                        context,
+                        iconPath: 'assets/blist.svg',
+                        title: 'Batch List',
+                        onTap: () {
+                          Get.toNamed(RouteName.batchlist);
+                        },
+                      )
+                    : const SizedBox(
+                        height: 0,
+                      ),
                 const Spacer(),
                 profileTile(
                   context,

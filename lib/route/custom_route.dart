@@ -12,9 +12,11 @@ import 'package:easy_padhai/auth/sign_in.dart';
 import 'package:easy_padhai/auth/splash_screen.dart';
 import 'package:easy_padhai/common/no_internet.dart';
 import 'package:easy_padhai/common/no_service.dart';
+import 'package:easy_padhai/dashboard/batch_list.dart';
 import 'package:easy_padhai/dashboard/leaderboard_screen.dart';
 import 'package:easy_padhai/dashboard/profile.dart';
 import 'package:easy_padhai/dashboard/profile_edit.dart';
+import 'package:easy_padhai/dashboard/student_detail.dart';
 import 'package:easy_padhai/dashboard/student_home.dart';
 import 'package:easy_padhai/dashboard/teacher_home.dart';
 import 'package:easy_padhai/route/route_name.dart';
@@ -76,6 +78,13 @@ class CustomRoute {
         return const ProfileEdit();
       case RouteName.leaderboard:
         return const LeaderboardScreen();
+      case RouteName.batchlist:
+        return const BatchListScreen();
+
+      case RouteName.subdet:
+        final argumentMap = args as Map<String, dynamic>?;
+        final title = argumentMap?['title'] ?? 'No Title';
+        return SubjectDetailScreen(title: title);
     }
     return const SplashScreen();
   }

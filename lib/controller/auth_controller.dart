@@ -6,10 +6,13 @@ import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/model/class_list_model.dart';
 import 'package:easy_padhai/model/common_model.dart';
+import 'package:easy_padhai/model/district_model.dart';
+import 'package:easy_padhai/model/ins_model.dart';
 import 'package:easy_padhai/model/institution_list_model.dart';
 import 'package:easy_padhai/model/login_model.dart';
 import 'package:easy_padhai/model/register_model.dart';
 import 'package:easy_padhai/model/section_list_model.dart';
+import 'package:easy_padhai/model/state_model.dart';
 import 'package:easy_padhai/model/subject_list_model.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,11 +31,17 @@ class AuthController extends GetxController {
   RxString userId = ''.obs;
   RxString instituteId = ''.obs;
   RxString instituteName = ''.obs;
+  RxString stateId = ''.obs;
+  RxString stateName = ''.obs;
+  RxString districtId = ''.obs;
+  RxString districtName = ''.obs;
 
   List<ClassesData> classesdataList = [];
   List<SectionData> sectiondataList = [];
   List<SubjectList> subjectdataList = [];
   List<InstitutesList> institutiondataList = [];
+  List<List1> stateList = [];
+  List<List1> districtList = [];
 
   var selectedClassIds = <String>[].obs;
   var selectedSectionIds = <String>[].obs;
@@ -191,7 +200,11 @@ class AuthController extends GetxController {
       LoginModel response = LoginModel.fromJson(signUpJson);
       if (response.status == true) {
         box.write('token', response.data!.token);
-        //   print("token:  ${token()}");
+        box.write('username', response.data!.name!.english);
+        box.write('email', response.data!.email);
+        box.write('userRole', response.data!.userRole);
+        box.write('propic', response.data!.picture);
+        print("token:  ${userEmail()}");
         response.data!.isProfileSet!.classSet == false
             ? {await getClassList(''), Get.toNamed(RouteName.classSelect)}
             : response.data!.isProfileSet!.section == false
@@ -240,6 +253,42 @@ class AuthController extends GetxController {
     }
 
     isLoading.value = false;
+  }
+
+  postInstitution(
+    String name,
+    String type,
+    String add1,
+    String add2,
+    String state,
+    String district,
+    String pin,
+    String inscode,
+  ) async {
+    isLoading1(false);
+
+    Map<String, dynamic>? queryParams = {
+      "institutesName": name,
+      "instituteType": type,
+      "address1": add1,
+      "address2": add2,
+      "stateId": state,
+      "districtId": district,
+      "pinCode": pin,
+      "codee": inscode
+    };
+
+    final countryJson =
+        await apiHelper.postwithoutToken(ApiUrls.addIns, queryParams);
+    if (countryJson != null && countryJson != false) {
+      InstituteModel response = InstituteModel.fromJson(countryJson);
+      if (response.status == true) {
+        isLoading1(true);
+        return response;
+      } else {
+        isLoading1(true);
+      }
+    }
   }
 
   getClassList(String search) async {
@@ -353,12 +402,30 @@ class AuthController extends GetxController {
     final countryJson =
         await apiHelper.get(ApiUrls.stateList, queryParameter, data);
     if (countryJson != null && countryJson != false) {
-      InstitutionListModel response =
-          InstitutionListModel.fromJson(countryJson);
+      StateModel response = StateModel.fromJson(countryJson);
       if (response.status == true) {
-        institutiondataList = response.data!.institutes!;
+        stateList = response.data!.list!;
         isLoading5(true);
-        return institutiondataList;
+        return stateList;
+      } else {
+        isLoading5(true);
+      }
+    }
+  }
+
+  getdistrictList() async {
+    isLoading5(false);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {};
+    final countryJson =
+        await apiHelper.get(ApiUrls.district, queryParameter, data);
+    if (countryJson != null && countryJson != false) {
+      StateModel response = StateModel.fromJson(countryJson);
+      if (response.status == true) {
+        districtList = response.data!.list!;
+        isLoading5(true);
+        return districtList;
       } else {
         isLoading5(true);
       }
@@ -402,11 +469,10 @@ class AuthController extends GetxController {
               ? queryParameters = {
                   "sections": selectedSectionIds,
                 }
-              : type == "subjectId"
+              : type == "subject"
                   ? queryParameters = {
-                      "subjects": selectedSubjectIds,
+                      "subjectId": selectedSubjectIds,
                     }
-                    
                   : type == "institute"
                       ? queryParameters = {
                           "institution": instituteId.value,
@@ -424,12 +490,19 @@ class AuthController extends GetxController {
               ? Get.toNamed(RouteName.sectionSelect)
               : type == "section"
                   ? Get.toNamed(RouteName.subjectSelect)
-                  : type == "subject"
+                  : type == "subject" && response.data!.role == "teacher"
                       ? Get.toNamed(RouteName
                           .selectInstitution) // have to chk student or teacher
                       : type == "institute"
-                          ? Get.offAllNamed(RouteName.teacherHome)
-                          : queryParameters = {};
+                          ? {
+                              Get.lazyPut(() => DashboardController()),
+                              Get.offAllNamed(RouteName.teacherHome)
+                            }
+                          // : queryParameters = {}
+                          : {
+                              Get.lazyPut(() => DashboardController()),
+                              Get.offAllNamed(RouteName.studentHome)
+                            };
         } else {
           Get.snackbar(
             '',
@@ -451,5 +524,40 @@ class AuthController extends GetxController {
       isLoading.value = false;
     }
     isLoading.value = false;
+  }
+
+  postinstitute(String name, String type, String add1, String add2,
+      String stateid, String distid, String pin, String code) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "institutesName": name,
+      "instituteType": type,
+      "address1": add1,
+      "address2": add2,
+      "stateId": stateid,
+      "districtId": distid,
+      "pinCode": pin,
+      "codee": code
+    };
+    print(queryParameter);
+    final profileJson =
+        await apiHelper.post(ApiUrls.crins, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      InstituteModel response = InstituteModel.fromJson(profileJson);
+      if (response.status == true) {
+        InstituteModel dta = response;
+        // Update box storage with profile data
+        isLoading(false);
+        return dta;
+      } else {
+        Get.snackbar("Message", response.message!,
+            snackPosition: SnackPosition.BOTTOM);
+        isLoading(false);
+        return response;
+      }
+    }
+    isLoading(false);
   }
 }

@@ -15,17 +15,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       systemOverlayStyle: SystemUiOverlayStyle.light,
       leadingWidth: MediaQuery.of(context).size.width * .13,
       leading: IconButton(
-        padding: EdgeInsets.zero,
+        padding: const EdgeInsets.only(
+          left: 20,
+        ),
         icon: Image.asset(
           'assets/back.png',
           fit: BoxFit.fill,
-          width: MediaQuery.of(context).size.width * 0.07,
+          width: MediaQuery.of(context).size.width * 0.09,
         ),
         onPressed: () {
           Navigator.pop(context);
         },
       ),
-      titleSpacing: 0,
+      titleSpacing: 10,
       title: Text(
         text,
         style: TextStyle(

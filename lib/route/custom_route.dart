@@ -16,7 +16,7 @@ import 'package:easy_padhai/dashboard/batch_list.dart';
 import 'package:easy_padhai/dashboard/leaderboard_screen.dart';
 import 'package:easy_padhai/dashboard/profile.dart';
 import 'package:easy_padhai/dashboard/profile_edit.dart';
-import 'package:easy_padhai/dashboard/student_detail.dart';
+import 'package:easy_padhai/dashboard/student_subject_detail.dart';
 import 'package:easy_padhai/dashboard/student_home.dart';
 import 'package:easy_padhai/dashboard/teacher_home.dart';
 import 'package:easy_padhai/route/route_name.dart';
@@ -84,7 +84,8 @@ class CustomRoute {
       case RouteName.subdet:
         final argumentMap = args as Map<String, dynamic>?;
         final title = argumentMap?['title'] ?? 'No Title';
-        return SubjectDetailScreen(title: title);
+        final id = argumentMap?['id'] ?? '';
+        return SubjectDetailScreen(title: title, id: id);
     }
     return const SplashScreen();
   }

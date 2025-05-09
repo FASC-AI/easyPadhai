@@ -51,9 +51,10 @@ class _SplashScreenState extends State<SplashScreen> {
         ? {
             Get.lazyPut(() => AuthController()),
             Get.lazyPut(() => DashboardController()),
-            userRole() == 'student'
-                ? Get.offNamed(RouteName.studentHome)
-                : Get.offNamed(RouteName.teacherHome)
+            Get.toNamed(RouteName.verifyMpin)
+            // userRole() == 'student'
+            //     ? Get.offNamed(RouteName.studentHome)
+            //     : Get.offNamed(RouteName.teacherHome)
           }
         : Get.offNamed(RouteName.login);
   }

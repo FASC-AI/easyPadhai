@@ -106,7 +106,8 @@ class AuthController extends GetxController {
         if (response.code == 200) {
           userId.value = response.data!.id!;
           userName.value = response.data!.name!;
-
+          box.write('username', response.data!.name!);
+          box.write('userid', response.data!.id!);
           response.data!.isMpinSet == true
               ? Get.toNamed(RouteName.verifyMpin)
               : Get.toNamed(RouteName.setMPin);
@@ -162,7 +163,8 @@ class AuthController extends GetxController {
         if (response.code == 200) {
           userId.value = response.data!.id!;
           userName.value = response.data!.name!;
-
+          box.write('username', response.data!.name!);
+          box.write('userid', response.data!.id!);
           isLoading.value = false;
           return response;
         } else {
@@ -191,6 +193,7 @@ class AuthController extends GetxController {
 
   postSetVerifymPin(String mPin) async {
     isLoading.value = true;
+    userId.value = userid();
     print("userId: $userId");
 
     dynamic queryParameters = {"mpin": mPin};
@@ -483,6 +486,7 @@ class AuthController extends GetxController {
           await apiHelper.post(ApiUrls.updateProfile, queryParameters, data);
       if (signUpJson != null && signUpJson != false) {
         CommonModel response = CommonModel.fromJson(signUpJson);
+        print(response.message);
         if (response.status == true) {
           isLoading.value = false;
 

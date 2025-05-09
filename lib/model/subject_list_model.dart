@@ -56,6 +56,8 @@ class SubjectList {
   String? nameEn;
   String? codee;
   String? description;
+  bool? isActive;
+  List<Images>? images;
   String? createdAt;
   String? updatedAt;
   int? code;
@@ -66,6 +68,8 @@ class SubjectList {
       this.nameEn,
       this.codee,
       this.description,
+      this.isActive,
+      this.images,
       this.createdAt,
       this.updatedAt,
       this.code,
@@ -76,6 +80,13 @@ class SubjectList {
     nameEn = json['nameEn'];
     codee = json['codee'];
     description = json['description'];
+    isActive = json['isActive'];
+    if (json['images'] != null) {
+      images = <Images>[];
+      json['images'].forEach((v) {
+        images!.add(new Images.fromJson(v));
+      });
+    }
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     code = json['code'];
@@ -83,15 +94,41 @@ class SubjectList {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['_id'] = sId;
-    data['nameEn'] = nameEn;
-    data['codee'] = codee;
-    data['description'] = description;
-    data['createdAt'] = createdAt;
-    data['updatedAt'] = updatedAt;
-    data['code'] = code;
-    data['__v'] = iV;
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['nameEn'] = this.nameEn;
+    data['codee'] = this.codee;
+    data['description'] = this.description;
+    data['isActive'] = this.isActive;
+    if (this.images != null) {
+      data['images'] = this.images!.map((v) => v.toJson()).toList();
+    }
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
+    data['code'] = this.code;
+    data['__v'] = this.iV;
+    return data;
+  }
+}
+
+class Images {
+  String? url;
+  String? name;
+  String? sId;
+
+  Images({this.url, this.name, this.sId});
+
+  Images.fromJson(Map<String, dynamic> json) {
+    url = json['url'];
+    name = json['name'];
+    sId = json['_id'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['url'] = this.url;
+    data['name'] = this.name;
+    data['_id'] = this.sId;
     return data;
   }
 }

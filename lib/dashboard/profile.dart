@@ -18,7 +18,8 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.theme,
@@ -45,6 +46,19 @@ class Profile extends StatelessWidget {
                 CircleAvatar(
                   radius: 40,
                   backgroundImage: NetworkImage(box.read('propic') ?? ''),
+                  backgroundColor: Colors.grey[400],
+                  child: (userPic().isEmpty)
+                      ? Text(
+                          userName().isNotEmpty
+                              ? userName()[0].toUpperCase()
+                              : '',
+                          style: TextStyle(
+                            fontSize: width * 0.08,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      : null,
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -78,7 +92,7 @@ class Profile extends StatelessWidget {
                   iconPath: 'assets/leader.svg',
                   title: 'Leader Board',
                   onTap: () {
-                   // Get.toNamed(RouteName.leaderboard);
+                    // Get.toNamed(RouteName.leaderboard);
                     Get.toNamed(RouteName.registerInstitution);
                   },
                 ),
@@ -111,7 +125,7 @@ class Profile extends StatelessWidget {
       ),
       bottomNavigationBar: userRole() == 'student'
           ? Obx(() => CustomBottomNavBar2(
-                currentIndex: dashboardController.currentIndex.value,
+                currentIndex: dashboardController.currentIndex1.value,
                 onTap: dashboardController.changeIndex1,
               ))
           : Obx(() => CustomBottomNavBar(

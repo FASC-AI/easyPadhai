@@ -6,10 +6,14 @@ import 'package:easy_padhai/model/batch_model.dart';
 import 'package:easy_padhai/model/batchlist_model.dart';
 import 'package:easy_padhai/model/batchreq.dart';
 import 'package:easy_padhai/model/binfo.dart';
+import 'package:easy_padhai/model/book_model.dart';
 import 'package:easy_padhai/model/institution_list_model.dart';
+import 'package:easy_padhai/model/lesson_model.dart';
 import 'package:easy_padhai/model/noti_model.dart';
 import 'package:easy_padhai/model/profile_model.dart';
 import 'package:easy_padhai/model/simple_model.dart';
+import 'package:easy_padhai/model/topic_model.dart';
+import 'package:easy_padhai/model/tpupdate_model.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:get/get.dart';
 
@@ -17,7 +21,7 @@ class DashboardController extends GetxController {
   RxBool isLoading = false.obs;
   ApiHelper apiHelper = ApiHelper();
   var currentIndex = 0.obs;
-
+  var currentIndex1 = 0.obs;
   List<InstitutesList> institutiondataList = [];
   List<Banners> Bannerlist = [];
   List<Notifications> tNoti = [];
@@ -26,6 +30,9 @@ class DashboardController extends GetxController {
   List<Notifications> uNoti = [];
   ProfileModel? profileModel;
   List<BbData> batchlist = [];
+  Data? topic;
+  List<Books> booklist = [];
+  List<LData> lessonlist = [];
   RxString instituteId = ''.obs;
   RxString instituteName = ''.obs;
 
@@ -63,8 +70,8 @@ class DashboardController extends GetxController {
   }
 
   void changeIndex1(int index) {
-    if (currentIndex.value == index) return;
-    currentIndex.value = index;
+    if (currentIndex1.value == index) return;
+    currentIndex1.value = index;
     switch (index) {
       case 0:
         Get.offAllNamed(RouteName.studentHome);
@@ -73,7 +80,7 @@ class DashboardController extends GetxController {
         Get.offAllNamed(RouteName.joinBatch);
         break;
       case 2:
-        Get.offAllNamed(RouteName.support);
+        //Get.offAllNamed(RouteName.support);
         break;
       case 3:
         Get.offAllNamed(RouteName.profile);
@@ -211,6 +218,7 @@ class DashboardController extends GetxController {
         await apiHelper.post(ApiUrls.crbatch, queryParameter, data);
     if (profileJson != null && profileJson != false) {
       BatchModel response = BatchModel.fromJson(profileJson);
+      print(response.code);
       if (response.status == true) {
         BatchModel dta = response;
         // Update box storage with profile data
@@ -253,14 +261,15 @@ class DashboardController extends GetxController {
     isLoading(false);
   }
 
-  postbatchreq(String code) async {
+  postbatchreq(String code, String name, String roll) async {
     isLoading(true);
     dynamic data;
     data = await token();
     Map<String, dynamic>? queryParameter = {
       "code": code,
+      "rollNo": roll,
     };
-    //  print(queryParameter);
+      print(queryParameter);
     final profileJson =
         await apiHelper.post(ApiUrls.breq, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -337,6 +346,101 @@ class DashboardController extends GetxController {
             snackPosition: SnackPosition.BOTTOM);
         isLoading(false);
         return response;
+      }
+    }
+    isLoading(false);
+  }
+
+  getBook(String id) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {"subjectId": id};
+    final profileJson =
+        await apiHelper.get(ApiUrls.getbook, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      BookModel response = BookModel.fromJson(profileJson);
+      if (response.status == true) {
+        booklist = response.data!.books!;
+        // Update box storage with profile data
+
+        isLoading(false);
+        return booklist;
+      } else {
+        isLoading(false);
+      }
+    }
+    isLoading(false);
+  }
+
+  getLesson(String bookid, String subid) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "bookId": bookid,
+      "subjectId": subid
+    };
+    final profileJson =
+        await apiHelper.get(ApiUrls.getlesson, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      LessonModel response = LessonModel.fromJson(profileJson);
+      if (response.status == true) {
+        lessonlist = response.data!;
+        // Update box storage with profile data
+
+        isLoading(false);
+        return lessonlist;
+      } else {
+        isLoading(false);
+      }
+    }
+    isLoading(false);
+  }
+
+  getTopic(String id) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {};
+    final profileJson =
+        await apiHelper.get(ApiUrls.gettopic + id, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      TopicModel response = TopicModel.fromJson(profileJson);
+      if (response.status == true) {
+        topic = response.data!;
+        // Update box storage with profile data
+
+        isLoading(false);
+        return topic;
+      } else {
+        isLoading(false);
+      }
+    }
+    isLoading(false);
+  }
+
+  getTopicUpdate(String id, String lesson_id) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "lessonId": lesson_id,
+      "topicId": id,
+      "status": true
+    };
+    final profileJson =
+        await apiHelper.patch(ApiUrls.updatetopic, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      TpupdateModel response = TpupdateModel.fromJson(profileJson);
+      if (response.status == true) {
+        //topic = response.data!;
+        // Update box storage with profile data
+        print("Topic updated:" + response.message!);
+        isLoading(false);
+        return response;
+      } else {
+        isLoading(false);
       }
     }
     isLoading(false);

@@ -21,7 +21,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
       child: GestureDetector(
         onTap: () => setState(() => selectedTabIndex = index),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+         // padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: isSelected ? Colors.blue : Colors.transparent,
             borderRadius: BorderRadius.circular(24),
@@ -72,13 +72,17 @@ class _RequestsScreenState extends State<RequestsScreen> {
               sendReq(true, data[index].id!);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
+              backgroundColor: Color(0xff21C375),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Accept'),
+            child: const Text(
+              'Accept',
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+            ),
           ),
           const SizedBox(width: 8),
           OutlinedButton(
@@ -86,14 +90,18 @@ class _RequestsScreenState extends State<RequestsScreen> {
               sendReq(false, data[index].id!);
             },
             style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.red,
-              side: const BorderSide(color: Colors.red),
+              foregroundColor: Color(0xffCF4343),
+              side: const BorderSide(color: Color(0xffCF4343)),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text('Reject'),
+            child: const Text(
+              'Reject',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: Color(0xffCF4343)),
+            ),
           ),
         ],
       ),
@@ -103,14 +111,52 @@ class _RequestsScreenState extends State<RequestsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      // backgroundColor: const Color(0xFFF5F7FA),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
-        height: 300,
-        child: Column(
+        height: 250,
+        child: Stack(
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Custom Tab Bar
+
+            // const SizedBox(height: 16),
+
+            // Tab Content
             Container(
+              margin: EdgeInsets.only(top: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Colors.grey.shade300),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              padding: const EdgeInsets.fromLTRB(10, 30, 10, 10),
+              child: selectedTabIndex == 0
+                  ? dashboardController.uBat.isNotEmpty
+                      ? ListView.builder(
+                          itemCount: dashboardController.uBat.length,
+                          itemBuilder: (context, index) =>
+                              buildRequestItem(index, dashboardController.uBat),
+                        )
+                      : const Center(
+                          child: Text("No Requests"),
+                        )
+                  : dashboardController.tBat.isNotEmpty
+                      ? ListView.builder(
+                          itemCount: dashboardController.tBat.length,
+                          itemBuilder: (context, index) =>
+                              buildRequestItem(index, dashboardController.tBat),
+                        )
+                      : const Center(
+                          child: Text("No Requests"),
+                        ),
+            ),
+            Container(
+              width: 280,
+              height: 40,
+              margin: EdgeInsets.only(
+                left: 10,
+              ),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(32),
@@ -121,38 +167,6 @@ class _RequestsScreenState extends State<RequestsScreen> {
                   buildTab('Student Requests', 0),
                   buildTab('Teacher Requests', 1),
                 ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Tab Content
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                padding: const EdgeInsets.all(12),
-                child: selectedTabIndex == 0
-                    ? dashboardController.uBat.isNotEmpty
-                        ? ListView.builder(
-                            itemCount: dashboardController.uBat.length,
-                            itemBuilder: (context, index) => buildRequestItem(
-                                index, dashboardController.uBat),
-                          )
-                        : const Center(
-                            child: Text("No Requests"),
-                          )
-                    : dashboardController.tBat.isNotEmpty
-                        ? ListView.builder(
-                            itemCount: dashboardController.tBat.length,
-                            itemBuilder: (context, index) => buildRequestItem(
-                                index, dashboardController.tBat),
-                          )
-                        : const Center(
-                            child: Text("No Requests"),
-                          ),
               ),
             ),
           ],

@@ -47,4 +47,8 @@ class ApiUrls {
   static const String breq = 'api/v1/request';
   static const String breqget = 'api/v1/request/requestedbatch';
   static const String breqapprove = 'api/v1/request/';
+  static const String getbook = 'api/v1/book/bookbysubject';
+  static const String getlesson = 'api/v1/lesson/topic';
+  static const String gettopic = 'api/v1/lesson/topicinfo/';
+  static const String updatetopic = 'api/v1/topic';
 }

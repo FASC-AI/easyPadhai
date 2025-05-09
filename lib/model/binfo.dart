@@ -30,14 +30,16 @@ class InfoData {
   String? class1;
   String? section;
   String? institute;
+  String? type;
 
-  InfoData({this.sId, this.class1, this.section, this.institute});
+  InfoData({this.sId, this.class1, this.section, this.institute, this.type});
 
   InfoData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     class1 = json['class'];
     section = json['section'];
     institute = json['institute'];
+    type = json['type'];
   }
 
   Map<String, dynamic> toJson() {
@@ -46,6 +48,7 @@ class InfoData {
     data['class'] = this.class1;
     data['section'] = this.section;
     data['institute'] = this.institute;
+    data['type'] = this.type;
     return data;
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
@@ -124,134 +126,180 @@ class _ProfileEditState extends State<StudentHome> {
         // ),
         title: Text(
           'Hi, $name  $class1',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.of(context).size.width * .05),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ClipRRect(
-            //   borderRadius: BorderRadius.circular(20),
-            //   child: Image.asset(
-            //     'assets/banner.png',
-            //     height: size.height * 0.25,
-            //     width: size.width,
-            //     fit: BoxFit.cover,
-            //   ),
-            // ),
-            CarouselSlider(
-              options: CarouselOptions(
-                height: 180,
-                // autoPlay: true,
-                enlargeCenterPage: true,
-                viewportFraction: 0.9,
-              ),
-              items: dashboardController.Bannerlist.map((item) {
-                return GestureDetector(
-                  onTap: () => _launchURL(item.redirectPath!),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      child: Image.network(
-                        item.images![0].url!,
-                        fit: BoxFit.cover,
-                        width: size.width,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        },
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Center(child: Icon(Icons.error)),
+      body: !isload
+          ? SafeArea(
+              child: SingleChildScrollView(
+                // padding: EdgeInsets.symmetric(
+                //     horizontal: MediaQuery.of(context).size.width * .05),
+                child: Column(
+                  children: [
+                    CarouselSlider(
+                      options: CarouselOptions(
+                        height: size.height * 0.28,
+                        autoPlay: true,
+                        enlargeCenterPage: true,
+                        viewportFraction: 0.9,
                       ),
+                      items: dashboardController.Bannerlist.map((item) {
+                        return GestureDetector(
+                          onTap: () => _launchURL(item.redirectPath!),
+                          child: Container(
+                            padding: const EdgeInsets.only(top: 20, bottom: 20),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                child: Image.network(
+                                  item.images![0].url!,
+                                  fit: BoxFit.cover,
+                                  width: size.width,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(
+                                        child: CircularProgressIndicator());
+                                  },
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Center(child: Icon(Icons.error)),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
-                  ),
-                );
-              }).toList(),
-            ),
-            Container(
-              width: double.infinity,
-              height: size.height * 0.28,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: ListView.builder(
-                itemCount: dashboardController
-                    .uNoti.length, // You can set this dynamically
-                itemBuilder: (context, index) {
-                  String formatted =
-                      formatDate(dashboardController.uNoti[index].date!);
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          formatted,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(Icons.notifications, color: Colors.blue),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Html(
-                                data: dashboardController.uNoti[index].message!,
-                                style: {
-                                  "body": Style(
-                                    margin: Margins.zero,
-                                    //padding: EdgeInsets.zero,
-                                    fontSize: FontSize.medium,
-                                  ),
-                                  "p": Style(
-                                    margin: Margins.zero,
-                                  ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width * .05),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // ClipRRect(
+                          //   borderRadius: BorderRadius.circular(20),
+                          //   child: Image.asset(
+                          //     'assets/banner.png',
+                          //     height: size.height * 0.25,
+                          //     width: size.width,
+                          //     fit: BoxFit.cover,
+                          //   ),
+                          // ),
+
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: List.generate(
+                                dashboardController.uNoti.length,
+                                (index) {
+                                  String formatted = formatDate(
+                                      dashboardController.uNoti[index].date!);
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (dashboardController
+                                                .uNoti[index].message! !=
+                                            "")
+                                          Text(
+                                            formatted,
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Icon(Icons.notifications,
+                                                color: Colors.blue),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: Html(
+                                                data: dashboardController
+                                                    .uNoti[index].message!,
+                                                style: {
+                                                  "body": Style(
+                                                    margin: Margins.zero,
+                                                    fontSize: FontSize.medium,
+                                                  ),
+                                                  "p": Style(
+                                                    margin: Margins.zero,
+                                                  ),
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  );
                                 },
                               ),
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            height: 500, // Adjust height as needed
+                            child: GridView.builder(
+                              physics: NeverScrollableScrollPhysics(),
+                              padding: const EdgeInsets.all(8.0),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2, // 2 items per row
+                                      crossAxisSpacing: 10,
+                                      mainAxisSpacing: 10,
+                                      childAspectRatio:
+                                          1.2 // Wider cards (adjust as needed)
+                                      ),
+                              itemCount: sublist.length,
+                              itemBuilder: (context, index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      RouteName.subdet,
+                                      arguments: {
+                                        'title': sublist[index].subject!,
+                                        'id': sublist[index].sId!
+                                      },
+                                    );
+                                  },
+                                  child: buildClassCard(
+                                    sublist[index].subject!,
+                                    '',
+                                    'assets/subject.png',
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                  );
-                },
-              ),
-            ),
-
-            const SizedBox(height: 20),
-            SizedBox(
-              height: 500, // Adjust height as needed
-              child: GridView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(8.0),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, // 2 items per row
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 1.2 // Wider cards (adjust as needed)
-                    ),
-                itemCount: sublist.length,
-                itemBuilder: (context, index) {
-                  return buildClassCard(
-                    sublist[index].subject!,
-                    '',
-                    'assets/subject.png',
-                  );
-                },
+                  ],
+                ),
               ),
             )
-          ],
-        ),
-      ),
+          : Center(
+              child: Lottie.asset(
+              'assets/loading.json',
+              width: MediaQuery.of(context).size.width * .2,
+              height: MediaQuery.of(context).size.height * .2,
+              repeat: true,
+              animate: true,
+              reverse: false,
+            )),
       bottomNavigationBar: Obx(() => CustomBottomNavBar2(
-            currentIndex: dashboardController.currentIndex.value,
+            currentIndex: dashboardController.currentIndex1.value,
             onTap: (index) {
               if (index == 1) {
                 // Assuming index 1 is for creating batch
@@ -266,42 +314,168 @@ class _ProfileEditState extends State<StudentHome> {
   }
 
   Widget buildClassCard(String title, String subtitle, String imagePath) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(
-          context,
-          RouteName.subdet,
-          arguments: {'title': title},
-        );
-      },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          // width: 150,
-          // height: 150,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(imagePath),
-              fit: BoxFit.cover,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        // width: 150,
+        // height: 150,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(imagePath),
+            fit: BoxFit.cover,
+          ),
+        ),
+        padding: const EdgeInsets.all(12),
+        alignment: Alignment.bottomLeft,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold)),
+            if (subtitle.isNotEmpty)
+              Text(subtitle,
+                  style: const TextStyle(color: Colors.white70, fontSize: 12)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showRollBottomSheet(BuildContext context, String type, String code) {
+    // Fetch class and section data if not already loaded
+    TextEditingController rollController = TextEditingController();
+    bool isLoading = false;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              type == 'School'
+                  ? 'Please tell the teacher your name and roll number'
+                  : "Please tell the teacher your name",
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          padding: const EdgeInsets.all(12),
-          alignment: Alignment.bottomLeft,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold)),
-              if (subtitle.isNotEmpty)
-                Text(subtitle,
-                    style:
-                        const TextStyle(color: Colors.white70, fontSize: 12)),
-            ],
-          ),
+            const SizedBox(height: 20),
+            GetBuilder<DashboardController>(
+              builder: (controller) => TextFormField(
+                initialValue: name,
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 18,
+                  ),
+                  hintText: 'Enter your name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Colors.grey),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Colors.grey),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Colors.grey),
+                  ),
+                ),
+                readOnly: true,
+              ),
+            ),
+            const SizedBox(height: 20),
+            if (type == 'School')
+              GetBuilder<DashboardController>(
+                builder: (controller) => TextFormField(
+                  controller: rollController,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 18,
+                    ),
+                    hintText: 'Enter your roll number',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                  ),
+                ),
+              ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () async {
+                  //  Navigator.pop(context);
+
+                  if (type == 'School' && rollController.text.isEmpty) {
+                    Get.snackbar("Message", "Roll number is required!",
+                        snackPosition: SnackPosition.BOTTOM);
+                    return;
+                  }
+                  isLoading = true;
+                  String roll = rollController.text.isEmpty
+                      ? ""
+                      : rollController.text.toString().trim();
+                  BinfoModel dta =
+                      await dashboardController.postbatchreq(code, name, roll);
+
+                  if (dta != null && dta.status == true) {
+                    isLoading = false;
+                    Navigator.pop(context);
+                    _showdoneBatchBottomSheet(context);
+                  } else {
+                    isLoading = false;
+                    Navigator.pop(context);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.theme,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
+                child: isLoading
+                    ? Lottie.asset(
+                        'assets/loading.json', // Replace with your animation file path
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+                        repeat: true, // Check play state for repeat
+                        animate: true,
+                        reverse: false,
+                      )
+                    : const Text(
+                        'Submit',
+                        style: TextStyle(color: Colors.white),
+                      ),
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
         ),
       ),
     );
@@ -313,7 +487,9 @@ class _ProfileEditState extends State<StudentHome> {
     String institution = '';
     String className = '';
     String section = '';
+    String type = '';
     Timer? _debounce;
+    bool isLoading = false;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -356,6 +532,7 @@ class _ProfileEditState extends State<StudentHome> {
                             institution = dta.data!.institute!;
                             className = dta.data!.class1!;
                             section = dta.data!.section ?? "";
+                            type = dta.data!.type!;
                           });
                         } else {
                           setState(() {
@@ -430,17 +607,20 @@ class _ProfileEditState extends State<StudentHome> {
                       }
 
                       isLoading = true;
-                      BinfoModel dta = await dashboardController
-                          .postbatchreq(tb_controller.text.toString().trim());
+                      Navigator.pop(context);
+                      _showRollBottomSheet(
+                          context, type, tb_controller.text.toString().trim());
+                      // BinfoModel dta = await dashboardController
+                      //     .postbatchreq(tb_controller.text.toString().trim());
 
-                      if (dta != null && dta.status == true) {
-                        isLoading = false;
-                        Navigator.pop(context);
-                        _showdoneBatchBottomSheet(context);
-                      } else {
-                        isLoading = false;
-                        Navigator.pop(context);
-                      }
+                      // if (dta != null && dta.status == true) {
+                      //   isLoading = false;
+                      //   Navigator.pop(context);
+                      //   _showdoneBatchBottomSheet(context);
+                      // } else {
+                      //   isLoading = false;
+                      //   Navigator.pop(context);
+                      // }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.theme,

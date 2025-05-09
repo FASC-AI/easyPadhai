@@ -1,10 +1,14 @@
+import 'package:easy_padhai/auth/popups/district_list1.dart';
 import 'package:easy_padhai/auth/popups/institutes_popup2.dart';
+import 'package:easy_padhai/auth/popups/state_list1.dart';
 import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/common/constant.dart';
+import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
 import 'package:easy_padhai/custom_widgets/custom_button.dart';
 import 'package:easy_padhai/custom_widgets/custom_input2.dart';
+import 'package:easy_padhai/model/profile_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,8 +25,14 @@ class ProfileEdit extends StatefulWidget {
 class _ProfileEditState extends State<ProfileEdit> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController classController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController pinController = TextEditingController();
   final TextEditingController instituteController = TextEditingController();
+  TextEditingController controllerState = TextEditingController();
+  TextEditingController controllerDistrict = TextEditingController();
   DashboardController dashboardController = Get.find();
+  AuthController controller = Get.find();
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
 
@@ -39,8 +49,10 @@ class _ProfileEditState extends State<ProfileEdit> {
           dashboardController.profileModel?.data?.userDetails?.name ?? '';
       emailController.text =
           dashboardController.profileModel?.data?.userDetails?.email ?? '';
-      //  instituteController.text =
-      //   dashboardController.instituteName.value;
+      classController.text =
+          dashboardController.profileModel?.data?.classDetail?[0].class1 ?? '';
+      instituteController.text =
+          dashboardController.profileModel?.data?.institute ?? '';
     });
   }
 
@@ -188,16 +200,31 @@ class _ProfileEditState extends State<ProfileEdit> {
                     backgroundImage: _imageFile != null
                         ? FileImage(_imageFile!)
                         : (userPic().isNotEmpty
-                                ? NetworkImage(userPic())
-                                : const AssetImage('assets/pic.png'))
-                            as ImageProvider,
-                    onBackgroundImageError: (exception, stackTrace) {
-                      setState(() {
-                        // If network image fails, use default asset image
-                        _imageFile = null;
-                      });
-                    },
+                            ? NetworkImage(userPic())
+                            : null),
+                    backgroundColor: Colors.grey[400],
+                    child: (_imageFile == null && userPic().isEmpty)
+                        ? Text(
+                            userName().isNotEmpty
+                                ? userName()[0].toUpperCase()
+                                : '',
+                            style: TextStyle(
+                              fontSize: width * 0.08,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : null,
+                    onBackgroundImageError:
+                        _imageFile != null || userPic().isNotEmpty
+                            ? (exception, stackTrace) {
+                                setState(() {
+                                  _imageFile = null;
+                                });
+                              }
+                            : null,
                   ),
+
                 ],
               ),
             ),
@@ -251,9 +278,20 @@ class _ProfileEditState extends State<ProfileEdit> {
                   ),
                   SizedBox(height: height * 0.015),
                   _buildLabel('Class', width, context: context),
-                  _buildClassChips(width),
+                  (dashboardController.profileModel?.data?.userDetails!.role! !=
+                          'student')
+                      ? Container(
+                          alignment: Alignment.topLeft,
+                          child: _buildClassChips(width))
+                      : _buildTextField(
+                          controller: classController,
+                          hint: 'Enter your class',
+                          context: context,
+                          enabled: false,
+                        ),
                   SizedBox(height: height * 0.015),
-                  if (dashboardController.profileModel?.data?.userDetails!.role! !=
+                  if (dashboardController
+                          .profileModel?.data?.userDetails!.role! !=
                       'student') ...[
                     _buildLabel('Institution', width, context: context),
                     GestureDetector(
@@ -310,11 +348,61 @@ class _ProfileEditState extends State<ProfileEdit> {
                     width,
                     context: context,
                   ),
-                  _buildTextField(
-                    hint: '+91-8882130397',
-                    context: context,
-                    isPin: true,
-                    maxNum: 10,
+                  // _buildTextField(
+                  //   hint: 'Enter your phone number',
+                  //   context: context,
+                  //   isPin: true,
+                  //   maxNum: 10,
+                  // ),
+                  TextFormField(
+                    maxLength: 10,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: InputDecoration(
+                        fillColor: AppColors.white,
+                        filled: true,
+                        isDense: false,
+                        contentPadding: EdgeInsets.only(left: 10),
+                        counterText: '',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 1.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 1.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 1.0),
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              BorderSide(color: AppColors.grey7, width: 1.0),
+                        ),
+                        suffixIconConstraints:
+                            BoxConstraints(maxHeight: 25, maxWidth: 30),
+                        hintText: "Enter your phone number",
+                        hintStyle: TextStyle(fontSize: 14, color: Colors.grey)),
+                    controller: phoneController,
+                    validator: (value) {
+                      // bool isEmail =
+                      //     RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")
+                      //         .hasMatch(value);
+
+                      bool isPhoneNumber =
+                          value!.length == 10 && int.tryParse(value) != null;
+
+                      if (!isPhoneNumber) {
+                        return "Please enter a valid phone number";
+                      }
+                      return null;
+                    },
                   ),
                   SizedBox(height: height * 0.015),
                   _buildLabel('Email', width, context: context),
@@ -327,25 +415,132 @@ class _ProfileEditState extends State<ProfileEdit> {
                   SizedBox(height: height * 0.015),
                   _buildLabel('Address', width, context: context),
                   _buildTextField(
-                    hint: 'C-1/502, Phase-4, Aya Nagar,',
+                    hint: 'Enter address',
                     context: context,
                   ),
                   SizedBox(height: height * 0.015),
                   _buildLabel('Address 2', width, context: context),
-                  _buildTextField(hint: '', context: context),
+                  _buildTextField(hint: 'Enter address 2', context: context),
                   SizedBox(height: height * 0.015),
                   _buildLabel('State', width, context: context),
-                  _buildTextField(hint: 'Haryana', context: context),
+                  GestureDetector(
+                    onTap: () async {
+                      await controller.getStateList();
+                      bool? result = await showDialog<bool>(
+                        context: context,
+                        barrierDismissible: true,
+                        builder: (BuildContext context) {
+                          return State1Popup();
+                        },
+                      );
+                      if (result == true) {
+                        setState(() {
+                          controllerState.text = controller.stateName.value;
+                        });
+                      }
+                    },
+                    child: CustomInput2(
+                      label: 'Select Your State',
+                      enable: false,
+                      controller: controllerState,
+                      validation: (value) {
+                        if (value!.isEmpty) {
+                          return 'State is required';
+                        }
+                        return null;
+                      },
+                      inputType: TextInputType.text,
+                      customSuffixIcon: Icons.keyboard_arrow_down,
+                      wholeBackground: AppColors.white,
+                      isPrefix: false,
+                    ),
+                  ),
                   SizedBox(height: height * 0.015),
                   _buildLabel('District', width, context: context),
-                  _buildTextField(hint: 'Gurugram', context: context),
+                  GestureDetector(
+                    onTap: () async {
+                      await controller.getdistrictList();
+                      bool? result = await showDialog<bool>(
+                        context: context,
+                        barrierDismissible: true,
+                        builder: (BuildContext context) {
+                          return District1Popup();
+                        },
+                      );
+                      if (result == true) {
+                        setState(() {
+                          controllerDistrict.text =
+                              controller.districtName.value;
+                        });
+                      }
+                    },
+                    child: CustomInput2(
+                      label: 'Select Your District',
+                      enable: false,
+                      controller: controllerDistrict,
+                      validation: (value) {
+                        if (value!.isEmpty) {
+                          return 'State is required';
+                        }
+                        return null;
+                      },
+                      inputType: TextInputType.text,
+                      customSuffixIcon: Icons.keyboard_arrow_down,
+                      wholeBackground: AppColors.white,
+                      isPrefix: false,
+                    ),
+                  ),
                   SizedBox(height: height * 0.015),
                   _buildLabel('Pin Code', width, context: context),
-                  _buildTextField(
-                    hint: '110047',
-                    context: context,
-                    isPin: true,
-                    maxNum: 6,
+                  TextFormField(
+                    maxLength: 10,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: InputDecoration(
+                        fillColor: AppColors.white,
+                        filled: true,
+                        isDense: false,
+                        contentPadding: EdgeInsets.only(left: 10),
+                        counterText: '',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 1.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 1.0),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              BorderSide(color: Colors.grey, width: 1.0),
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              BorderSide(color: AppColors.grey7, width: 1.0),
+                        ),
+                        suffixIconConstraints:
+                            BoxConstraints(maxHeight: 25, maxWidth: 30),
+                        hintText: "Enter your pin",
+                        hintStyle: TextStyle(fontSize: 14, color: Colors.grey)),
+                    controller: phoneController,
+                    validator: (value) {
+                      // bool isEmail =
+                      //     RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")
+                      //         .hasMatch(value);
+
+                      bool isPhoneNumber =
+                          value!.length == 6 && int.tryParse(value) != null;
+
+                      if (!isPhoneNumber) {
+                        return "Please enter a valid pincode";
+                      }
+                      return null;
+                    },
                   ),
                   SizedBox(height: height * 0.12),
                 ],
@@ -405,6 +600,7 @@ class _ProfileEditState extends State<ProfileEdit> {
           horizontal: MediaQuery.of(context).size.width * .035,
           vertical: MediaQuery.of(context).size.width * .02,
         ),
+        hintStyle: TextStyle(color: Colors.grey),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Colors.grey),
@@ -422,12 +618,14 @@ class _ProfileEditState extends State<ProfileEdit> {
   }
 
   Widget _buildClassChips(double width) {
-    final classes = ['XI', 'XII', 'X', 'IX'];
+    // final classes = ['XI', 'XII', 'X', 'IX'];
+    List<ClassDetail>? classes =
+        dashboardController.profileModel?.data!.classDetail;
     return Wrap(
       spacing: width * 0.025,
-      children: classes
-          .map((c) => Chip(
-                label: Text(c),
+      children: classes!
+          .map((item) => Chip(
+                label: Text(item.class1!),
                 deleteIcon: Icon(Icons.close, size: width * 0.035),
                 onDeleted: () {},
               ))

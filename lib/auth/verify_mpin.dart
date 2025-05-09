@@ -1,3 +1,4 @@
+import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_button.dart';
@@ -103,7 +104,7 @@ class _VerifyMPinState extends State<VerifyMpin> {
                             () => Text(
                               textAlign: TextAlign.center,
                               overflow: TextOverflow.ellipsis,
-                              "Hi, ${authController.userName}",
+                              "Hi, ${authController.userName.isNotEmpty ? authController.userName : userName()}",
                               style: TextStyle(
                                   color: AppColors.white,
                                   fontWeight: FontWeight.bold,

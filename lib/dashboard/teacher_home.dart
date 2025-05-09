@@ -7,7 +7,9 @@ import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
 import 'package:easy_padhai/dashboard/batch_req.dart';
+import 'package:easy_padhai/dashboard/class_teacher_assign.dart';
 import 'package:easy_padhai/model/batch_model.dart';
+import 'package:easy_padhai/model/batchlist_model.dart';
 import 'package:easy_padhai/model/binfo.dart';
 import 'package:easy_padhai/model/profile_model.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +38,7 @@ class _ProfileEditState extends State<TeacherHome> {
   late String selectedClass = "";
   late String sec = "";
   bool isload = false;
+  List<BbData> batches = [];
 
   @override
   void initState() {
@@ -50,9 +53,10 @@ class _ProfileEditState extends State<TeacherHome> {
     ProfileModel data = await dashboardController.getProfile();
     await dashboardController.getBanners();
     await dashboardController.getNotification();
-    // await dashboardController.getBatch();
+    await dashboardController.getBatch();
     await dashboardController.getBatchReq();
     sublist = data.data!.subjectDetail!;
+    batches = dashboardController.batchlist;
     setState(() {
       isload = false;
     });
@@ -79,130 +83,169 @@ class _ProfileEditState extends State<TeacherHome> {
         ),
       ),
       body: !isload
-          ? SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * .05),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ClipRRect(
-                  //   borderRadius: BorderRadius.circular(20),
-                  //   child: Image.asset(
-                  //     'assets/banner.png',
-                  //     height: size.height * 0.25,
-                  //     width: size.width,
-                  //     fit: BoxFit.cover,
-                  //   ),
-                  // ),
-                  CarouselSlider(
-                    options: CarouselOptions(
-                      height: 180,
-                      // autoPlay: true,
-                      enlargeCenterPage: true,
-                      viewportFraction: 0.9,
-                    ),
-                    items: dashboardController.Bannerlist.map((item) {
-                      return GestureDetector(
-                        onTap: () => _launchURL(item.redirectPath!),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            item.images![0].url!,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            },
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Center(child: Icon(Icons.error)),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    height: size.height * 0.28,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: ListView.builder(
-                      //   padding: const EdgeInsets.all(16),
-                      itemCount: dashboardController
-                          .tNoti.length, // You can set this dynamically
-                      itemBuilder: (context, index) {
-                        String formatted =
-                            formatDate(dashboardController.tNoti[index].date!);
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                formatted,
-                                style: TextStyle(fontWeight: FontWeight.bold),
+          ? SafeArea(
+              child: SingleChildScrollView(
+                // padding: EdgeInsets.symmetric(
+                //     horizontal: MediaQuery.of(context).size.width * .05),
+                child: Column(
+                  children: [
+                    CarouselSlider(
+                      options: CarouselOptions(
+                        height: size.height * 0.28,
+                        autoPlay: true,
+                        enlargeCenterPage: true,
+                        viewportFraction: 0.9,
+                      ),
+                      items: dashboardController.Bannerlist.map((item) {
+                        return GestureDetector(
+                          onTap: () => _launchURL(item.redirectPath!),
+                          child: Container(
+                            padding: const EdgeInsets.only(top: 20, bottom: 20),
+                            width: size.width,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Image.network(
+                                  item.images![0].url!,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(
+                                        child: CircularProgressIndicator());
+                                  },
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      const Center(child: Icon(Icons.error)),
+                                ),
                               ),
-                              const SizedBox(height: 8),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(Icons.notifications,
-                                      color: Colors.blue),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Html(
-                                      data: dashboardController
-                                          .tNoti[index].message!,
-                                      style: {
-                                        "body": Style(
-                                          margin: Margins.zero,
-                                          //padding: EdgeInsets.zero,
-                                          fontSize: FontSize.medium,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width * .05),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // ClipRRect(
+                          //   borderRadius: BorderRadius.circular(20),
+                          //   child: Image.asset(
+                          //     'assets/banner.png',
+                          //     height: size.height * 0.25,
+                          //     width: size.width,
+                          //     fit: BoxFit.cover,
+                          //   ),
+                          // ),
+
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey.shade300),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: List.generate(
+                                dashboardController.tNoti.length,
+                                (index) {
+                                  String formatted = formatDate(
+                                      dashboardController.tNoti[index].date!);
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (dashboardController
+                                                .tNoti[index].message! !=
+                                            "")
+                                          Text(
+                                            formatted,
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const Icon(Icons.notifications,
+                                                color: Colors.blue),
+                                            const SizedBox(width: 10),
+                                            Expanded(
+                                              child: Html(
+                                                data: dashboardController
+                                                    .tNoti[index].message!,
+                                                style: {
+                                                  "body": Style(
+                                                    margin: Margins.zero,
+                                                    fontSize: FontSize.medium,
+                                                  ),
+                                                  "p": Style(
+                                                    margin: Margins.zero,
+                                                  ),
+                                                },
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        "p": Style(
-                                          margin: Margins.zero,
-                                        ),
-                                      },
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+                          Container(
+                              color: Colors.white,
+                              width: MediaQuery.of(context).size.width,
+                              height: 250,
+                              child: const RequestsScreen()),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            height: 120, // Slightly increased height if needed
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: batches.length,
+                              itemBuilder: (context, index) {
+                                String cls =
+                                    "${extractClassNumber(batches[index].class1!).toString()}-${batches[index].section}";
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0), // spacing between items
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) => TeacherClassScreen(
+                                                  title: cls,
+                                                )),
+                                      );
+                                    },
+                                    child: buildClassCard(
+                                      cls,
+                                      batches[index].institute!,
+                                      'assets/subject.png',
                                     ),
                                   ),
-                                ],
-                              ),
-                            ],
+                                );
+                              },
+                            ),
                           ),
-                        );
-                      },
+                          const SizedBox(height: 20),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                      color: Colors.white,
-                      width: MediaQuery.of(context).size.width,
-                      height: 300,
-                      child: const RequestsScreen()),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 120, // Slightly increased height if needed
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: sublist.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0), // spacing between items
-                          child: buildClassCard(
-                            sublist[index].subject!,
-                            '',
-                            'assets/subject.png',
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             )
           : Center(
@@ -362,8 +405,8 @@ class _ProfileEditState extends State<TeacherHome> {
                       }
 
                       isLoading = true;
-                      BinfoModel dta = await dashboardController
-                          .postbatchreq(tb_controller.text.toString().trim());
+                      BinfoModel dta = await dashboardController.postbatchreq(
+                          tb_controller.text.toString().trim(), "", "");
 
                       if (dta != null && dta.status == true) {
                         isLoading = false;
@@ -603,7 +646,9 @@ class _ProfileEditState extends State<TeacherHome> {
                   if (dta != null && dta.status == true) {
                     isLoading = false;
                     Navigator.pop(context);
-                    _showdoneBatchBottomSheet(context);
+                    Get.snackbar("Message", "Batch code created successfully!",
+                        snackPosition: SnackPosition.BOTTOM);
+                    //  _showdoneBatchBottomSheet(context);
                     batchController.text = "";
                   } else {
                     isLoading = false;
@@ -767,7 +812,7 @@ class _ProfileEditState extends State<TeacherHome> {
             Text(title,
                 style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold)),
             if (subtitle.isNotEmpty)
               Text(subtitle,

@@ -162,7 +162,7 @@ class ApiHelper {
           },
           body: jsonEncode(data));
       responseJson = _returnResponse(response);
-
+      print(responseJson);
       if (response.statusCode == 503) {
         Get.offAllNamed(RouteName.noService);
       }

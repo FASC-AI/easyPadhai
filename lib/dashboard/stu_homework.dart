@@ -1,6 +1,12 @@
 import 'package:easy_padhai/common/constant.dart';
+import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
+import 'package:easy_padhai/model/home_noti_model.dart';
+import 'package:easy_padhai/model/homework_model2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class HomeworkScreen extends StatefulWidget {
   @override
@@ -8,27 +14,24 @@ class HomeworkScreen extends StatefulWidget {
 }
 
 class _HomeworkScreenState extends State<HomeworkScreen> {
-  Map<String, List<Map<String, String>>> homeworkData = {
-    "Tue, 21 December 2024": [],
-    "Tue, 20 December 2024": [
-      {
-        "question":
-            "State which of the following situations are possible and give an example for each of these:\n\n(a) an object with a constant acceleration but with zero velocity\n(b) an object moving with an acceleration but with uniform speed.\n(c) an object moving in a certain direction with an acceleration in the perpendicular direction.",
-        "answer": "Sample Answer for Question 9"
-      },
-      {
-        "question":
-            "State which of the following situations are possible and give an example for each of these:\n\n(a) an object with a constant acceleration but with zero velocity\n(b) an object moving with an acceleration but with uniform speed.\n(c) an object moving in a certain direction with an acceleration in the perpendicular direction.",
-        "answer": "Sample Answer for Question 10"
-      },
-    ],
-    "Mon, 17 December 2024": [],
-    "Fri, 16 December 2024": [],
-    "Mon, 15 December 2024": [],
-    "Tue, 13 December 2024": [],
-  };
+  List<HomeworkModel2Data> homeworkData = [];
+  DashboardController dashboardController = Get.find();
+  bool isExpanded = false;
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
 
-  Map<String, bool> expandedSections = {};
+  void getData() {
+    homeworkData = dashboardController.homeworkList;
+  }
+
+  String formatDate(String isoDate) {
+    DateTime parsedDate = DateTime.parse(isoDate);
+    String formattedDate = DateFormat('EEE, dd MMMM yyyy').format(parsedDate);
+    return formattedDate;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,71 +39,139 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
       appBar: const CustomAppBar(
         text: "Homework",
       ),
-      body: ListView(
-        children: homeworkData.keys.map((date) {
-          return ExpansionTile(
-            tilePadding: EdgeInsets.symmetric(horizontal: 16.0),
-            collapsedBackgroundColor:
-                Color(0xffC5D5E1), // Background color when collapsed
-            backgroundColor: Color(0xff186BA5),
-            title: Text(date),
-            initiallyExpanded: expandedSections[date] ?? false,
-            onExpansionChanged: (value) {
-              setState(() {
-                expandedSections[date] = value;
-              });
-            },
-            children: homeworkData[date]!.map((questionData) {
-              return Container(
-                padding: EdgeInsets.all(20),
-                color: Color(0xffF6F9FF),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: Color(0xff186BA5),
-                          child: Text(
-                            "${homeworkData[date]!.indexOf(questionData) + 9}",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        RotatedBox(
-                          quarterTurns: 1,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // Add your Answer logic here
-                            },
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                shape: StadiumBorder(),
-                                side: BorderSide(color: Color(0xff186BA5))),
-                            child: const Text(
-                              'Answer',
-                              style: TextStyle(color: AppColors.theme),
+      body: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+        child: ListView(
+          children: homeworkData.map((data) {
+            String date = formatDate(data.publishedDate!);
+
+            return ExpansionTile(
+              tilePadding: const EdgeInsets.symmetric(horizontal: 16.0),
+              collapsedBackgroundColor: const Color(0xffC5D5E1),
+              collapsedIconColor: !isExpanded ? Colors.black : Colors.white,
+              backgroundColor: const Color(0xff186BA5),
+              title: Text(
+                date,
+                style:
+                    TextStyle(color: !isExpanded ? Colors.black : Colors.white),
+              ),
+              initiallyExpanded: false,
+              onExpansionChanged: (bool expanded) {
+                setState(() {
+                  isExpanded = expanded;
+                });
+              },
+              children: data.homework!.asMap().entries.map((entry) {
+                int index = entry.key + 1; // S.No starts from 1
+                var questiondata = entry.value;
+
+                return Container(
+                  padding: const EdgeInsets.all(20),
+                  color: const Color(0xffF6F9FF),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: const Color(0xff186BA5),
+                            child: Text(
+                              "$index",
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          RotatedBox(
+                            quarterTurns: 1,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // Add your Answer logic here
+                                _showBottomSheet(
+                                    context, questiondata.hint ?? "");
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                shape: const StadiumBorder(),
+                                side:
+                                    const BorderSide(color: Color(0xff186BA5)),
+                              ),
+                              child: const Text(
+                                'Answer',
+                                style: TextStyle(color: Color(0xff186BA5)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Text(questiondata.question!),
                         ),
-                      ],
-                    ),
-                    Expanded(child: Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Text(questionData['question'] ?? ""),
-                    )),
-                  ],
-                ),
-              );
-            }).toList(),
-          );
-        }).toList(),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            );
+          }).toList(),
+        ),
       ),
+    );
+  }
+
+  // 👉 Function to show the BottomSheet
+  void _showBottomSheet(BuildContext context, String hint) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Answer",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
+              ),
+              const SizedBox(height: 10),
+              Html(
+                data: hint.isNotEmpty ? hint : "No hint available.",
+                //  style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close BottomSheet
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(color: AppColors.theme),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: const Text("Solutions"),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

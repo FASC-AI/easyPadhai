@@ -32,6 +32,7 @@ class _ProfileEditState extends State<TeacherHome> {
   TextEditingController batchController = TextEditingController();
   List<SubjectDetail> sublist = [];
   bool isLoading = false;
+  String type = "";
 
   String bclass = "";
   String bsec = "";
@@ -55,8 +56,10 @@ class _ProfileEditState extends State<TeacherHome> {
     await dashboardController.getNotification();
     await dashboardController.getBatch();
     await dashboardController.getBatchReq();
+    await dashboardController.getProfile();
     sublist = data.data!.subjectDetail!;
     batches = dashboardController.batchlist;
+    type = dashboardController.profileModel?.data?.type! ?? "";
     setState(() {
       isload = false;
     });
@@ -148,58 +151,86 @@ class _ProfileEditState extends State<TeacherHome> {
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: Colors.grey.shade300),
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: List.generate(
-                                dashboardController.tNoti.length,
-                                (index) {
-                                  String formatted = formatDate(
-                                      dashboardController.tNoti[index].date!);
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 8),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        if (dashboardController
-                                                .tNoti[index].message! !=
-                                            "")
-                                          Text(
-                                            formatted,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        const SizedBox(height: 8),
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Icon(Icons.notifications,
-                                                color: Colors.blue),
-                                            const SizedBox(width: 10),
-                                            Expanded(
-                                              child: Html(
-                                                data: dashboardController
-                                                    .tNoti[index].message!,
-                                                style: {
-                                                  "body": Style(
-                                                    margin: Margins.zero,
-                                                    fontSize: FontSize.medium,
+                            child: dashboardController.tNoti.isNotEmpty
+                                ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: List.generate(
+                                      dashboardController.tNoti.length,
+                                      (index) {
+                                        String formatted = formatDate(
+                                            dashboardController
+                                                .tNoti[index].date!);
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 8),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              if (dashboardController
+                                                      .tNoti[index].message! !=
+                                                  "")
+                                                Text(
+                                                  formatted,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              const SizedBox(height: 8),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  const Icon(
+                                                      Icons.notifications,
+                                                      color: Colors.blue),
+                                                  const SizedBox(width: 10),
+                                                  Expanded(
+                                                    child: Html(
+                                                      data: dashboardController
+                                                          .tNoti[index]
+                                                          .message!,
+                                                      style: {
+                                                        "body": Style(
+                                                          margin: Margins.zero,
+                                                          fontSize:
+                                                              FontSize.medium,
+                                                        ),
+                                                        "p": Style(
+                                                          margin: Margins.zero,
+                                                        ),
+                                                      },
+                                                    ),
                                                   ),
-                                                  "p": Style(
-                                                    margin: Margins.zero,
-                                                  ),
-                                                },
+                                                ],
                                               ),
-                                            ),
-                                          ],
-                                        ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  )
+                                : Center(
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                            width: 100,
+                                            height: 130,
+                                            child: Image.asset(
+                                                "assets/no_notification.png")),
+                                        Text(
+                                          "No messages yet. Your notifications will appear here.",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: AppColors.black
+                                                .withOpacity(0.5),
+                                          ),
+                                        )
                                       ],
                                     ),
-                                  );
-                                },
-                              ),
-                            ),
+                                  ),
                           ),
 
                           const SizedBox(height: 20),
@@ -227,14 +258,25 @@ class _ProfileEditState extends State<TeacherHome> {
                                         MaterialPageRoute(
                                             builder: (_) => TeacherClassScreen(
                                                   title: cls,
+                                                  id: batches[index].classId!,
+                                                  sub_id: batches[index]
+                                                      .subject!
+                                                      .sId!,
                                                 )),
                                       );
                                     },
                                     child: buildClassCard(
-                                      cls,
-                                      batches[index].institute!,
-                                      'assets/subject.png',
-                                    ),
+                                        cls,
+                                        batches[index].institute!,
+                                        batches[index]
+                                                .subject!
+                                                .images!
+                                                .isNotEmpty
+                                            ? batches[index]
+                                                .subject!
+                                                .images![0]
+                                                .url!
+                                            : ""),
                                   ),
                                 );
                               },
@@ -441,12 +483,12 @@ class _ProfileEditState extends State<TeacherHome> {
   }
 
   String generateBatchCode(
-      String sessionYear, String className, String section) {
+      String sessionYear, String className, String type, String section) {
     final random = Random();
     const letters = 'abcdefghijklmnopqrstuvwxyz';
 
     // Generate 4 random letters
-    String randomPart = List.generate(4, (index) {
+    String randomPart = List.generate(3, (index) {
       return letters[random.nextInt(letters.length)];
     }).join();
 
@@ -459,8 +501,10 @@ class _ProfileEditState extends State<TeacherHome> {
         ? sessionYear.substring(sessionYear.length - 2)
         : sessionYear;
 
+    String ty = type.isNotEmpty ? type[0] : "SC";
+
     // Combine to form batch code
-    return '$sessionSuffix$randomPart${className}${section.toUpperCase()}';
+    return '$sessionSuffix$ty$randomPart${className}${section.toUpperCase()}';
   }
 
   void _showCreateBatchBottomSheet(BuildContext context) {
@@ -542,7 +586,7 @@ class _ProfileEditState extends State<TeacherHome> {
                     if (!selectedClass.isEmpty && !sec.isEmpty) {
                       int? cls = extractClassNumber(selectedClass);
                       String bcode =
-                          generateBatchCode('2025', cls.toString(), sec);
+                          generateBatchCode('2025', cls.toString(), type, sec);
                       batchController.text = bcode;
                     }
                   }
@@ -592,7 +636,7 @@ class _ProfileEditState extends State<TeacherHome> {
                     sec = selectedsec.sectionsName!;
                     int? cls = extractClassNumber(selectedClass);
                     String bcode =
-                        generateBatchCode('2025', cls.toString(), sec);
+                        generateBatchCode('2025', cls.toString(), type, sec);
                     batchController.text = bcode;
                   }
                 },
@@ -798,10 +842,16 @@ class _ProfileEditState extends State<TeacherHome> {
       child: Container(
         width: 160,
         decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(imagePath),
-            fit: BoxFit.cover,
-          ),
+          image: imagePath.isNotEmpty
+              ? DecorationImage(
+                  image: NetworkImage(imagePath),
+                  fit: BoxFit.cover,
+                  onError: (error, stackTrace) {
+                    debugPrint('Image load failed: $error'); // Error logging
+                  },
+                )
+              : null,
+          color: Colors.grey[300], // Background color if no image
         ),
         padding: const EdgeInsets.all(12),
         alignment: Alignment.bottomLeft,
@@ -809,14 +859,22 @@ class _ProfileEditState extends State<TeacherHome> {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             if (subtitle.isNotEmpty)
-              Text(subtitle,
-                  style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 12,
+                ),
+              ),
           ],
         ),
       ),

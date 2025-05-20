@@ -1,0 +1,859 @@
+import 'package:easy_padhai/common/constant.dart';
+import 'package:easy_padhai/controller/dashboard_controller.dart';
+import 'package:easy_padhai/custom_widgets/custom_input.dart';
+import 'package:easy_padhai/custom_widgets/text.dart';
+import 'package:easy_padhai/model/book_model.dart';
+import 'package:easy_padhai/model/homework_model1.dart';
+import 'package:easy_padhai/model/lesson_model.dart';
+import 'package:easy_padhai/model/profile_model.dart';
+import 'package:easy_padhai/model/question_model.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+
+class CreateOfflineTestScreen extends StatefulWidget {
+  @override
+  _CreateTestScreenState createState() => _CreateTestScreenState();
+}
+
+class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
+  List<LData> lessonList = [];
+  List<ClassDetail> classes = [];
+  List<Books> booklist = [];
+  List<Topics> topics = [];
+  ClassDetail? selectedClass;
+  Books? selectedbook;
+  LData? selectedlesson;
+  Topics? selectedtopic;
+  int selectedCount = 3;
+  DateTime selectedDate = DateTime.now();
+  String selectDate = '';
+  String sub_id = "";
+  final TextEditingController _dateController = TextEditingController();
+  List<OnlineQuesmodelData> questions = [];
+  List<String> selectedQuestionIds = [];
+  DashboardController dashboardController = Get.find();
+  // int selectedCount = 13;
+  int totalCount = 40;
+  List<String> mcqQuestions = [
+    "What is the acceleration due to gravity on Earth?",
+    "Describe how the poverty line is estimated in India?",
+    "Do you think that the present methodology of poverty estimation is appropriate?",
+    "Identify the social and economic groups which are most vulnerable to poverty in India?",
+    "What is the acceleration due to gravity on Earth?",
+    "What is the acceleration due to gravity on Earth?",
+  ];
+
+  List<bool> selectedMcq = [false, true, true, false, true, false];
+  int mcqCount = 6;
+  int tfCount = 14;
+  int descCount = 50;
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        selectDate = DateFormat('dd-MM-yyyy')
+            .format(selectedDate.toLocal())
+            .split(' ')[0];
+        _dateController.text = selectDate;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getdata();
+  }
+
+  Future<void> getdata() async {
+    classes = dashboardController.profileModel?.data?.classDetail! ?? [];
+    sub_id =
+        dashboardController.profileModel?.data?.subjectDetail?[0].sId! ?? "";
+  }
+
+  void _showPublishDatePopup() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.white,
+        title: const Text(
+          "Test Ready for Launch",
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GestureDetector(
+              onTap: () {
+                _selectDate(context);
+              },
+              child: TextFormField(
+                controller: _dateController, // Bind the controller here
+                readOnly: true,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide:
+                        const BorderSide(color: Colors.grey, width: 1.0),
+                  ),
+                  hintText: "Pick a Date",
+                  suffixIcon: IconButton(
+                    icon: const Icon(
+                      Icons.calendar_month,
+                      color: Color(0xFF2765CA),
+                    ),
+                    onPressed: () {
+                      _selectDate(context);
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: () {
+                _selectTime(context);
+              },
+              child: TextFormField(
+                controller: _timeController, // Controller for time
+                readOnly: true,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide:
+                        const BorderSide(color: Colors.grey, width: 1.0),
+                  ),
+                  hintText: "Pick a Time",
+                  suffixIcon: IconButton(
+                    icon: const Icon(
+                      Icons.access_time,
+                      color: Color(0xFF2765CA),
+                    ),
+                    onPressed: () {
+                      _selectTime(context);
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (selectDate != null && selectTime != null) {
+                // Implement publish logic here
+                Navigator.pop(context);
+                Get.snackbar("Success",
+                    "Publish date set to ${_dateController.text} at ${_timeController.text}");
+              } else {
+                Get.snackbar("Error", "Please select both date and time.");
+              }
+            },
+            child: const Text("Save"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  TimeOfDay? selectTime;
+
+  final TextEditingController _timeController = TextEditingController();
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null && picked != selectTime) {
+      setState(() {
+        selectTime = picked;
+        _timeController.text = picked.format(context);
+      });
+    }
+  }
+
+  final TextEditingController _durationController = TextEditingController();
+  Duration _duration = const Duration(hours: 0, minutes: 0);
+
+  void _selectDuration() async {
+    final Duration? picked = await showTimePicker(
+      context: context,
+      initialTime:
+          TimeOfDay(hour: _duration.inHours, minute: _duration.inMinutes % 60),
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child ?? Container(),
+        );
+      },
+    ).then((value) {
+      if (value != null) {
+        return Duration(hours: value.hour, minutes: value.minute);
+      }
+      return null;
+    });
+
+    if (picked != null) {
+      setState(() {
+        _duration = picked;
+        _durationController.text =
+            "${picked.inHours.toString().padLeft(2, '0')}:${(picked.inMinutes % 60).toString().padLeft(2, '0')}";
+      });
+    }
+  }
+
+  Widget buildQuestionSection(String title, int count) {
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xff4186B6),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "$title (${selectedMcq.where((e) => e).length})",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.green,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            child: Text(
+              "$count",
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildTypeSection(String title, int count) {
+    return Container(
+      margin: const EdgeInsets.only(top: 4),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade100,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.green,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            child: Text(
+              "$count",
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(0.0),
+          child: AppBar(
+            backgroundColor: AppColors.theme,
+            systemOverlayStyle: SystemUiOverlayStyle.light,
+          )),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                decoration: const BoxDecoration(color: AppColors.theme),
+                padding: const EdgeInsets.only(
+                    top: 30, left: 16, right: 16, bottom: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        // Back Button
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Image.asset(
+                            'assets/back.png',
+                            fit: BoxFit.fill,
+                            width: MediaQuery.of(context).size.width * 0.09,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+
+                        // Title
+                        const Text(
+                          "Question Paper",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+
+                        const Spacer(),
+                        SizedBox(
+                          width: 100,
+                          child: GestureDetector(
+                            onTap: () {
+                              _selectDuration();
+                            },
+                            child: AbsorbPointer(
+                              child: CustomInput(
+                                readOnly: true,
+                                label: 'Time',
+                                controller: _durationController,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 150,
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: AppColors.grey7, width: 1.0),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(12)),
+                              ),
+                              contentPadding: EdgeInsets.only(
+                                  left: 10, top: 0, bottom: 0, right: 10),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<ClassDetail>(
+                                hint: const Text('Select class'),
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.black),
+                                value: selectedClass,
+                                dropdownColor: Colors.lightBlue.shade50,
+                                onChanged: (ClassDetail? value) async {
+                                  if (value != null) {
+                                    setState(() {
+                                      selectedClass = value;
+                                    });
+
+                                    // Fetching books based on selected class
+                                    await dashboardController.getBook(
+                                        sub_id, value.sId!);
+                                    setState(() {
+                                      booklist = dashboardController.booklist;
+                                    });
+
+                                    if (!classes.contains(selectedClass)) {
+                                      setState(() {
+                                        selectedClass = null;
+                                        selectedbook = null;
+                                        selectedlesson = null;
+                                        selectedtopic = null;
+                                      });
+                                    }
+                                    if (!booklist.contains(selectedbook)) {
+                                      setState(() {
+                                        selectedbook = null;
+                                        selectedlesson = null;
+                                        selectedtopic = null;
+                                      });
+                                    }
+                                    if (!lessonList.contains(selectedlesson)) {
+                                      setState(() {
+                                        selectedlesson = null;
+                                        selectedtopic = null;
+                                      });
+                                    }
+                                    if (!topics.contains(selectedtopic)) {
+                                      setState(() {
+                                        selectedtopic = null;
+                                      });
+                                    }
+                                  }
+                                },
+                                items: classes.map((ClassDetail cls) {
+                                  return DropdownMenuItem<ClassDetail>(
+                                    value: cls,
+                                    child: Text(cls.class1 ??
+                                        'Unknown'), // Display class name
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        SizedBox(
+                          width: 190,
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: AppColors.grey7, width: 1.0),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(12))),
+                                contentPadding: EdgeInsets.only(
+                                    left: 10, top: 0, bottom: 0, right: 10),
+                                filled: true,
+                                fillColor: Colors.white),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton(
+                                hint: const Text('Select book'),
+                                style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black,
+                                    overflow: TextOverflow.ellipsis),
+                                value: selectedbook,
+                                dropdownColor: Colors.lightBlue.shade50,
+                                onChanged: (Books? value) async {
+                                  if (value != null) {
+                                    setState(() {
+                                      selectedbook = value;
+                                    });
+
+                                    // Fetching books based on selected class
+                                    await dashboardController.getLesson(
+                                        value.sId!, sub_id);
+                                    setState(() {
+                                      lessonList =
+                                          dashboardController.lessonlist;
+                                    });
+
+                                    if (!classes.contains(selectedClass)) {
+                                      setState(() {
+                                        selectedClass = null;
+                                        selectedbook = null;
+                                        selectedlesson = null;
+                                        selectedtopic = null;
+                                      });
+                                    }
+                                    if (!booklist.contains(selectedbook)) {
+                                      setState(() {
+                                        selectedbook = null;
+                                        selectedlesson = null;
+                                        selectedtopic = null;
+                                      });
+                                    }
+                                    if (!lessonList.contains(selectedlesson)) {
+                                      setState(() {
+                                        selectedlesson = null;
+                                        selectedtopic = null;
+                                      });
+                                    }
+                                    if (!topics.contains(selectedtopic)) {
+                                      setState(() {
+                                        selectedtopic = null;
+                                      });
+                                    }
+                                  }
+                                },
+                                items: booklist
+                                    .map((cls) => DropdownMenuItem(
+                                        value: cls, child: Text(cls.book!)))
+                                    .toList(),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: AppColors.grey7, width: 1.0),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(12))),
+                            contentPadding: EdgeInsets.only(
+                                left: 10, top: 0, bottom: 0, right: 10),
+                            filled: true,
+                            fillColor: Colors.white),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<LData>(
+                            hint: const Text('Select lesson'),
+                            style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                                overflow: TextOverflow.ellipsis),
+                            value: selectedlesson,
+                            dropdownColor: Colors.lightBlue.shade50,
+                            onChanged: (LData? value) async {
+                              if (value != null) {
+                                setState(() {
+                                  selectedlesson = value;
+                                });
+
+                                // Fetching books based on selected class
+
+                                setState(() {
+                                  topics = value.topics!;
+                                });
+
+                                if (!classes.contains(selectedClass)) {
+                                  setState(() {
+                                    selectedClass = null;
+                                    selectedbook = null;
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!booklist.contains(selectedbook)) {
+                                  setState(() {
+                                    selectedbook = null;
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!lessonList.contains(selectedlesson)) {
+                                  setState(() {
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!topics.contains(selectedtopic)) {
+                                  setState(() {
+                                    selectedtopic = null;
+                                  });
+                                }
+                              }
+                            },
+                            items: lessonList
+                                .map((cls) => DropdownMenuItem(
+                                    value: cls, child: Text(cls.lesson!)))
+                                .toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: AppColors.grey7, width: 1.0),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(12))),
+                            contentPadding: EdgeInsets.only(
+                                left: 10, top: 0, bottom: 0, right: 10),
+                            filled: true,
+                            fillColor: Colors.white),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<Topics>(
+                            hint: const Text('Select topics'),
+                            style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                                overflow: TextOverflow.ellipsis),
+                            value: selectedtopic,
+                            dropdownColor: Colors.lightBlue.shade50,
+                            onChanged: (Topics? value) async {
+                              if (value != null) {
+                                setState(() {
+                                  selectedtopic = value;
+                                });
+                                await dashboardController.getOnlineQ1(
+                                    selectedClass!.sId!,
+                                    sub_id,
+                                    selectedbook!.sId!,
+                                    selectedlesson!.sId!,
+                                    selectedtopic!.sId!);
+                                // Fetching books based on selected class
+                                setState(() {
+                                  questions = dashboardController.quesList;
+                                });
+
+                                if (!classes.contains(selectedClass)) {
+                                  setState(() {
+                                    selectedClass = null;
+                                    selectedbook = null;
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!booklist.contains(selectedbook)) {
+                                  setState(() {
+                                    selectedbook = null;
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!lessonList.contains(selectedlesson)) {
+                                  setState(() {
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!topics.contains(selectedtopic)) {
+                                  setState(() {
+                                    selectedtopic = null;
+                                  });
+                                }
+                              }
+                            },
+                            items: topics
+                                .map((cls) => DropdownMenuItem(
+                                    value: cls, child: Text(cls.topic!)))
+                                .toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Choose Your Questions",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        // OutlinedButton.icon(
+                        //   onPressed: _showPublishDatePopup,
+                        //   icon: SvgPicture.asset('assets/publish.svg'),
+                        //   label: const Text(
+                        //     "Publish Date",
+                        //     style: TextStyle(
+                        //         color: Color(0xff2180C3),
+                        //         fontWeight: FontWeight.bold),
+                        //   ),
+                        //   style: OutlinedButton.styleFrom(
+                        //     side: const BorderSide(color: Color(0xff2180C3)),
+                        //   ),
+                        // ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+
+                    // Questions List
+                    Container(
+                      height: 260,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: AppColors.grey7),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 20),
+                            decoration: const BoxDecoration(
+                              color: Color(0xff4186B6),
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(5),
+                                topRight: Radius.circular(5),
+                              ),
+                            ),
+                            child: Text(
+                              "Questions (${selectedQuestionIds.length})",
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: questions.isNotEmpty
+                                ? ListView.separated(
+                                    itemCount: questions.length,
+                                    separatorBuilder: (context, index) {
+                                      return const Divider(
+                                        color: Colors.grey,
+                                        thickness: 0.5,
+                                        height: 10,
+                                      );
+                                    },
+                                    itemBuilder: (context, index) {
+                                      return CheckboxListTile(
+                                        checkColor: Colors.white,
+                                        activeColor: const Color(0xff186BA5),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        title: Html(
+                                            data:
+                                                questions[index].description ??
+                                                    ''),
+                                        value: questions[index].isPublished,
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            questions[index].isPublished =
+                                                value ?? false;
+                                            if (value == true) {
+                                              selectedQuestionIds.add(
+                                                  questions[index].sId ?? '');
+                                            } else {
+                                              selectedQuestionIds.remove(
+                                                  questions[index].sId ?? '');
+                                            }
+                                          });
+                                        },
+                                      );
+                                    },
+                                  )
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        'assets/no_notification.png', // Change with your icon/image path
+                                        height: 80,
+                                      ),
+                                      const SizedBox(height: 10),
+                                      const Text(
+                                        "No Questions Available",
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    buildTypeSection("True/False Questions", tfCount),
+                    buildTypeSection("Descriptive Questions", descCount),
+                    const SizedBox(height: 10),
+
+                    // Submit Button
+                    Center(
+                      child: SizedBox(
+                        width: 200,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // print("Selected Questions: $selectedQuestionIds");
+                            // Handle submit logic here
+                            if (selectedQuestionIds.isEmpty) {
+                              Get.snackbar(
+                                  "Message", "Please select questions.",
+                                  snackPosition: SnackPosition.BOTTOM);
+                              return;
+                            } else if (selectDate.isEmpty) {
+                              Get.snackbar(
+                                  "Message", "Please select publish date.",
+                                  snackPosition: SnackPosition.BOTTOM);
+                              return;
+                            } else if (_timeController.text.isEmpty) {
+                              Get.snackbar(
+                                  "Message", "Please select publish time.",
+                                  snackPosition: SnackPosition.BOTTOM);
+                              return;
+                            } else if (_durationController.text.isEmpty) {
+                              Get.snackbar("Message",
+                                  "Please enter time duration of test.",
+                                  snackPosition: SnackPosition.BOTTOM);
+                              return;
+                            } else {
+                              DateTime parsedDate =
+                                  DateFormat('dd-MM-yyyy').parse(selectDate);
+
+                              // Step 2: Convert to UTC and format to ISO 8601
+                              String isoDate =
+                                  formatToISOWithOffset(parsedDate);
+
+                              var res = dashboardController.updateQuestion(
+                                  selectedQuestionIds,
+                                  isoDate,
+                                  _timeController.text,
+                                  _durationController.text);
+
+                              if (res != null && res != false) {
+                                setState(() {
+                                  selectDate = "";
+                                  selectedQuestionIds = [];
+                                });
+                              }
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.theme,
+                          ),
+                          child: const Text("Submit",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String formatToISOWithOffset(DateTime parsedDate) {
+    // Add 5 hours and 30 minutes to the parsed date
+    DateTime adjustedDate =
+        parsedDate.add(const Duration(hours: 5, minutes: 30));
+
+    // Convert to UTC and format as ISO 8601 string
+    String isoDate = adjustedDate.toUtc().toIso8601String();
+    return isoDate;
+  }
+}

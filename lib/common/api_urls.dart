@@ -50,5 +50,15 @@ class ApiUrls {
   static const String getbook = 'api/v1/book/bookbysubject';
   static const String getlesson = 'api/v1/lesson/topic';
   static const String gettopic = 'api/v1/lesson/topicinfo/';
+  static const String getques = 'api/v1/homework/homeworkbytopic';
+  static const String getprevques = 'api/v1/homework/homeworkpublishedbytopic';
   static const String updatetopic = 'api/v1/topic';
+  static const String uphome = 'api/v1/homework/publishhomework';
+  static const String getJbat = 'api/v1/request/checkjoinedbatch';
+  static const String geth = 'api/v1/homework/homeworkbyclasssubject';
+  static const String getq1 = 'api/v1/test/testbybookinfo';
+  static const String updateq1 = 'api/v1/test/publishtest';
+  static const String stuNoti = 'api/v1/studentnotification/notification';
+  static const String getAllTest = 'api/v1/test/publishedtestinfo';
+  static const String getCurrTest = 'api/v1/test/getcurrentdaytest';
 }

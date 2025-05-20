@@ -17,7 +17,7 @@ class _LoginState extends State<Login> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final GoogleSignInHelper _googleSignInHelper = GoogleSignInHelper();
-
+  bool _isGoogleLoading = false;
   AuthController authController = Get.find();
   final formKey = GlobalKey<FormState>();
 
@@ -84,43 +84,94 @@ class _LoginState extends State<Login> {
 
                           GestureDetector(
                             onTap: () async {
-                              final User? user =
-                                  await _googleSignInHelper.signInWithGoogle();
-                              if (user != null) {
-                                await authController.googleSignin('google');
+                              if (_isGoogleLoading)
+                                return; // Prevent multiple taps
+
+                              setState(() {
+                                _isGoogleLoading = true;
+                              });
+
+                              try {
+                                final User? user = await _googleSignInHelper
+                                    .signInWithGoogle();
+                                if (user != null) {
+                                  await authController.googleSignin('google');
+                                }
+                              } catch (e) {
+                                // Handle error if needed
+                                print('Google sign in error: $e');
+                              } finally {
+                                if (mounted) {
+                                  setState(() {
+                                    _isGoogleLoading = false;
+                                  });
+                                }
                               }
                             },
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              height: MediaQuery.of(context).size.height * .07,
-                              decoration: BoxDecoration(
+                            child: Opacity(
+                              opacity: _isGoogleLoading ? 0.7 : 1.0,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                height:
+                                    MediaQuery.of(context).size.height * .07,
+                                decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(
-                                      MediaQuery.of(context).size.width * .1),
-                                  color: AppColors.white),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    'assets/google.png',
-                                    width:
-                                        MediaQuery.of(context).size.width * .06,
+                                    MediaQuery.of(context).size.width * .1,
                                   ),
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width * .01,
-                                  ),
-                                  Text(
-                                    'Continue with Google',
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontFamily: 'Roboto',
-                                        color: AppColors.black,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize:
-                                            MediaQuery.of(context).size.width *
-                                                .033),
-                                  ),
-                                ],
+                                  color: AppColors.white,
+                                ),
+                                child: _isGoogleLoading
+                                    ? Center(
+                                        child: SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .06,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              .06,
+                                          child:
+                                              const CircularProgressIndicator(
+                                            strokeWidth: 3,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                    AppColors.black),
+                                          ),
+                                        ),
+                                      )
+                                    : Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Image.asset(
+                                            'assets/google.png',
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                .06,
+                                          ),
+                                          SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                .01,
+                                          ),
+                                          Text(
+                                            'Continue with Google',
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontFamily: 'Roboto',
+                                              color: AppColors.black,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  .033,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                               ),
                             ),
                           ),

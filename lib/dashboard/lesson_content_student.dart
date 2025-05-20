@@ -1,5 +1,7 @@
+import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
+import 'package:easy_padhai/dashboard/assign_homework.dart';
 import 'package:easy_padhai/dashboard/lessonTest.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -41,8 +43,8 @@ class _LessonScreenState extends State<LessonTopics> {
     super.initState();
     _pageController = PageController();
     head = widget.topic!.topic ?? "";
+
     pages = _splitTextIntoPages(widget.topic!.lessonTextContent ?? "");
-    update();
   }
 
   Future<void> update() async {
@@ -70,22 +72,14 @@ class _LessonScreenState extends State<LessonTopics> {
   }
 
   void nextPage() {
-    if (currentPage < pages.length - 1) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
+    update();
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => LessonTestScreen()),
+    );
   }
 
-  void previousPage() {
-    if (currentPage > 0) {
-      _pageController.previousPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
+  void previousPage() {}
 
   @override
   Widget build(BuildContext context) {
@@ -108,57 +102,85 @@ class _LessonScreenState extends State<LessonTopics> {
               ),
             ),
             Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: pages.length,
-                onPageChanged: (index) {
-                  setState(() {
-                    currentPage = index;
-                  });
-                },
-                itemBuilder: (context, index) {
-                  return SingleChildScrollView(
-                    child: Html(
-                      data: pages[index],
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Html(
+                      data: widget.topic!.lessonTextContent ?? "",
                       //  style: const TextStyle(fontSize: 18, color: Colors.grey),
+                      style: {
+                        "body": Style(
+                          margin: Margins.zero,
+                          fontSize: FontSize.medium,
+                        ),
+                        "p": Style(
+                          margin: Margins.zero,
+                        ),
+                      },
                     ),
-                  );
-                },
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  onPressed: previousPage,
-                  icon: SvgPicture.asset('assets/prev.svg'),
-                  // padding: EdgeInsets.all(12),
-                ),
-                IconButton(
-                  onPressed: nextPage,
-                  icon: SvgPicture.asset('assets/next.svg'),
-                ),
-              ],
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => LessonTestScreen()),
-                  );
-                },
-                child: Container(
-                  margin: EdgeInsets.only(right: 20, bottom: 10),
-                  width: 50,
-                  height: 27,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: AppColors.theme,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Text('Skip', style: TextStyle(color: Colors.white)),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    if (userRole() == "teacher")
+                      ElevatedButton(
+                        onPressed: () async {
+                          update();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => AssignHomeworkScreen(
+                                      tid: widget.topic_id,
+                                    )),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          maximumSize: Size.fromWidth(300),
+                          backgroundColor: AppColors.theme,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 20),
+                        ),
+                        child: const Text(
+                          'Assign Homework & Continue',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    if (userRole() == "student")
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            onPressed: previousPage,
+                            icon: SvgPicture.asset('assets/prev.svg'),
+                            // padding: EdgeInsets.all(12),
+                          ),
+                          IconButton(
+                            onPressed: nextPage,
+                            icon: SvgPicture.asset('assets/next.svg'),
+                          ),
+                        ],
+                      ),
+                    if (userRole() == "student")
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(right: 20, bottom: 10),
+                            width: 50,
+                            height: 27,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: AppColors.theme,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Text('Skip',
+                                style: TextStyle(color: Colors.white)),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),

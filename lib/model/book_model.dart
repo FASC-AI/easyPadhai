@@ -110,14 +110,14 @@ class Books {
 class Images {
   String? url;
   String? name;
-  Id? iId;
+  String? iId;
 
   Images({this.url, this.name, this.iId});
 
   Images.fromJson(Map<String, dynamic> json) {
     url = json['url'];
     name = json['name'];
-    iId = json['_id'] != null ? new Id.fromJson(json['_id']) : null;
+    iId = json['_id'] ;
   }
 
   Map<String, dynamic> toJson() {
@@ -125,7 +125,7 @@ class Images {
     data['url'] = this.url;
     data['name'] = this.name;
     if (this.iId != null) {
-      data['_id'] = this.iId!.toJson();
+      data['_id'] = this.iId!;
     }
     return data;
   }

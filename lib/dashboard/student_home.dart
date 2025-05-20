@@ -7,10 +7,12 @@ import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
 import 'package:easy_padhai/custom_widgets/custum_nav_bar2.dart';
 import 'package:easy_padhai/model/binfo.dart';
+import 'package:easy_padhai/model/notification_model.dart';
 import 'package:easy_padhai/model/profile_model.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -31,6 +33,8 @@ class _ProfileEditState extends State<StudentHome> {
   bool isload = false;
 
   List<SubjectDetail> sublist = [];
+  List<NData1> hlist = [];
+  List<NData1> subjectNotilist = [];
   String name = "";
   String class1 = "";
 
@@ -41,10 +45,13 @@ class _ProfileEditState extends State<StudentHome> {
     ProfileModel data = await dashboardController.getProfile();
     await dashboardController.getBanners();
     await dashboardController.getNotification();
-    // await dashboardController.getBatch();
+    await dashboardController.getbatchjoined();
     //await dashboardController.getBatchReq();
+    await dashboardController.getStuNoti();
+    hlist = dashboardController.stuNotilist;
     sublist = data.data!.subjectDetail!;
     name = data.data!.userDetails!.name!;
+    homeNoti();
     class1 =
         "(${extractClassNumber(data.data!.classDetail![0].class1!).toString()}${data.data!.sectionDetail![0].section!})";
     setState(() {
@@ -56,6 +63,18 @@ class _ProfileEditState extends State<StudentHome> {
   void initState() {
     super.initState();
     _loadProfileData();
+  }
+
+  void homeNoti() {
+    for (int i = 0; i < sublist.length; i++) {
+      for (int j = 0; j < hlist.length; j++) {
+        if (sublist[i].sId == hlist[j].subjectId![0]) {
+          if (hlist[j].type == "homework") {
+            subjectNotilist.add(hlist[j]);
+          }
+        }
+      }
+    }
   }
 
   void _launchURL(String url) async {
@@ -126,7 +145,8 @@ class _ProfileEditState extends State<StudentHome> {
         // ),
         title: Text(
           'Hi, $name  $class1',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20),
+          style: TextStyle(
+              color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20),
         ),
       ),
       body: !isload
@@ -193,75 +213,106 @@ class _ProfileEditState extends State<StudentHome> {
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: Colors.grey.shade300),
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: List.generate(
-                                dashboardController.uNoti.length,
-                                (index) {
-                                  String formatted = formatDate(
-                                      dashboardController.uNoti[index].date!);
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 8),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        if (dashboardController
-                                                .uNoti[index].message! !=
-                                            "")
-                                          Text(
-                                            formatted,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        const SizedBox(height: 8),
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            const Icon(Icons.notifications,
-                                                color: Colors.blue),
-                                            const SizedBox(width: 10),
-                                            Expanded(
-                                              child: Html(
-                                                data: dashboardController
-                                                    .uNoti[index].message!,
-                                                style: {
-                                                  "body": Style(
-                                                    margin: Margins.zero,
-                                                    fontSize: FontSize.medium,
+                            child: dashboardController.uNoti.isNotEmpty
+                                ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: List.generate(
+                                      dashboardController.uNoti.length,
+                                      (index) {
+                                        String formatted = formatDate(
+                                            dashboardController
+                                                .uNoti[index].date!);
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 8),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              if (dashboardController
+                                                      .uNoti[index].message! !=
+                                                  "")
+                                                Text(
+                                                  formatted,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              const SizedBox(height: 8),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  const Icon(
+                                                      Icons.notifications,
+                                                      color: Colors.blue),
+                                                  const SizedBox(width: 10),
+                                                  Expanded(
+                                                    child: Html(
+                                                      data: dashboardController
+                                                          .uNoti[index]
+                                                          .message!,
+                                                      style: {
+                                                        "body": Style(
+                                                          margin: Margins.zero,
+                                                          fontSize:
+                                                              FontSize.medium,
+                                                        ),
+                                                        "p": Style(
+                                                          margin: Margins.zero,
+                                                        ),
+                                                      },
+                                                    ),
                                                   ),
-                                                  "p": Style(
-                                                    margin: Margins.zero,
-                                                  ),
-                                                },
+                                                ],
                                               ),
-                                            ),
-                                          ],
-                                        ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  )
+                                : Center(
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                            width: 100,
+                                            height: 130,
+                                            child: Image.asset(
+                                                "assets/no_notification.png")),
+                                        Text(
+                                          "No messages yet. Your notifications will appear here.",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: AppColors.black
+                                                .withOpacity(0.5),
+                                          ),
+                                        )
                                       ],
                                     ),
-                                  );
-                                },
-                              ),
-                            ),
+                                  ),
                           ),
                           const SizedBox(height: 20),
                           SizedBox(
                             height: 500, // Adjust height as needed
                             child: GridView.builder(
-                              physics: NeverScrollableScrollPhysics(),
+                              physics: const NeverScrollableScrollPhysics(),
                               padding: const EdgeInsets.all(8.0),
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2, // 2 items per row
-                                      crossAxisSpacing: 10,
-                                      mainAxisSpacing: 10,
-                                      childAspectRatio:
-                                          1.2 // Wider cards (adjust as needed)
-                                      ),
+                                crossAxisCount: 2, // 2 items per row
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                                childAspectRatio:
+                                    1.2, // Wider cards (adjust as needed)
+                              ),
                               itemCount: sublist.length,
                               itemBuilder: (context, index) {
+                                int notificationCount =
+                                    getNotificationCount(sublist[index].sId!);
+
                                 return GestureDetector(
                                   onTap: () {
                                     Navigator.pushNamed(
@@ -269,14 +320,19 @@ class _ProfileEditState extends State<StudentHome> {
                                       RouteName.subdet,
                                       arguments: {
                                         'title': sublist[index].subject!,
-                                        'id': sublist[index].sId!
+                                        'id': sublist[index].sId!,
                                       },
                                     );
                                   },
-                                  child: buildClassCard(
-                                    sublist[index].subject!,
-                                    '',
-                                    'assets/subject.png',
+                                  child: buildClassCard11(
+                                    subject: sublist[index].subject!,
+                                    imageAsset:
+                                        sublist[index].images!.isNotEmpty
+                                            ? sublist[index].images![0].url!
+                                            : "",
+                                    isSelected: false,
+                                    notificationCount: notificationCount,
+                                    color: Colors.black87,
                                   ),
                                 );
                               },
@@ -313,7 +369,94 @@ class _ProfileEditState extends State<StudentHome> {
     );
   }
 
-  Widget buildClassCard(String title, String subtitle, String imagePath) {
+  int getNotificationCount(String subjectId) {
+    return subjectNotilist
+        .where((notification) => notification.subjectId!.contains(subjectId))
+        .length;
+  }
+
+  Widget buildClassCard({
+    required String label,
+    required String imageAsset,
+    required Color color,
+    IconData? icon,
+  }) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[200], // Fallback color for better UX
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Image loader
+            imageAsset.isNotEmpty
+                ? Image.network(
+                    imageAsset,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[300],
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.broken_image,
+                          color: Colors.grey[600],
+                          size: 50,
+                        ),
+                      );
+                    },
+                  )
+                : Container(
+                    color: Colors.grey[300],
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.image_not_supported,
+                      color: Colors.grey[600],
+                      size: 50,
+                    ),
+                  ),
+            // Text and Icon overlay
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                // color: Colors.black54, // Slight overlay for readability
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    if (icon != null) ...[
+                      Icon(icon, color: Colors.white, size: 20),
+                      const SizedBox(width: 4),
+                    ],
+                    Flexible(
+                      child: Text(
+                        label,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildClassCard1(String title, String subtitle, String imagePath) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Container(
@@ -643,11 +786,13 @@ class _ProfileEditState extends State<StudentHome> {
     );
   }
 
-  Widget buildClassCard1({
+  Widget buildClassCard11({
     required String subject,
     required String imageAsset,
     bool isSelected = false,
     int notificationCount = 0,
+    required Color color,
+    IconData? icon,
   }) {
     return Stack(
       children: [
@@ -672,25 +817,60 @@ class _ProfileEditState extends State<StudentHome> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset(
-                  imageAsset,
-                  fit: BoxFit.cover,
-                ),
-                Container(
+                imageAsset.isNotEmpty
+                    ? Image.network(
+                        imageAsset,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey[300],
+                            alignment: Alignment.center,
+                            child: Icon(
+                              Icons.broken_image,
+                              color: Colors.grey[600],
+                              size: 50,
+                            ),
+                          );
+                        },
+                      )
+                    : Container(
+                        color: Colors.grey[300],
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.image_not_supported,
+                          color: Colors.grey[600],
+                          size: 50,
+                        ),
+                      ),
+                Align(
                   alignment: Alignment.bottomLeft,
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, Colors.black54],
-                    ),
-                  ),
-                  child: Text(
-                    subject,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (icon != null) ...[
+                          Icon(icon, color: Colors.white, size: 20),
+                          const SizedBox(width: 4),
+                        ],
+                        Flexible(
+                          child: Text(
+                            subject,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -701,24 +881,23 @@ class _ProfileEditState extends State<StudentHome> {
         if (notificationCount > 0)
           Positioned(
             right: 4,
-            top: 4,
+            bottom: 4,
             child: Stack(
               alignment: Alignment.center,
               children: [
-                const Icon(
-                  Icons.notifications,
-                  color: Colors.redAccent,
-                  size: 24,
+                SvgPicture.asset(
+                  "assets/bell.svg",
+                  height: 30,
                 ),
                 Positioned(
                   right: 0,
-                  top: 0,
+                  bottom: 12,
                   child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
+                    padding: const EdgeInsets.all(1),
+                    // decoration: const BoxDecoration(
+                    //   color: Colors.red,
+                    //   shape: BoxShape.circle,
+                    // ),
                     constraints: const BoxConstraints(
                       minWidth: 16,
                       minHeight: 16,
@@ -726,9 +905,9 @@ class _ProfileEditState extends State<StudentHome> {
                     child: Text(
                       '$notificationCount',
                       style: const TextStyle(
-                        fontSize: 10,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.redAccent,
+                        color: Colors.white,
                       ),
                       textAlign: TextAlign.center,
                     ),

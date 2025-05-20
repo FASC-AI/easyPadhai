@@ -14,35 +14,56 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   final LocalStorageService localStorageService = LocalStorageService();
   LocalStorageService localStorageServiceUser = LocalStorageService();
-
+  bool showFirstImage = true;
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _brightnessAnimation;
+  late Animation<double> _sizeAnimation;
   AuthController authController = Get.find();
   dynamic directLogin;
   dynamic onboardingDone;
   dynamic loginData;
-
   bool isloading = false;
-  bool showFirstImage = true;
-
   String? data;
 
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 2), () {
-      setState(() {
-        showFirstImage = false;
-      });
-    });
 
+    // Initialize Animation Controller
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 700), // Smooth transition duration
+      vsync: this,
+    );
+
+    // Fade Animation
+    _fadeAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+
+    // Start animation loop
+    Timer.periodic(const Duration(seconds: 3), (Timer timer) {
+      setState(() {
+        showFirstImage = !showFirstImage;
+      });
+      _controller.forward().then((_) => _controller.reverse());
+    });
     startTimeiOS();
   }
 
   startTimeiOS() async {
     var duration = const Duration(seconds: 4);
     return Timer(duration, navigationPage);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   Future<void> navigationPage() async {
@@ -52,9 +73,6 @@ class _SplashScreenState extends State<SplashScreen> {
             Get.lazyPut(() => AuthController()),
             Get.lazyPut(() => DashboardController()),
             Get.toNamed(RouteName.verifyMpin)
-            // userRole() == 'student'
-            //     ? Get.offNamed(RouteName.studentHome)
-            //     : Get.offNamed(RouteName.teacherHome)
           }
         : Get.offNamed(RouteName.login);
   }
@@ -66,6 +84,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: SafeArea(
         child: Stack(
           children: [
+            // Background Image
             SizedBox(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
@@ -74,25 +93,37 @@ class _SplashScreenState extends State<SplashScreen> {
                 fit: BoxFit.fill,
               ),
             ),
+            // Animated Logos
             Center(
-              child: AnimatedCrossFade(
-                duration: const Duration(milliseconds: 2000),
-                firstChild: Image.asset(
-                  'assets/logos.png',
-                  width: 200,
-                  height: 200,
-                ),
-                secondChild: Image.asset(
-                  'assets/logoss.png',
-                  width: 200,
-                  height: 200,
-                ),
-                crossFadeState: showFirstImage
-                    ? CrossFadeState.showFirst
-                    : CrossFadeState.showSecond,
-                firstCurve: Curves.easeInOut,
-                secondCurve: Curves.easeInOut,
-                sizeCurve: Curves.easeInOut,
+              child: AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  return AnimatedCrossFade(
+                    duration: const Duration(milliseconds: 500),
+                    firstChild: Opacity(
+                      opacity: _fadeAnimation.value,
+                      child: Image.asset(
+                        'assets/logos.png', // Light logo
+                        width: 180, // 👈 Smaller Size
+                        height: 180,
+                      ),
+                    ),
+                    secondChild: Opacity(
+                      opacity: (_fadeAnimation.value + 0.2).clamp(0.0, 1.0),
+                      child: Image.asset(
+                        'assets/logoss.png', // Bold logo
+                        width: 250, // 👈 Larger Size
+                        height: 250,
+                      ),
+                    ),
+                    crossFadeState: showFirstImage
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    firstCurve: Curves.easeInOut,
+                    secondCurve: Curves.easeInOut,
+                    sizeCurve: Curves.easeInOut,
+                  );
+                },
               ),
             ),
           ],

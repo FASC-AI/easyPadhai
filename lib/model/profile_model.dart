@@ -31,6 +31,7 @@ class ProfileData {
   List<SubjectDetail>? subjectDetail;
   List<SectionDetail>? sectionDetail;
   String? institute;
+  String? type;
   String? picture;
   bool? class1;
   bool? section;
@@ -44,6 +45,7 @@ class ProfileData {
       this.subjectDetail,
       this.sectionDetail,
       this.institute,
+      this.type,
       this.picture,
       this.class1,
       this.section,
@@ -74,6 +76,7 @@ class ProfileData {
       });
     }
     institute = json['institute'];
+    type = json['type'];
     picture = json['picture'];
     class1 = json['class'];
     section = json['section'];
@@ -99,6 +102,7 @@ class ProfileData {
           this.sectionDetail!.map((v) => v.toJson()).toList();
     }
     data['institute'] = this.institute;
+    data['type'] = this.type;
     data['picture'] = this.picture;
     data['class'] = this.class1;
     data['section'] = this.section;
@@ -156,17 +160,49 @@ class ClassDetail {
 class SubjectDetail {
   String? subject;
   String? sId;
+  List<Images>? images;
 
-  SubjectDetail({this.subject, this.sId});
+  SubjectDetail({this.subject, this.sId, this.images});
 
   SubjectDetail.fromJson(Map<String, dynamic> json) {
     subject = json['subject'];
     sId = json['_id'];
+    if (json['images'] != null) {
+      images = <Images>[];
+      json['images'].forEach((v) {
+        images!.add(new Images.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['subject'] = this.subject;
+    data['_id'] = this.sId;
+    if (this.images != null) {
+      data['images'] = this.images!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Images {
+  String? url;
+  String? name;
+  String? sId;
+
+  Images({this.url, this.name, this.sId});
+
+  Images.fromJson(Map<String, dynamic> json) {
+    url = json['url'];
+    name = json['name'];
+    sId = json['_id'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['url'] = this.url;
+    data['name'] = this.name;
     data['_id'] = this.sId;
     return data;
   }

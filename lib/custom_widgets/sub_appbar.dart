@@ -46,23 +46,25 @@ class SubjectAppBar extends StatelessWidget implements PreferredSizeWidget {
               //  const Spacer(),
             ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          if (teacherName.isNotEmpty)
+            const SizedBox(
+              height: 20,
+            ),
           // Pill-shaped teacher badge
-          Container(
-            margin: EdgeInsets.only(left: 20),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
+          if (teacherName.isNotEmpty)
+            Container(
+              margin: EdgeInsets.only(left: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: Text(
+                teacherName,
+                style: const TextStyle(
+                    color: Colors.blue, fontWeight: FontWeight.w600),
+              ),
             ),
-            child: Text(
-              teacherName,
-              style: const TextStyle(
-                  color: Colors.blue, fontWeight: FontWeight.w600),
-            ),
-          ),
         ],
       ),
     );

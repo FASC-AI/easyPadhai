@@ -22,11 +22,27 @@
           }
         },
         {
+          "client_id": "276680617082-7l1ch5bdq9tj2sjqvfeiipcfj8ofsis9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.troology.easypadhai",
+            "certificate_hash": "2bfd8634bcefa0171397d3aa44cdc005aaa54db7"
+          }
+        },
+        {
           "client_id": "276680617082-if45pppvkdj16n4lgsa5td5uhkv7ocq3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.troology.easypadhai",
             "certificate_hash": "30c477944e30b6be51127e76c26949f8b442689d"
+          }
+        },
+        {
+          "client_id": "276680617082-inprthqlhalau4am1i3u6djshtvb2nql.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.troology.easypadhai",
+            "certificate_hash": "c4a23e0741e813b1b0815527e2abeacff19ca110"
           }
         },
         {

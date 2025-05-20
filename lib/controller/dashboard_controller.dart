@@ -7,10 +7,19 @@ import 'package:easy_padhai/model/batchlist_model.dart';
 import 'package:easy_padhai/model/batchreq.dart';
 import 'package:easy_padhai/model/binfo.dart';
 import 'package:easy_padhai/model/book_model.dart';
+import 'package:easy_padhai/model/current_test_model.dart';
+import 'package:easy_padhai/model/home_noti_model.dart';
+import 'package:easy_padhai/model/homework_model1.dart';
+import 'package:easy_padhai/model/homework_model2.dart';
+import 'package:easy_padhai/model/homework_model3.dart';
 import 'package:easy_padhai/model/institution_list_model.dart';
+import 'package:easy_padhai/model/joinedModel.dart';
 import 'package:easy_padhai/model/lesson_model.dart';
 import 'package:easy_padhai/model/noti_model.dart';
+import 'package:easy_padhai/model/notification_model.dart';
+import 'package:easy_padhai/model/online_test_model1.dart';
 import 'package:easy_padhai/model/profile_model.dart';
+import 'package:easy_padhai/model/question_model.dart';
 import 'package:easy_padhai/model/simple_model.dart';
 import 'package:easy_padhai/model/topic_model.dart';
 import 'package:easy_padhai/model/tpupdate_model.dart';
@@ -32,11 +41,19 @@ class DashboardController extends GetxController {
   List<BbData> batchlist = [];
   Data? topic;
   List<Books> booklist = [];
+  List<Homework> queslist = [];
+  List<HomeworkModel3Data> prevHlist = [];
+  List<HomeworkModel2Data> homeworkList = [];
+  List<OnlineQuesmodelData> quesList = [];
+  List<NData1> stuNotilist = [];
+  List<OnlineTestModel1Data> testList = [];
+  List<CurrentTestModelData> CurrTest = [];
   List<LData> lessonlist = [];
   RxString instituteId = ''.obs;
   RxString instituteName = ''.obs;
-
+  RxBool isJoined = false.obs;
   RxBool isLoading4 = false.obs;
+  BatchId? batchData;
 
   @override
   void onInit() {
@@ -81,6 +98,25 @@ class DashboardController extends GetxController {
         break;
       case 2:
         //Get.offAllNamed(RouteName.support);
+        break;
+      case 3:
+        Get.offAllNamed(RouteName.profile);
+        break;
+    }
+  }
+
+  void changeIndex3(int index) {
+    if (currentIndex.value == index) return;
+    currentIndex.value = index;
+    switch (index) {
+      case 0:
+        Get.offAllNamed(RouteName.teacherHome);
+        break;
+      case 1:
+        // Get.offAllNamed(RouteName.teacherHome);
+        break;
+      case 2:
+        // Get.offAllNamed(RouteName.teacherHome);
         break;
       case 3:
         Get.offAllNamed(RouteName.profile);
@@ -269,7 +305,7 @@ class DashboardController extends GetxController {
       "code": code,
       "rollNo": roll,
     };
-      print(queryParameter);
+    print(queryParameter);
     final profileJson =
         await apiHelper.post(ApiUrls.breq, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -351,11 +387,11 @@ class DashboardController extends GetxController {
     isLoading(false);
   }
 
-  getBook(String id) async {
+  getBook(String id, String clsid) async {
     isLoading(true);
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {"subjectId": id};
+    Map<String, dynamic>? queryParameter = {"subjectId": id, "classId": clsid};
     final profileJson =
         await apiHelper.get(ApiUrls.getbook, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -465,6 +501,281 @@ class DashboardController extends GetxController {
         isLoading(false);
       }
     }
+    isLoading(false);
+  }
+
+  getHWQbyTopic(String id) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "topicId": id,
+    };
+    final profileJson =
+        await apiHelper.get(ApiUrls.getques, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      HomeworkModel1 response = HomeworkModel1.fromJson(profileJson);
+      if (response.status == true) {
+        queslist = response.data!.homework!;
+        // Update box storage with profile data
+
+        isLoading(false);
+        return queslist;
+      } else {
+        isLoading(false);
+      }
+    }
+    isLoading(false);
+  }
+
+  getPHWQbyTopic(String id) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "topicId": id,
+    };
+    final profileJson =
+        await apiHelper.get(ApiUrls.getprevques, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      HomeworkModel3 response = HomeworkModel3.fromJson(profileJson);
+      if (response.status == true) {
+        prevHlist = response.data!;
+        // Update box storage with profile data
+
+        isLoading(false);
+        return prevHlist;
+      } else {
+        prevHlist = [];
+        isLoading(false);
+      }
+    } else {
+      prevHlist = [];
+    }
+
+    isLoading(false);
+  }
+
+  updateHomework(List<String> ids, String date) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "ids": ids,
+      "publishedDate": date,
+    };
+    final profileJson =
+        await apiHelper.patch(ApiUrls.uphome, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      TpupdateModel response = TpupdateModel.fromJson(profileJson);
+      if (response.status == true) {
+        //topic = response.data!;
+        // Update box storage with profile data
+        Get.snackbar("Message", response.message!,
+            snackPosition: SnackPosition.BOTTOM);
+        print("Topic updated:" + response.message!);
+        isLoading(false);
+        return response;
+      } else {
+        isLoading(false);
+      }
+    }
+    isLoading(false);
+  }
+
+  getbatchjoined() async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {};
+    final profileJson =
+        await apiHelper.get(ApiUrls.getJbat, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      Joinedmodel response = Joinedmodel.fromJson(profileJson);
+      if (response.status == true) {
+        isJoined.value = response.data!.approve!;
+        // Update box storage with profile data
+        batchData = response.data!.batchId!;
+        isLoading(false);
+        return response.data!;
+      } else {
+        isLoading(false);
+        isJoined.value = false;
+      }
+    } else {
+      isJoined.value = false;
+    }
+    isLoading(false);
+  }
+
+  getStuHomework(String subid, String classid, String secid) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "subjectId": subid,
+      "classId": classid,
+      "sections": secid
+    };
+    final profileJson = await apiHelper.get(ApiUrls.geth, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      HomeworkModel2 response = HomeworkModel2.fromJson(profileJson);
+      if (response.status == true) {
+        homeworkList = response.data!;
+        // Update box storage with profile data
+
+        isLoading(false);
+        return homeworkList;
+      } else {
+        homeworkList = [];
+        isLoading(false);
+      }
+    } else {
+      homeworkList = [];
+    }
+    isLoading(false);
+  }
+
+  getOnlineQ1(String classid, String subid, String bookid, String lesson,
+      String topic) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "classId": classid,
+      "subjectId": subid,
+      "bookId": bookid,
+      "lessonId": lesson,
+      "topicId": topic
+    };
+    final profileJson =
+        await apiHelper.get(ApiUrls.getq1, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      OnlineQuesmodel response = OnlineQuesmodel.fromJson(profileJson);
+      if (response.status == true) {
+        print(response.message);
+        quesList = response.data!;
+        // Update box storage with profile data
+
+        isLoading(false);
+        return quesList;
+      } else {
+        quesList = [];
+        isLoading(false);
+      }
+    } else {
+      quesList = [];
+    }
+    isLoading(false);
+  }
+
+  updateQuestion(
+      List<String> ids, String date, String time, String duration) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "ids": ids,
+      "publishedDate": date,
+      "publishedTime": time,
+      "duration": duration
+    };
+    final profileJson =
+        await apiHelper.patch(ApiUrls.updateq1, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      TpupdateModel response = TpupdateModel.fromJson(profileJson);
+      if (response.status == true) {
+        //topic = response.data!;
+        // Update box storage with profile data
+        Get.snackbar("Message", response.message!,
+            snackPosition: SnackPosition.BOTTOM);
+        print("Question updated:" + response.message!);
+        isLoading(false);
+        return response;
+      } else {
+        isLoading(false);
+      }
+    }
+    isLoading(false);
+  }
+
+  getStuNoti() async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {};
+    final profileJson =
+        await apiHelper.get(ApiUrls.stuNoti, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      NotificationModel response = NotificationModel.fromJson(profileJson);
+      if (response.status == true) {
+        print(response.message);
+        stuNotilist = response.data!;
+        // Update box storage with profile data
+
+        isLoading(false);
+        return stuNotilist;
+      } else {
+        stuNotilist = [];
+        isLoading(false);
+      }
+    } else {
+      stuNotilist = [];
+    }
+    isLoading(false);
+  }
+
+  getAllPubTest() async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {};
+    final profileJson =
+        await apiHelper.get(ApiUrls.getAllTest, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      OnlineTestModel1 response = OnlineTestModel1.fromJson(profileJson);
+      if (response.status == true) {
+        print(response.message);
+        testList = response.data!;
+        // Update box storage with profile data
+
+        isLoading(false);
+        return testList;
+      } else {
+        testList = [];
+        isLoading(false);
+      }
+    } else {
+      testList = [];
+    }
+    isLoading(false);
+  }
+
+  getCurrTest() async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {};
+    final profileJson =
+        await apiHelper.get(ApiUrls.getCurrTest, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      CurrentTestModel response = CurrentTestModel.fromJson(profileJson);
+      if (response.status == true) {
+        print(response.message);
+        if (response.data!.isNotEmpty) {
+          CurrTest = response.data!;
+        } else {
+          Get.snackbar("Message", response.message!,
+              snackPosition: SnackPosition.BOTTOM);
+        }
+        // Update box storage with profile data
+
+        isLoading(false);
+        return CurrTest;
+      } else {
+        isLoading(false);
+      }
+    } else {}
     isLoading(false);
   }
 }

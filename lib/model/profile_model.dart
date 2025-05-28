@@ -33,11 +33,17 @@ class ProfileData {
   String? institute;
   String? type;
   String? picture;
+  String? address1;
+  String? address2;
+  String? pincode;
   bool? class1;
   bool? section;
   bool? subject;
   bool? institutionRequired;
   bool? institution;
+  String? instituteId;
+  State1? state;
+  State1? district;
 
   ProfileData(
       {this.userDetails,
@@ -47,11 +53,17 @@ class ProfileData {
       this.institute,
       this.type,
       this.picture,
+      this.address1,
+      this.address2,
+      this.pincode,
       this.class1,
       this.section,
       this.subject,
       this.institutionRequired,
-      this.institution});
+      this.institution,
+      this.instituteId,
+      this.state,
+      this.district});
 
   ProfileData.fromJson(Map<String, dynamic> json) {
     userDetails = json['userDetails'] != null
@@ -78,11 +90,18 @@ class ProfileData {
     institute = json['institute'];
     type = json['type'];
     picture = json['picture'];
+    address1 = json['address1'];
+    address2 = json['address2'];
+    pincode = json['pincode'];
     class1 = json['class'];
     section = json['section'];
     subject = json['subject'];
     institutionRequired = json['institutionRequired'];
     institution = json['institution'];
+    instituteId = json['instituteId'];
+    state = json['state'] != null ? new State1.fromJson(json['state']) : null;
+    district =
+        json['district'] != null ? new State1.fromJson(json['district']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -101,14 +120,60 @@ class ProfileData {
       data['sectionDetail'] =
           this.sectionDetail!.map((v) => v.toJson()).toList();
     }
+    if (this.state != null) {
+      data['state'] = this.state!.toJson();
+    }
+    if (this.district != null) {
+      data['district'] = this.district!.toJson();
+    }
     data['institute'] = this.institute;
     data['type'] = this.type;
     data['picture'] = this.picture;
+    data['address1'] = this.address1;
+    data['address2'] = this.address2;
+    data['pincode'] = this.pincode;
     data['class'] = this.class1;
     data['section'] = this.section;
     data['subject'] = this.subject;
     data['institutionRequired'] = this.institutionRequired;
     data['institution'] = this.institution;
+    return data;
+  }
+}
+
+class State1 {
+  String? sId;
+  Name? name;
+
+  State1({this.sId, this.name});
+
+  State1.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    name = json['name'] != null ? new Name.fromJson(json['name']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    if (this.name != null) {
+      data['name'] = this.name!.toJson();
+    }
+    return data;
+  }
+}
+
+class Name {
+  String? english;
+
+  Name({this.english});
+
+  Name.fromJson(Map<String, dynamic> json) {
+    english = json['english'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['english'] = this.english;
     return data;
   }
 }

@@ -2,13 +2,17 @@ import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/model/current_test_model.dart';
 import 'package:easy_padhai/model/online_test_model1.dart';
+import 'package:easy_padhai/model/submit_test_model.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
 class TestInProgressScreen extends StatefulWidget {
+  String subId;
+  TestInProgressScreen({super.key, required this.subId});
   @override
   _TestInProgressScreenState createState() => _TestInProgressScreenState();
 }
@@ -21,12 +25,13 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
   List<String> _selectedAnswers = [];
   Map<String, List<String>> answersMap = {};
 
-  DashboardController dashboardController = DashboardController();
+  DashboardController dashboardController = Get.find();
   List<OnlineTestModel1Data> testList = [];
   List<CurrentTestModelData> tests = [];
-  CurrentTestModelData? currentTest;
+  TestId? currentTest;
   List<String> options = [];
   String testType = "";
+  String cls_id = "";
   bool isload = false;
 
   @override
@@ -41,13 +46,35 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
       isload = true;
     });
     await dashboardController.getCurrTest();
-    // testList = dashboardController.testList;
+    await dashboardController.getCurrTime();
 
+    // testList = dashboardController.testList;
+    // tests= testList[0]!.tests![0];
+    cls_id = dashboardController.profileModel?.data?.classDetail?[0].sId! ?? "";
+    print(cls_id);
     tests = dashboardController.CurrTest;
-    currentTest = dashboardController.CurrTest[_currentIndex];
+    currentTest = dashboardController.CurrTest[_currentIndex].testId;
     testType = currentTest!.type!;
-    String durationStr = currentTest!.duration!;
+    String durationStr = tests[_currentIndex].duration!;
+    String curTimeStr = dashboardController.currTime;
+    String pubTimeStr = tests[_currentIndex].publishedTime!;
+
     _duration = parseDuration(durationStr);
+    Duration fullDuration = parseDuration(durationStr);
+
+    // Step 2: Parse time strings to DateTime objects
+    DateTime now = DateTime.now();
+    DateTime curTime = _getTodayDateTime(curTimeStr);
+    DateTime pubTime = _getTodayDateTime(pubTimeStr);
+
+    // Step 3: Get elapsed time and subtract from total duration
+    Duration elapsed = curTime.difference(pubTime);
+    Duration remaining = fullDuration - elapsed;
+
+    //print("Remaining Duration: $remaining");
+    setState(() {
+      _duration = remaining;
+    });
 
     options.clear();
     if (testType == "True/False") {
@@ -67,6 +94,19 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
     setState(() {
       isload = false;
     });
+  }
+
+  DateTime _getTodayDateTime(String timeStr) {
+    final now = DateTime.now();
+    final parts = timeStr.split(RegExp(r'[:\s]'));
+    int hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+    final period = parts[2].toLowerCase();
+
+    if (period == 'pm' && hour != 12) hour += 12;
+    if (period == 'am' && hour == 12) hour = 0;
+
+    return DateTime(now.year, now.month, now.day, hour, minute);
   }
 
   Duration parseDuration(String duration) {
@@ -107,7 +147,7 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
         _currentIndex++;
         _selectedAnswer = '';
         _selectedAnswers.clear();
-        currentTest = tests[_currentIndex];
+        currentTest = tests[_currentIndex].testId;
         testType = currentTest!.type!;
         options.clear();
 
@@ -129,7 +169,12 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
     }
   }
 
-  void submit() {
+  bool isvisible = false;
+
+  Future<void> submit() async {
+    setState(() {
+      isvisible = true;
+    });
     if (testType == "True/False") {
       answersMap[currentTest!.sId!] = [_selectedAnswer];
     } else {
@@ -137,6 +182,35 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
     }
     print("Submitted Answers:");
     print(answersMap);
+    List<Map<String, dynamic>> response = [];
+
+    for (var entry in answersMap.entries) {
+      response.add({
+        "questionId": entry.key,
+        "answer": entry.value, // Note the plural "answers" since it's a list
+      });
+    }
+
+    SubmitTestModel res = await dashboardController.submitCurrTest(
+        response,
+        tests[_currentIndex].publishedDate!,
+        tests[_currentIndex].publishedTime!,
+        tests[_currentIndex].duration!,
+        cls_id,
+        widget.subId);
+    if (res.status == true) {
+      Navigator.pop(context);
+      Navigator.pop(context);
+      setState(() {
+        isvisible = false;
+      });
+    } else {
+      Navigator.pop(context);
+      Navigator.pop(context);
+      setState(() {
+        isvisible = false;
+      });
+    }
   }
 
   void _handlePrev() {
@@ -145,7 +219,7 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
         _currentIndex--;
         _selectedAnswer = '';
         _selectedAnswers.clear();
-        currentTest = tests[_currentIndex];
+        currentTest = tests[_currentIndex].testId;
         testType = currentTest!.type!;
         options.clear();
         if (testType == "True/False") {
@@ -263,6 +337,11 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
                             shape: BoxShape.rectangle,
                             border: Border.all(color: AppColors.grey7)),
                         child: CheckboxListTile(
+                          checkColor: Colors.white,
+                          activeColor: const Color(0xff186BA5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
                           title: Text(option),
                           value: _selectedAnswers.contains(option),
                           onChanged: (value) {
@@ -303,10 +382,25 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
                         onPressed: _currentIndex < tests.length - 1
                             ? _handleNext
                             : submit,
-                        child: Text(
-                          _currentIndex < tests.length - 1 ? "Next" : "Submit",
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        child: !isvisible
+                            ? Text(
+                                _currentIndex < tests.length - 1
+                                    ? "Next"
+                                    : "Submit",
+                                style: TextStyle(color: Colors.white),
+                              )
+                            : SizedBox(
+                                width: 30,
+                                height: 30,
+                                child: Lottie.asset(
+                                  'assets/loading.json',
+                                  width: MediaQuery.of(context).size.width,
+                                  height: MediaQuery.of(context).size.height,
+                                  repeat: true,
+                                  animate: true,
+                                  reverse: false,
+                                ),
+                              ),
                       ),
                     ],
                   )

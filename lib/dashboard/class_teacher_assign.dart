@@ -9,7 +9,9 @@ import 'package:easy_padhai/dashboard/popup2.dart';
 import 'package:easy_padhai/dashboard/popup3.dart';
 import 'package:easy_padhai/dashboard/question_paper.dart';
 import 'package:easy_padhai/model/book_model.dart';
+import 'package:easy_padhai/model/bstudent_model.dart';
 import 'package:easy_padhai/model/online_test_model1.dart';
+import 'package:easy_padhai/model/test_marks_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
@@ -20,8 +22,13 @@ class TeacherClassScreen extends StatefulWidget {
   String title;
   String id;
   String sub_id;
+  String sec_id;
   TeacherClassScreen(
-      {super.key, required this.title, required this.id, required this.sub_id});
+      {super.key,
+      required this.title,
+      required this.id,
+      required this.sub_id,
+      required this.sec_id});
 
   @override
   State<TeacherClassScreen> createState() => _ProfileEditState();
@@ -32,8 +39,11 @@ class _ProfileEditState extends State<TeacherClassScreen> {
   DashboardController dashboardController = Get.find();
   List<OnlineTestModel1Data> testList = [];
   List<Books> booklist = [];
+  List<StudentModelData> students = [];
+  List<TestMarksModelData> markList = [];
   bool isload = false;
   String id = "";
+  String batchClassId = "";
   @override
   void initState() {
     // TODO: implement initState
@@ -45,12 +55,17 @@ class _ProfileEditState extends State<TeacherClassScreen> {
     setState(() {
       isload = true;
     });
-    id = widget.sub_id;
-
+    // id = widget.sub_id;
+    batchClassId = widget.id;
+    id = dashboardController.profileModel?.data?.subjectDetail![0].sId! ?? "";
     await dashboardController.getBook(id, widget.id);
     booklist = dashboardController.booklist;
     await dashboardController.getAllPubTest();
     testList = dashboardController.testList;
+    await dashboardController.getStudentfromBatch(batchClassId, widget.sec_id);
+    students = dashboardController.studentList;
+    await dashboardController.getStuTestMarks(batchClassId, id);
+    markList = dashboardController.marksList;
     setState(() {
       isload = false;
     });
@@ -97,9 +112,13 @@ class _ProfileEditState extends State<TeacherClassScreen> {
                         child: selectedTabIndex == 0
                             ? AssignmentsTab(booklist, id)
                             : selectedTabIndex == 1
-                                ? TestsTab()
+                                ? TestsTab(
+                                    markList: markList,
+                                  )
                                 : selectedTabIndex == 2
-                                    ? StudentSelectionScreen()
+                                    ? StudentSelectionScreen(
+                                        students: students,
+                                      )
                                     : null),
                   ),
                 ],
@@ -160,7 +179,10 @@ class _ProfileEditState extends State<TeacherClassScreen> {
             Navigator.of(context).pop();
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => CreateTestScreen()),
+              MaterialPageRoute(
+                  builder: (_) => CreateTestScreen(
+                        bClassId: batchClassId,
+                      )),
             );
           },
           onOptionSelect: (test) {
@@ -181,7 +203,10 @@ class _ProfileEditState extends State<TeacherClassScreen> {
             Navigator.of(context).pop();
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => CreateOfflineTestScreen()),
+              MaterialPageRoute(
+                  builder: (_) => CreateOfflineTestScreen(
+                        bClassId: batchClassId,
+                      )),
             );
           },
           onOptionSelect: (test) {
@@ -367,30 +392,38 @@ class AssignmentsTab extends StatelessWidget {
 }
 
 class TestsTab extends StatelessWidget {
+  final List<TestMarksModelData> markList;
+
+  TestsTab({required this.markList});
+
   @override
   Widget build(BuildContext context) {
     return ListView(
       padding: EdgeInsets.all(16),
-      children: [
-        Text("Tue, 21 Dec", style: TextStyle(fontWeight: FontWeight.bold)),
-        ...List.generate(
-            6,
-            (i) => studentScoreRow(
-                "Student ${i + 1}", i == 4 ? "Ab" : "${12 + i}/20")),
-        SizedBox(height: 16),
-        Text("Mon, 20 Dec", style: TextStyle(fontWeight: FontWeight.bold)),
-        ...List.generate(
-            6,
-            (i) => studentScoreRow(
-                "Student ${i + 1}", i == 4 ? "Ab" : "${12 + i}/20")),
-      ],
+      children: markList.map((testData) {
+        final date = formatDate(testData.publishedDate ?? "");
+        final submissions = testData.submissions ?? [];
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(date, style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
+            ...submissions.map((submission) => studentScoreRow(
+                  submission.name ?? "Unknown",
+                  submission.result ?? "Ab",
+                )),
+            SizedBox(height: 16),
+          ],
+        );
+      }).toList(),
     );
   }
 
   Widget studentScoreRow(String name, String score) {
-    final isAbsent = score == "Ab";
+    final isAbsent = score.toLowerCase() == "ab";
     return ListTile(
-      contentPadding: EdgeInsets.only(top: 0, bottom: 0),
+      contentPadding: EdgeInsets.symmetric(vertical: 0),
       title: Text(name),
       trailing: Container(
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -405,31 +438,67 @@ class TestsTab extends StatelessWidget {
       ),
     );
   }
-}
 
-class Student {
-  final String name;
-  bool isSelected;
+  String formatDate(String dateStr) {
+    try {
+      DateTime dt = DateTime.parse(dateStr);
+      return "${_getWeekday(dt.weekday)}, ${dt.day} ${_getMonth(dt.month)}";
+    } catch (e) {
+      return dateStr;
+    }
+  }
 
-  Student({required this.name, this.isSelected = false});
+  String _getWeekday(int day) {
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    return days[(day - 1) % 7];
+  }
+
+  String _getMonth(int month) {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ];
+    return months[(month - 1) % 12];
+  }
 }
 
 class StudentSelectionScreen extends StatefulWidget {
+  List<StudentModelData> students;
+  StudentSelectionScreen({required this.students});
   @override
   _StudentSelectionScreenState createState() => _StudentSelectionScreenState();
 }
 
 class _StudentSelectionScreenState extends State<StudentSelectionScreen> {
-  List<Student> students = [
-    Student(name: 'Abhishek Kumar Jha'),
-    Student(name: 'Archana Sharma'),
-    Student(name: 'Bharti Kapoor'),
-    Student(name: 'Chandni Yadav'),
-    Student(name: 'Kunal Bhardwaj'),
-    Student(name: 'Sushil Yadav'),
-  ];
+  List<StudentModelData> students = [];
+  DashboardController dashboardController = Get.find();
 
   bool get isAllSelected => students.every((s) => s.isSelected);
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getData();
+  }
+
+  Future<void> getData() async {
+    students = widget.students;
+    students = widget.students.map((student) {
+      student.isSelected = false; // manually set
+      return student;
+    }).toList();
+    setState(() {});
+  }
 
   void toggleSelectAll(bool? val) {
     setState(() {
@@ -479,7 +548,7 @@ class _StudentSelectionScreenState extends State<StudentSelectionScreen> {
               itemCount: students.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(students[index].name),
+                  title: Text(students[index].name!),
                   leading: Text("${index + 1}."),
                   trailing: Checkbox(
                     value: students[index].isSelected,
@@ -541,8 +610,23 @@ class _StudentSelectionScreenState extends State<StudentSelectionScreen> {
                   child: ElevatedButton(
                     style:
                         ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                    onPressed: () {},
-                    child: Text("Remove Student"),
+                    onPressed: () async {
+                      List<String> selectedStudentIds = students
+                          .where((student) => student.isSelected)
+                          .map((student) => student.sId!)
+                          .toList();
+
+                      print("Selected Student IDs: $selectedStudentIds");
+                      var res = await dashboardController
+                          .removeStu(selectedStudentIds);
+                      if (res != null) {
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: const Text(
+                      "Remove Student",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
                 SizedBox(width: 12),
@@ -551,7 +635,8 @@ class _StudentSelectionScreenState extends State<StudentSelectionScreen> {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xff186BA5)),
                     onPressed: () {},
-                    child: Text("Send Message"),
+                    child: Text("Send Message",
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ],

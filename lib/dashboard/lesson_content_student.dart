@@ -11,14 +11,16 @@ import 'package:get/get.dart';
 import '../model/topic_model.dart';
 
 class LessonTopics extends StatefulWidget {
-  Data? topic;
+  String? topic;
   String topic_id;
   String lesson_id;
+  String sub_id;
   LessonTopics(
       {super.key,
       required this.topic,
       required this.topic_id,
-      required this.lesson_id});
+      required this.lesson_id,
+      required this.sub_id});
   @override
   _LessonScreenState createState() => _LessonScreenState();
 }
@@ -42,9 +44,9 @@ class _LessonScreenState extends State<LessonTopics> {
   void initState() {
     super.initState();
     _pageController = PageController();
-    head = widget.topic!.topic ?? "";
+    // head = widget.topic!.topic ?? "";
 
-    pages = _splitTextIntoPages(widget.topic!.lessonTextContent ?? "");
+    // pages = _splitTextIntoPages(widget.topic!.lessonTextContent ?? "");
   }
 
   Future<void> update() async {
@@ -75,7 +77,12 @@ class _LessonScreenState extends State<LessonTopics> {
     update();
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => LessonTestScreen()),
+      MaterialPageRoute(
+          builder: (_) => LessonTestScreen(
+                lesson_id: widget.lesson_id,
+                topic_id: widget.topic_id,
+                sub_id: widget.sub_id,
+              )),
     );
   }
 
@@ -90,23 +97,23 @@ class _LessonScreenState extends State<LessonTopics> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-              alignment: Alignment.topLeft,
-              margin: EdgeInsets.only(bottom: 20),
-              child: Text(
-                head,
-                style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
+            // Container(
+            //   alignment: Alignment.topLeft,
+            //   margin: EdgeInsets.only(bottom: 20),
+            //   child: Text(
+            //     head,
+            //     style: const TextStyle(
+            //         color: Colors.black,
+            //         fontSize: 18,
+            //         fontWeight: FontWeight.bold),
+            //   ),
+            // ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
                     Html(
-                      data: widget.topic!.lessonTextContent ?? "",
+                      data: widget.topic!,
                       //  style: const TextStyle(fontSize: 18, color: Colors.grey),
                       style: {
                         "body": Style(

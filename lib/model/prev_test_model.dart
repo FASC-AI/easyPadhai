@@ -1,19 +1,19 @@
-class CurrentTestModel {
+class PrevTestModel {
   int? code;
   bool? status;
   String? message;
-  List<CurrentTestModelData>? data;
+  List<PrevTestModelData>? data;
 
-  CurrentTestModel({this.code, this.status, this.message, this.data});
+  PrevTestModel({this.code, this.status, this.message, this.data});
 
-  CurrentTestModel.fromJson(Map<String, dynamic> json) {
+  PrevTestModel.fromJson(Map<String, dynamic> json) {
     code = json['code'];
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
-      data = <CurrentTestModelData>[];
+      data = <PrevTestModelData>[];
       json['data'].forEach((v) {
-        data!.add(new CurrentTestModelData.fromJson(v));
+        data!.add(new PrevTestModelData.fromJson(v));
       });
     }
   }
@@ -30,7 +30,39 @@ class CurrentTestModel {
   }
 }
 
-class CurrentTestModelData {
+class PrevTestModelData {
+  String? duration;
+  String? publishedDate;
+  String? publishedTime;
+  List<Tests>? tests;
+
+  PrevTestModelData({this.duration, this.publishedDate, this.publishedTime, this.tests});
+
+  PrevTestModelData.fromJson(Map<String, dynamic> json) {
+    duration = json['duration'];
+    publishedDate = json['publishedDate'];
+    publishedTime = json['publishedTime'];
+    if (json['tests'] != null) {
+      tests = <Tests>[];
+      json['tests'].forEach((v) {
+        tests!.add(new Tests.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['duration'] = this.duration;
+    data['publishedDate'] = this.publishedDate;
+    data['publishedTime'] = this.publishedTime;
+    if (this.tests != null) {
+      data['tests'] = this.tests!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Tests {
   String? sId;
   String? userId;
   String? subjectId;
@@ -40,15 +72,16 @@ class CurrentTestModelData {
   String? publishedTime;
   String? publishedDate;
   String? publishedBy;
+  TestId? testId;
   bool? isReaded;
   int? iV;
   String? createdAt;
   String? updatedAt;
-  TestId? testId;
-  String? id;
   String? attempted;
+  SubmitTestData? submitTestData;
+  String? questionType;
 
-  CurrentTestModelData(
+  Tests(
       {this.sId,
       this.userId,
       this.subjectId,
@@ -58,15 +91,16 @@ class CurrentTestModelData {
       this.publishedTime,
       this.publishedDate,
       this.publishedBy,
+      this.testId,
       this.isReaded,
       this.iV,
       this.createdAt,
       this.updatedAt,
-      this.testId,
-      this.id,
-      this.attempted});
+      this.attempted,
+      this.submitTestData,
+      this.questionType});
 
-  CurrentTestModelData.fromJson(Map<String, dynamic> json) {
+  Tests.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     userId = json['userId'];
     subjectId = json['subjectId'];
@@ -76,14 +110,17 @@ class CurrentTestModelData {
     publishedTime = json['publishedTime'];
     publishedDate = json['publishedDate'];
     publishedBy = json['publishedBy'];
+    testId =
+        json['testId'] != null ? new TestId.fromJson(json['testId']) : null;
     isReaded = json['isReaded'];
     iV = json['__v'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
-    testId =
-        json['testId'] != null ? new TestId.fromJson(json['testId']) : null;
-    id = json['id'];
     attempted = json['attempted'];
+    submitTestData = json['submitTestData'] != null
+        ? new SubmitTestData.fromJson(json['submitTestData'])
+        : null;
+    questionType = json['questionType'];
   }
 
   Map<String, dynamic> toJson() {
@@ -97,15 +134,18 @@ class CurrentTestModelData {
     data['publishedTime'] = this.publishedTime;
     data['publishedDate'] = this.publishedDate;
     data['publishedBy'] = this.publishedBy;
+    if (this.testId != null) {
+      data['testId'] = this.testId!.toJson();
+    }
     data['isReaded'] = this.isReaded;
     data['__v'] = this.iV;
     data['createdAt'] = this.createdAt;
     data['updatedAt'] = this.updatedAt;
-    if (this.testId != null) {
-      data['testId'] = this.testId!.toJson();
-    }
-    data['id'] = this.id;
     data['attempted'] = this.attempted;
+    if (this.submitTestData != null) {
+      data['submitTestData'] = this.submitTestData!.toJson();
+    }
+    data['questionType'] = this.questionType;
     return data;
   }
 }
@@ -157,7 +197,6 @@ class TestId {
   String? updatedAt;
   int? code;
   int? iV;
-  String? id;
 
   TestId(
       {this.sId,
@@ -205,8 +244,7 @@ class TestId {
       this.createdAt,
       this.updatedAt,
       this.code,
-      this.iV,
-      this.id});
+      this.iV});
 
   TestId.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -280,7 +318,6 @@ class TestId {
     updatedAt = json['updatedAt'];
     code = json['code'];
     iV = json['__v'];
-    id = json['id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -341,7 +378,6 @@ class TestId {
     data['updatedAt'] = this.updatedAt;
     data['code'] = this.code;
     data['__v'] = this.iV;
-    data['id'] = this.id;
     return data;
   }
 }
@@ -349,21 +385,96 @@ class TestId {
 class Classes {
   String? sId;
   String? nameEn;
-  String? id;
 
-  Classes({this.sId, this.nameEn, this.id});
+  Classes({this.sId, this.nameEn});
 
   Classes.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     nameEn = json['nameEn'];
-    id = json['id'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
     data['nameEn'] = this.nameEn;
-    data['id'] = this.id;
+    return data;
+  }
+}
+
+class SubmitTestData {
+  String? sId;
+  String? publishedDate;
+  String? publishedTime;
+  String? duration;
+  String? userId;
+  List<Test>? test;
+  String? createdAt;
+  String? updatedAt;
+  int? iV;
+
+  SubmitTestData(
+      {this.sId,
+      this.publishedDate,
+      this.publishedTime,
+      this.duration,
+      this.userId,
+      this.test,
+      this.createdAt,
+      this.updatedAt,
+      this.iV});
+
+  SubmitTestData.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    publishedDate = json['publishedDate'];
+    publishedTime = json['publishedTime'];
+    duration = json['duration'];
+    userId = json['userId'];
+    if (json['test'] != null) {
+      test = <Test>[];
+      json['test'].forEach((v) {
+        test!.add(new Test.fromJson(v));
+      });
+    }
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    iV = json['__v'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['publishedDate'] = this.publishedDate;
+    data['publishedTime'] = this.publishedTime;
+    data['duration'] = this.duration;
+    data['userId'] = this.userId;
+    if (this.test != null) {
+      data['test'] = this.test!.map((v) => v.toJson()).toList();
+    }
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
+    data['__v'] = this.iV;
+    return data;
+  }
+}
+
+class Test {
+  String? questionId;
+  List<String>? answer;
+  String? sId;
+
+  Test({this.questionId, this.answer, this.sId});
+
+  Test.fromJson(Map<String, dynamic> json) {
+    questionId = json['questionId'];
+    answer = json['answer'].cast<String>();
+    sId = json['_id'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['questionId'] = this.questionId;
+    data['answer'] = this.answer;
+    data['_id'] = this.sId;
     return data;
   }
 }

@@ -262,6 +262,7 @@ class _ProfileEditState extends State<TeacherHome> {
                                                   sub_id: batches[index]
                                                       .subject!
                                                       .sId!,
+                                                      sec_id: batches[index].sectionId!,
                                                 )),
                                       );
                                     },
@@ -565,10 +566,10 @@ class _ProfileEditState extends State<TeacherHome> {
                   ),
                   suffixIcon: const Icon(Icons.keyboard_arrow_down),
                 ),
-                items: controller.classesdataList
+                items: dashboardController.profileModel?.data?.classDetail!
                     .map((e) => DropdownMenuItem(
                           value: e.sId,
-                          child: Text(e.nameEn ?? ''),
+                          child: Text(e.class1 ?? ''),
                         ))
                     .toList(),
                 onChanged: (value) {
@@ -576,13 +577,14 @@ class _ProfileEditState extends State<TeacherHome> {
                     controller.toggleClassSelection(value);
                     bclass = value;
                     // Find the selected class object by ID
-                    final selectedClass1 =
-                        controller.classesdataList.firstWhere(
+                    final selectedClass1 = dashboardController
+                        .profileModel?.data?.classDetail!
+                        .firstWhere(
                       (e) => e.sId == value,
                     );
 
                     // Set batchController text
-                    selectedClass = selectedClass1.nameEn ?? '';
+                    selectedClass = selectedClass1!.class1!;
                     if (!selectedClass.isEmpty && !sec.isEmpty) {
                       int? cls = extractClassNumber(selectedClass);
                       String bcode =
@@ -620,20 +622,22 @@ class _ProfileEditState extends State<TeacherHome> {
                   ),
                   suffixIcon: const Icon(Icons.keyboard_arrow_down),
                 ),
-                items: controller.sectiondataList
+                items: dashboardController.profileModel?.data?.sectionDetail!
                     .map((e) => DropdownMenuItem(
                           value: e.sId,
-                          child: Text(e.sectionsName ?? ''),
+                          child: Text(e.section ?? ''),
                         ))
                     .toList(),
                 onChanged: (value) {
                   if (value != null) {
                     controller.toggleSectionSelection(value);
                     bsec = value;
-                    final selectedsec = controller.sectiondataList.firstWhere(
+                    final selectedsec = dashboardController
+                        .profileModel?.data?.sectionDetail!
+                        .firstWhere(
                       (e) => e.sId == value,
                     );
-                    sec = selectedsec.sectionsName!;
+                    sec = selectedsec!.section!;
                     int? cls = extractClassNumber(selectedClass);
                     String bcode =
                         generateBatchCode('2025', cls.toString(), type, sec);

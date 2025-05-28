@@ -35,8 +35,14 @@ class LData {
   String? lesson;
   bool? status;
   List<Topics>? topics;
+  String? lessonDescription;
 
-  LData({this.sId, this.lesson, this.status, this.topics});
+  LData(
+      {this.sId,
+      this.lesson,
+      this.status,
+      this.topics,
+      this.lessonDescription});
 
   LData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -48,6 +54,7 @@ class LData {
         topics!.add(new Topics.fromJson(v));
       });
     }
+    lessonDescription = json['lessonDescription'];
   }
 
   Map<String, dynamic> toJson() {
@@ -58,6 +65,7 @@ class LData {
     if (this.topics != null) {
       data['topics'] = this.topics!.map((v) => v.toJson()).toList();
     }
+    data['lessonDescription'] = this.lessonDescription;
     return data;
   }
 }

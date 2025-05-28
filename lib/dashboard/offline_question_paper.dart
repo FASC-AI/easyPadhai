@@ -5,6 +5,7 @@ import 'package:easy_padhai/custom_widgets/text.dart';
 import 'package:easy_padhai/model/book_model.dart';
 import 'package:easy_padhai/model/homework_model1.dart';
 import 'package:easy_padhai/model/lesson_model.dart';
+import 'package:easy_padhai/model/offline_test_model.dart';
 import 'package:easy_padhai/model/profile_model.dart';
 import 'package:easy_padhai/model/question_model.dart';
 
@@ -16,6 +17,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class CreateOfflineTestScreen extends StatefulWidget {
+  String bClassId = "";
+  CreateOfflineTestScreen({required this.bClassId});
   @override
   _CreateTestScreenState createState() => _CreateTestScreenState();
 }
@@ -34,24 +37,29 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
   String selectDate = '';
   String sub_id = "";
   final TextEditingController _dateController = TextEditingController();
-  List<OnlineQuesmodelData> questions = [];
+  final TextEditingController sessionController = TextEditingController();
+  List<GroupedTests> questions = [];
   List<String> selectedQuestionIds = [];
+  List<String> selectedQuestionTF = [];
+  List<String> selectedQuestionAR = [];
+  List<String> selectedQuestionDS = [];
   DashboardController dashboardController = Get.find();
   // int selectedCount = 13;
   int totalCount = 40;
-  List<String> mcqQuestions = [
-    "What is the acceleration due to gravity on Earth?",
-    "Describe how the poverty line is estimated in India?",
-    "Do you think that the present methodology of poverty estimation is appropriate?",
-    "Identify the social and economic groups which are most vulnerable to poverty in India?",
-    "What is the acceleration due to gravity on Earth?",
-    "What is the acceleration due to gravity on Earth?",
-  ];
+  List<Tests> mcqQuestions = [];
+  List<Tests> TFQuestions = [];
+  List<Tests> ARQuestions = [];
+  List<Tests> DSQuestions = [];
 
-  List<bool> selectedMcq = [false, true, true, false, true, false];
-  int mcqCount = 6;
-  int tfCount = 14;
-  int descCount = 50;
+  List<bool> selectedMcq = [];
+  int mcqCount = 0;
+  int tfCount = 0;
+  int descCount = 0;
+  bool mcqPub = false;
+  bool trPub = false;
+  bool arPub = false;
+  bool dsPub = false;
+  bool isVisible = false;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -81,6 +89,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
     classes = dashboardController.profileModel?.data?.classDetail! ?? [];
     sub_id =
         dashboardController.profileModel?.data?.subjectDetail?[0].sId! ?? "";
+    classes.retainWhere((classDetail) => classDetail.sId == widget.bClassId);
   }
 
   void _showPublishDatePopup() {
@@ -220,71 +229,55 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
     }
   }
 
-  Widget buildQuestionSection(String title, int count) {
-    return Container(
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xff4186B6),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "$title (${selectedMcq.where((e) => e).length})",
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.green,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-            child: Text(
-              "$count",
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  bool tfExpanded = false;
+  bool dsExpanded = false;
+  bool ds1Expanded = false;
 
-  Widget buildTypeSection(String title, int count) {
-    return Container(
-      margin: const EdgeInsets.only(top: 4),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.blue.shade100,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+  Widget buildTypeSection({
+    required String title,
+    required int count,
+    required bool isExpanded,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(top: 4),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.blue.shade100,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.green,
-              borderRadius: BorderRadius.circular(12),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+              child: Text(
+                "$count",
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+              ),
             ),
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-            child: Text(
-              "$count",
-              style: const TextStyle(color: Colors.white, fontSize: 14),
+            const SizedBox(width: 10),
+            Icon(
+              isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+              color: Colors.black,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -327,7 +320,8 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                         const Text(
                           "Question Paper",
                           style: TextStyle(
-                            fontSize: 20,
+                            overflow: TextOverflow.ellipsis,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -335,7 +329,18 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
 
                         const Spacer(),
                         SizedBox(
-                          width: 100,
+                          width: 80,
+                          child: CustomInput(
+                            readOnly: true,
+                            label: 'Session',
+                            controller: sessionController,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        SizedBox(
+                          width: 70,
                           child: GestureDetector(
                             onTap: () {
                               _selectDuration();
@@ -610,7 +615,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                 setState(() {
                                   selectedtopic = value;
                                 });
-                                await dashboardController.getOnlineQ1(
+                                await dashboardController.getOfflineQ1(
                                     selectedClass!.sId!,
                                     sub_id,
                                     selectedbook!.sId!,
@@ -618,7 +623,23 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                     selectedtopic!.sId!);
                                 // Fetching books based on selected class
                                 setState(() {
-                                  questions = dashboardController.quesList;
+                                  questions = dashboardController.OffquesList;
+                                  if (questions.isNotEmpty) {
+                                    for (int i = 0; i < questions.length; i++) {
+                                      if (questions[i].sId ==
+                                          "Assertion-Reason") {
+                                        ARQuestions = questions[i].tests!;
+                                      } else if (questions[i].sId ==
+                                          "Descriptive") {
+                                        DSQuestions = questions[i].tests!;
+                                      } else if (questions[i].sId == "MCQ") {
+                                        mcqQuestions = questions[i].tests!;
+                                      } else if (questions[i].sId ==
+                                          "True/False") {
+                                        TFQuestions = questions[i].tests!;
+                                      }
+                                    }
+                                  }
                                 });
 
                                 if (!classes.contains(selectedClass)) {
@@ -659,34 +680,21 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                     ),
 
                     const SizedBox(height: 20),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           "Choose Your Questions",
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
-                        // OutlinedButton.icon(
-                        //   onPressed: _showPublishDatePopup,
-                        //   icon: SvgPicture.asset('assets/publish.svg'),
-                        //   label: const Text(
-                        //     "Publish Date",
-                        //     style: TextStyle(
-                        //         color: Color(0xff2180C3),
-                        //         fontWeight: FontWeight.bold),
-                        //   ),
-                        //   style: OutlinedButton.styleFrom(
-                        //     side: const BorderSide(color: Color(0xff2180C3)),
-                        //   ),
-                        // ),
                       ],
                     ),
                     const SizedBox(height: 10),
 
                     // Questions List
                     Container(
-                      height: 260,
+                      height: 230,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                         border: Border.all(color: AppColors.grey7),
@@ -704,18 +712,36 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                 topRight: Radius.circular(5),
                               ),
                             ),
-                            child: Text(
-                              "Questions (${selectedQuestionIds.length})",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Multiple Choice Questions (${selectedQuestionIds.length})",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.green,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 4, horizontal: 8),
+                                  child: Text(
+                                    "${mcqQuestions.length}",
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 14),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           Expanded(
-                            child: questions.isNotEmpty
+                            child: mcqQuestions.isNotEmpty
                                 ? ListView.separated(
-                                    itemCount: questions.length,
+                                    itemCount: mcqQuestions.length,
                                     separatorBuilder: (context, index) {
                                       return const Divider(
                                         color: Colors.grey,
@@ -732,20 +758,19 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                               BorderRadius.circular(4),
                                         ),
                                         title: Html(
-                                            data:
-                                                questions[index].description ??
-                                                    ''),
-                                        value: questions[index].isPublished,
+                                            data: mcqQuestions[index]
+                                                    .description ??
+                                                ''),
+                                        value: mcqPub,
                                         onChanged: (bool? value) {
                                           setState(() {
-                                            questions[index].isPublished =
-                                                value ?? false;
+                                            mcqPub = value ?? false;
                                             if (value == true) {
                                               selectedQuestionIds.add(
-                                                  questions[index].sId ?? '');
+                                                  mcqQuestions[index].sId ?? '');
                                             } else {
                                               selectedQuestionIds.remove(
-                                                  questions[index].sId ?? '');
+                                                  mcqQuestions[index].sId ?? '');
                                             }
                                           });
                                         },
@@ -773,75 +798,172 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                         ],
                       ),
                     ),
-                    buildTypeSection("True/False Questions", tfCount),
-                    buildTypeSection("Descriptive Questions", descCount),
+                    // buildTypeSection("True/False Questions", tfCount),
+                    Column(
+                      children: [
+                        buildTypeSection(
+                          title:
+                              "True/False Questions (${selectedQuestionTF.length})",
+                          count: TFQuestions.length,
+                          isExpanded: tfExpanded,
+                          onTap: () {
+                            setState(() {
+                              tfExpanded = !tfExpanded;
+                            });
+                          },
+                        ),
+                        if (tfExpanded)
+                          ...TFQuestions.asMap().entries.map((entry) {
+                            // int index = entry.key; // S.No starts from 1
+                            var questiondata = entry.value;
+                            return CheckboxListTile(
+                              checkColor: Colors.white,
+                              activeColor: const Color(0xff186BA5),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              title: Html(data: questiondata.description ?? ''),
+                              value: trPub,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  trPub = value ?? false;
+                                  if (value == true) {
+                                    selectedQuestionTF
+                                        .add(questiondata.sId ?? '');
+                                  } else {
+                                    selectedQuestionTF
+                                        .remove(questiondata.sId ?? '');
+                                  }
+                                });
+                              },
+                            );
+                          }),
+                      ],
+                    ),
+                    buildTypeSection(
+                      title: "AR Questions (${selectedQuestionAR.length})",
+                      count: ARQuestions.length,
+                      isExpanded: dsExpanded,
+                      onTap: () {
+                        setState(() {
+                          dsExpanded = !dsExpanded;
+                        });
+                      },
+                    ),
+                    if (dsExpanded)
+                      ...ARQuestions.asMap().entries.map((entry) {
+                        // int index = entry.key; // S.No starts from 1
+                        var questiondata = entry.value;
+                        return CheckboxListTile(
+                          checkColor: Colors.white,
+                          activeColor: const Color(0xff186BA5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          title: Html(data: questiondata.description ?? ''),
+                          value: arPub,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              arPub = value ?? false;
+                              if (value == true) {
+                                selectedQuestionAR.add(questiondata.sId ?? '');
+                              } else {
+                                selectedQuestionAR
+                                    .remove(questiondata.sId ?? '');
+                              }
+                            });
+                          },
+                        );
+                      }),
+                    buildTypeSection(
+                      title:
+                          "Discriptive Questions (${selectedQuestionDS.length})",
+                      count: DSQuestions.length,
+                      isExpanded: ds1Expanded,
+                      onTap: () {
+                        setState(() {
+                          ds1Expanded = !ds1Expanded;
+                        });
+                      },
+                    ),
+                    if (ds1Expanded)
+                      ...DSQuestions.asMap().entries.map((entry) {
+                        // int index = entry.key; // S.No starts from 1
+                        var questiondata = entry.value;
+                        return CheckboxListTile(
+                          checkColor: Colors.white,
+                          activeColor: const Color(0xff186BA5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          title: Html(data: questiondata.description ?? ''),
+                          value: dsPub,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              dsPub = value ?? false;
+                              if (value == true) {
+                                selectedQuestionDS.add(questiondata.sId ?? '');
+                              } else {
+                                selectedQuestionDS
+                                    .remove(questiondata.sId ?? '');
+                              }
+                            });
+                          },
+                        );
+                      }),
                     const SizedBox(height: 10),
 
                     // Submit Button
-                    Center(
-                      child: SizedBox(
-                        width: 200,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // print("Selected Questions: $selectedQuestionIds");
-                            // Handle submit logic here
-                            if (selectedQuestionIds.isEmpty) {
-                              Get.snackbar(
-                                  "Message", "Please select questions.",
-                                  snackPosition: SnackPosition.BOTTOM);
-                              return;
-                            } else if (selectDate.isEmpty) {
-                              Get.snackbar(
-                                  "Message", "Please select publish date.",
-                                  snackPosition: SnackPosition.BOTTOM);
-                              return;
-                            } else if (_timeController.text.isEmpty) {
-                              Get.snackbar(
-                                  "Message", "Please select publish time.",
-                                  snackPosition: SnackPosition.BOTTOM);
-                              return;
-                            } else if (_durationController.text.isEmpty) {
-                              Get.snackbar("Message",
-                                  "Please enter time duration of test.",
-                                  snackPosition: SnackPosition.BOTTOM);
-                              return;
-                            } else {
-                              DateTime parsedDate =
-                                  DateFormat('dd-MM-yyyy').parse(selectDate);
-
-                              // Step 2: Convert to UTC and format to ISO 8601
-                              String isoDate =
-                                  formatToISOWithOffset(parsedDate);
-
-                              var res = dashboardController.updateQuestion(
-                                  selectedQuestionIds,
-                                  isoDate,
-                                  _timeController.text,
-                                  _durationController.text);
-
-                              if (res != null && res != false) {
-                                setState(() {
-                                  selectDate = "";
-                                  selectedQuestionIds = [];
-                                });
-                              }
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.theme,
-                          ),
-                          child: const Text("Submit",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold)),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+        width: 100,
+        child: ElevatedButton(
+          onPressed: () async {
+            // print("Selected Questions: $selectedQuestionIds");
+            // Handle submit logic here
+            if (selectedQuestionIds.isEmpty) {
+              Get.snackbar("Message", "Please select questions.",
+                  snackPosition: SnackPosition.BOTTOM);
+              return;
+            } else if (sessionController.text.isEmpty) {
+              Get.snackbar("Message", "Please enter session.",
+                  snackPosition: SnackPosition.BOTTOM);
+              return;
+            } else if (_durationController.text.isEmpty) {
+              Get.snackbar("Message", "Please enter time duration of test.",
+                  snackPosition: SnackPosition.BOTTOM);
+              return;
+            } else {
+              List<String> arr = selectedQuestionIds+
+                  selectedQuestionAR + selectedQuestionTF + selectedQuestionDS;
+              await dashboardController.downloadAndOpenPdf(
+                  sub_id,
+                  widget.bClassId,
+                  selectedtopic!.sId!,
+                  selectedlesson!.sId!,
+                  arr,
+                  sessionController.text.toString().trim(),
+                  _durationController.text.toString().trim(),
+                  selectedbook!.sId!);
+              Navigator.pop(context);
+              // if (res != false) {
+              //   Navigator.pop(context);
+              // }
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.theme,
+          ),
+          child: const Text("View Preview",
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         ),
       ),
     );

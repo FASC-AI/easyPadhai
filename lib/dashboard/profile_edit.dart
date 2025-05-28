@@ -6,9 +6,13 @@ import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
-import 'package:easy_padhai/custom_widgets/custom_button.dart';
+
+import 'package:easy_padhai/custom_widgets/custom_button2.dart';
+import 'package:easy_padhai/custom_widgets/custom_input.dart';
 import 'package:easy_padhai/custom_widgets/custom_input2.dart';
+import 'package:easy_padhai/model/pro_update_model.dart';
 import 'package:easy_padhai/model/profile_model.dart';
+import 'package:easy_padhai/route/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -29,12 +33,16 @@ class _ProfileEditState extends State<ProfileEdit> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController pinController = TextEditingController();
   final TextEditingController instituteController = TextEditingController();
+  final TextEditingController add1Controller = TextEditingController();
+  final TextEditingController add2Controller = TextEditingController();
   TextEditingController controllerState = TextEditingController();
   TextEditingController controllerDistrict = TextEditingController();
   DashboardController dashboardController = Get.find();
+  String stateId = "", distId = "";
   AuthController controller = Get.find();
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
+  bool isVisible = false;
 
   @override
   void initState() {
@@ -44,6 +52,7 @@ class _ProfileEditState extends State<ProfileEdit> {
 
   Future<void> _loadProfileData() async {
     await dashboardController.getProfile();
+   // print("picture :  ${userPic()}");
     setState(() {
       nameController.text =
           dashboardController.profileModel?.data?.userDetails?.name ?? '';
@@ -53,6 +62,20 @@ class _ProfileEditState extends State<ProfileEdit> {
           dashboardController.profileModel?.data?.classDetail?[0].class1 ?? '';
       instituteController.text =
           dashboardController.profileModel?.data?.institute ?? '';
+      phoneController.text =
+          dashboardController.profileModel?.data?.userDetails?.mobile ?? '';
+      add1Controller.text =
+          dashboardController.profileModel?.data?.address1 ?? '';
+      add2Controller.text =
+          dashboardController.profileModel?.data?.address2 ?? '';
+      pinController.text =
+          dashboardController.profileModel?.data?.pincode ?? '';
+      controllerState.text =
+          dashboardController.profileModel?.data?.state?.name!.english ?? '';
+      stateId = dashboardController.profileModel?.data?.state?.sId ?? '';
+      controllerDistrict.text =
+          dashboardController.profileModel?.data?.district?.name!.english ?? '';
+      distId = dashboardController.profileModel?.data?.district?.sId ?? '';
     });
   }
 
@@ -111,7 +134,15 @@ class _ProfileEditState extends State<ProfileEdit> {
         setState(() {
           _imageFile = File(croppedFile.path);
         });
+        List<File> profileImage = [];
+        profileImage.add(File(croppedFile.path));
+        await dashboardController.uploadImage(profileImage);
         // TODO: Upload the cropped image to server
+      } else {
+        List<File> profileImage = [];
+
+        profileImage.add(File(imagePath));
+        await dashboardController.uploadImage(profileImage);
       }
     } catch (e) {
       print(e);
@@ -224,7 +255,6 @@ class _ProfileEditState extends State<ProfileEdit> {
                               }
                             : null,
                   ),
-
                 ],
               ),
             ),
@@ -417,10 +447,29 @@ class _ProfileEditState extends State<ProfileEdit> {
                   _buildTextField(
                     hint: 'Enter address',
                     context: context,
+                    controller: add1Controller,
                   ),
+                  // CustomInput(
+                  //   label: 'Address 1',
+                  //   controller: add1Controller,
+                  //   inputType: TextInputType.text,
+                  //   wholeBackground: AppColors.white,
+                  //   isPrefix: false,
+                  // ),
                   SizedBox(height: height * 0.015),
                   _buildLabel('Address 2', width, context: context),
-                  _buildTextField(hint: 'Enter address 2', context: context),
+                  _buildTextField(
+                    hint: 'Enter address 2',
+                    context: context,
+                    controller: add2Controller,
+                  ),
+                  // CustomInput(
+                  //   label: 'Address 2',
+                  //   controller: add2Controller,
+                  //   inputType: TextInputType.text,
+                  //   wholeBackground: AppColors.white,
+                  //   isPrefix: false,
+                  // ),
                   SizedBox(height: height * 0.015),
                   _buildLabel('State', width, context: context),
                   GestureDetector(
@@ -436,6 +485,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                       if (result == true) {
                         setState(() {
                           controllerState.text = controller.stateName.value;
+                          stateId = controller.stateId.value;
                         });
                       }
                     },
@@ -471,6 +521,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                         setState(() {
                           controllerDistrict.text =
                               controller.districtName.value;
+                          distId = controller.districtId.value;
                         });
                       }
                     },
@@ -527,7 +578,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                             BoxConstraints(maxHeight: 25, maxWidth: 30),
                         hintText: "Enter your pin",
                         hintStyle: TextStyle(fontSize: 14, color: Colors.grey)),
-                    controller: phoneController,
+                    controller: pinController,
                     validator: (value) {
                       // bool isEmail =
                       //     RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")
@@ -537,7 +588,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                           value!.length == 6 && int.tryParse(value) != null;
 
                       if (!isPhoneNumber) {
-                        return "Please enter a valid pincode";
+                        return "Please enter a valid Pincode";
                       }
                       return null;
                     },
@@ -554,10 +605,21 @@ class _ProfileEditState extends State<ProfileEdit> {
           horizontal: width * 0.05,
           vertical: height * 0.01,
         ),
-        child: CustomButton(
+        child: CustomButton2(
           text: 'Update',
-          onTap: () {
-            // TODO: Implement update functionality
+          onTap: () async {
+            ProUpdateModel res = await dashboardController.updatePro(
+                nameController.text.toString().trim(),
+                phoneController.text.toString().trim(),
+                add1Controller.text.toString().trim(),
+                add2Controller.text.toString().trim(),
+                pinController.text.toString().trim(),
+                stateId,
+                distId,
+                userPic());
+            if (res.status == true) {
+              Get.offNamed(RouteName.profile);
+            }
           },
         ),
       ),
@@ -600,7 +662,7 @@ class _ProfileEditState extends State<ProfileEdit> {
           horizontal: MediaQuery.of(context).size.width * .035,
           vertical: MediaQuery.of(context).size.width * .02,
         ),
-        hintStyle: TextStyle(color: Colors.grey),
+        hintStyle: TextStyle(color: Colors.black),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Colors.grey),
@@ -611,7 +673,7 @@ class _ProfileEditState extends State<ProfileEdit> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.theme),
+          borderSide: const BorderSide(color: AppColors.grey),
         ),
       ),
     );
@@ -626,7 +688,7 @@ class _ProfileEditState extends State<ProfileEdit> {
       children: classes!
           .map((item) => Chip(
                 label: Text(item.class1!),
-                deleteIcon: Icon(Icons.close, size: width * 0.035),
+                //deleteIcon: null,
                 onDeleted: () {},
               ))
           .toList(),

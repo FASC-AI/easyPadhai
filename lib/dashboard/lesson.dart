@@ -70,10 +70,27 @@ class _LessonScreenState extends State<LessonScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         setState(() {
                           expandedIndex = isExpanded ? -1 : index;
                         });
+                        if (lessonList[index].topics!.isEmpty) {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => LessonTopic1Screen(
+                                      title: lessonList[index].lesson!,
+                                      lessonContent:
+                                          lessonList[index].lessonDescription!,
+                                      id: "",
+                                      lesson_id: lessonList[index].sId!,
+                                      sub_id: widget.subId,
+                                    )),
+                          );
+                          setState(() {
+                            _loadData();
+                          });
+                        }
                       },
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 6),
@@ -134,6 +151,8 @@ class _LessonScreenState extends State<LessonScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (_) => LessonTopic1Screen(
+                                              lessonContent: lessonList[index]
+                                                  .lessonDescription!,
                                               title: lessonList[index]
                                                   .topics![subIndex]
                                                   .topic!,
@@ -141,6 +160,7 @@ class _LessonScreenState extends State<LessonScreen> {
                                                   .topics![subIndex]
                                                   .sId!,
                                               lesson_id: lessonList[index].sId!,
+                                              sub_id: widget.subId,
                                             )),
                                   );
                                   setState(() {

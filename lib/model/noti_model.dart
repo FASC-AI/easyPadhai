@@ -56,7 +56,7 @@ class Notifications {
   String? sId;
   String? title;
   String? message;
-  String? type;
+  List<Type>? type;
   String? date;
   String? fromm;
   String? to;
@@ -88,7 +88,12 @@ class Notifications {
     sId = json['_id'];
     title = json['title'];
     message = json['message'];
-    type = json['type'];
+    if (json['type'] != null) {
+      type = <Type>[];
+      json['type'].forEach((v) {
+        type!.add(new Type.fromJson(v));
+      });
+    }
     date = json['date'];
     fromm = json['fromm'];
     to = json['to'];
@@ -106,7 +111,9 @@ class Notifications {
     data['_id'] = this.sId;
     data['title'] = this.title;
     data['message'] = this.message;
-    data['type'] = this.type;
+    if (this.type != null) {
+      data['type'] = this.type!.map((v) => v.toJson()).toList();
+    }
     data['date'] = this.date;
     data['fromm'] = this.fromm;
     data['to'] = this.to;
@@ -117,6 +124,25 @@ class Notifications {
     data['updatedAt'] = this.updatedAt;
     data['code'] = this.code;
     data['__v'] = this.iV;
+    return data;
+  }
+}
+
+class Type {
+  String? sId;
+  String? nameEn;
+
+  Type({this.sId, this.nameEn});
+
+  Type.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    nameEn = json['nameEn'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['nameEn'] = this.nameEn;
     return data;
   }
 }

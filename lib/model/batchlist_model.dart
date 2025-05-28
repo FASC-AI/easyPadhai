@@ -35,6 +35,7 @@ class BbData {
   String? section;
   String? class1;
   String? classId;
+  String? sectionId;
   Subject? subject;
   String? institute;
   String? createdAt;
@@ -45,6 +46,7 @@ class BbData {
       this.section,
       this.class1,
       this.classId,
+      this.sectionId,
       this.subject,
       this.institute,
       this.createdAt,
@@ -55,6 +57,7 @@ class BbData {
     section = json['section'];
     class1 = json['class'];
     classId = json['classId'];
+    sectionId = json['sectionId'];
     subject =
         json['subject'] != null ? new Subject.fromJson(json['subject']) : null;
     institute = json['institute'];
@@ -68,6 +71,7 @@ class BbData {
     data['section'] = this.section;
     data['class'] = this.class1;
     data['classId'] = this.classId;
+    data['sectionId'] = this.sectionId;
     if (this.subject != null) {
       data['subject'] = this.subject!.toJson();
     }

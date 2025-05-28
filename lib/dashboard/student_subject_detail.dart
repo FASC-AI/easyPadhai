@@ -66,6 +66,11 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
     return DateFormat('EEE, dd MMM').format(dateTime);
   }
 
+  String formatDate1(String isoDate) {
+    final dateTime = DateTime.parse(isoDate).toLocal(); // Convert to local time
+    return DateFormat('yyyy-MM-dd').format(dateTime);
+  }
+
   @override
   Widget build(BuildContext context) {
     // final String title = Get.arguments?['title'] ?? 'Subject';
@@ -94,13 +99,7 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                         child: Column(
                           children: [
                             GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => HomeworkScreen()),
-                                );
-                              },
+                              onTap: () {},
                               child: Image.asset(
                                 'assets/join.png', // Your attention image asset
                                 height: 160,
@@ -170,11 +169,16 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                                                 );
                                               } else if (hlist[index].type! ==
                                                   "test") {
+                                                String date = formatDate1(
+                                                    hlist[index]
+                                                        .publishedDate!);
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (_) =>
-                                                          StuOnlineTest()),
+                                                          StuOnlineTest(
+                                                            subId: hlist[index].subjectId![0] ,
+                                                          )),
                                                 );
                                               } else {}
                                             },

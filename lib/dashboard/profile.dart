@@ -17,6 +17,7 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("picture :  ${userPic()}");
     final size = MediaQuery.of(context).size;
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
@@ -45,7 +46,7 @@ class Profile extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 40,
-                  backgroundImage: NetworkImage(box.read('propic') ?? ''),
+                  backgroundImage: NetworkImage(userPic() ?? ''),
                   backgroundColor: Colors.grey[400],
                   child: (userPic().isEmpty)
                       ? Text(

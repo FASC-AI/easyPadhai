@@ -12,14 +12,18 @@ import 'package:lottie/lottie.dart';
 import '../model/topic_model.dart';
 
 class LessonTopic1Screen extends StatefulWidget {
+  String lessonContent;
   String title;
   String id;
   String lesson_id;
+  String sub_id;
   LessonTopic1Screen(
       {super.key,
+      required this.lessonContent,
       required this.title,
       required this.id,
-      required this.lesson_id});
+      required this.lesson_id,
+      required this.sub_id});
 
   @override
   State<LessonTopic1Screen> createState() => _ProfileEditState();
@@ -30,7 +34,9 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
   String lesson_id = "";
   DashboardController dashboardController = Get.find();
   bool isLoad = false;
-  Data? topic;
+  String? topic;
+  String vid_link = "";
+  String vid_name = "";
 
   @override
   void initState() {
@@ -44,8 +50,16 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
     setState(() {
       isLoad = true;
     });
-    await dashboardController.getTopic(widget.id);
-    topic = dashboardController.topic;
+    if (widget.id.isEmpty) {
+      topic = widget.lessonContent;
+    } else {
+      await dashboardController.getTopic(widget.id);
+      topic = dashboardController.topic!.lessonTextContent!;
+      await dashboardController.getVideo(widget.id);
+      vid_link = dashboardController.vidList!.videoTutorialLink!;
+      vid_name = dashboardController.vidList!.topic!;
+    }
+
     setState(() {
       isLoad = false;
     });
@@ -89,9 +103,13 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
                                 topic: topic,
                                 lesson_id: lesson_id,
                                 topic_id: widget.id,
+                                sub_id: widget.sub_id,
                               )
                             : selectedTabIndex == 1
-                                ? LessonClipsScreen()
+                                ? LessonClipsScreen(
+                                    vid_link: vid_link,
+                                    vid_title: vid_name,
+                                  )
                                 : null),
                   ),
                 ],

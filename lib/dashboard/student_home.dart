@@ -751,8 +751,15 @@ class _ProfileEditState extends State<StudentHome> {
 
                       isLoading = true;
                       Navigator.pop(context);
-                      _showRollBottomSheet(
-                          context, type, tb_controller.text.toString().trim());
+                      if (institution.isNotEmpty && className.isNotEmpty) {
+                        _showRollBottomSheet(context, type,
+                            tb_controller.text.toString().trim());
+                      } else {
+                        Get.snackbar("Message", "Enter a valid Batch code",
+                            snackPosition: SnackPosition.BOTTOM);
+                        return;
+                      }
+
                       // BinfoModel dta = await dashboardController
                       //     .postbatchreq(tb_controller.text.toString().trim());
 

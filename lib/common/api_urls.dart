@@ -61,4 +61,14 @@ class ApiUrls {
   static const String stuNoti = 'api/v1/studentnotification/notification';
   static const String getAllTest = 'api/v1/test/publishedtestinfo';
   static const String getCurrTest = 'api/v1/test/getcurrentdaytest';
+  static const String submitTest = 'api/v1/submittest';
+  static const String prevTest = 'api/v1/test/previoustest';
+  static const String offlineTest = 'api/v1/offlinetest';
+  static const String currTime = 'api/v1/test/currenttime';
+  static const String stulist = 'api/v1/batch/batchstudentlist';
+  static const String profileUp = 'api/v1/auth/';
+  static const String lessonQ = 'api/v1/test/testbylessontopic';
+  static const String deleteS = 'api/v1/request/removestudent';
+  static const String testM = 'api/v1/test/studentmarkslist';
+  static const String vid = 'api/v1/lesson/';
 }

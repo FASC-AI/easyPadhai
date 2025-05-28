@@ -1,19 +1,19 @@
-class CurrentTestModel {
+class LessonTestModel {
   int? code;
   bool? status;
   String? message;
-  List<CurrentTestModelData>? data;
+  List<LessonTestModelData>? data;
 
-  CurrentTestModel({this.code, this.status, this.message, this.data});
+  LessonTestModel({this.code, this.status, this.message, this.data});
 
-  CurrentTestModel.fromJson(Map<String, dynamic> json) {
+  LessonTestModel.fromJson(Map<String, dynamic> json) {
     code = json['code'];
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
-      data = <CurrentTestModelData>[];
+      data = <LessonTestModelData>[];
       json['data'].forEach((v) {
-        data!.add(new CurrentTestModelData.fromJson(v));
+        data!.add(new LessonTestModelData.fromJson(v));
       });
     }
   }
@@ -30,87 +30,7 @@ class CurrentTestModel {
   }
 }
 
-class CurrentTestModelData {
-  String? sId;
-  String? userId;
-  String? subjectId;
-  String? classId;
-  String? type;
-  String? duration;
-  String? publishedTime;
-  String? publishedDate;
-  String? publishedBy;
-  bool? isReaded;
-  int? iV;
-  String? createdAt;
-  String? updatedAt;
-  TestId? testId;
-  String? id;
-  String? attempted;
-
-  CurrentTestModelData(
-      {this.sId,
-      this.userId,
-      this.subjectId,
-      this.classId,
-      this.type,
-      this.duration,
-      this.publishedTime,
-      this.publishedDate,
-      this.publishedBy,
-      this.isReaded,
-      this.iV,
-      this.createdAt,
-      this.updatedAt,
-      this.testId,
-      this.id,
-      this.attempted});
-
-  CurrentTestModelData.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    userId = json['userId'];
-    subjectId = json['subjectId'];
-    classId = json['classId'];
-    type = json['type'];
-    duration = json['duration'];
-    publishedTime = json['publishedTime'];
-    publishedDate = json['publishedDate'];
-    publishedBy = json['publishedBy'];
-    isReaded = json['isReaded'];
-    iV = json['__v'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    testId =
-        json['testId'] != null ? new TestId.fromJson(json['testId']) : null;
-    id = json['id'];
-    attempted = json['attempted'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['userId'] = this.userId;
-    data['subjectId'] = this.subjectId;
-    data['classId'] = this.classId;
-    data['type'] = this.type;
-    data['duration'] = this.duration;
-    data['publishedTime'] = this.publishedTime;
-    data['publishedDate'] = this.publishedDate;
-    data['publishedBy'] = this.publishedBy;
-    data['isReaded'] = this.isReaded;
-    data['__v'] = this.iV;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
-    if (this.testId != null) {
-      data['testId'] = this.testId!.toJson();
-    }
-    data['id'] = this.id;
-    data['attempted'] = this.attempted;
-    return data;
-  }
-}
-
-class TestId {
+class LessonTestModelData {
   String? sId;
   String? codee;
   bool? isActive;
@@ -157,9 +77,8 @@ class TestId {
   String? updatedAt;
   int? code;
   int? iV;
-  String? id;
 
-  TestId(
+  LessonTestModelData(
       {this.sId,
       this.codee,
       this.isActive,
@@ -205,10 +124,9 @@ class TestId {
       this.createdAt,
       this.updatedAt,
       this.code,
-      this.iV,
-      this.id});
+      this.iV});
 
-  TestId.fromJson(Map<String, dynamic> json) {
+  LessonTestModelData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     codee = json['codee'];
     isActive = json['isActive'];
@@ -280,7 +198,6 @@ class TestId {
     updatedAt = json['updatedAt'];
     code = json['code'];
     iV = json['__v'];
-    id = json['id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -341,7 +258,6 @@ class TestId {
     data['updatedAt'] = this.updatedAt;
     data['code'] = this.code;
     data['__v'] = this.iV;
-    data['id'] = this.id;
     return data;
   }
 }
@@ -349,21 +265,18 @@ class TestId {
 class Classes {
   String? sId;
   String? nameEn;
-  String? id;
 
-  Classes({this.sId, this.nameEn, this.id});
+  Classes({this.sId, this.nameEn});
 
   Classes.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     nameEn = json['nameEn'];
-    id = json['id'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
     data['nameEn'] = this.nameEn;
-    data['id'] = this.id;
     return data;
   }
 }

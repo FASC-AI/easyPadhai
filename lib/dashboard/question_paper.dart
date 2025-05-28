@@ -16,6 +16,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class CreateTestScreen extends StatefulWidget {
+  String bClassId = "";
+  CreateTestScreen({required this.bClassId});
   @override
   _CreateTestScreenState createState() => _CreateTestScreenState();
 }
@@ -33,6 +35,7 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
   DateTime selectedDate = DateTime.now();
   String selectDate = '';
   String sub_id = "";
+  String classid = "";
   final TextEditingController _dateController = TextEditingController();
   List<OnlineQuesmodelData> questions = [];
   List<String> selectedQuestionIds = [];
@@ -64,8 +67,10 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
 
   Future<void> getdata() async {
     classes = dashboardController.profileModel?.data?.classDetail! ?? [];
+    classid = widget.bClassId;
     sub_id =
         dashboardController.profileModel?.data?.subjectDetail?[0].sId! ?? "";
+    classes.retainWhere((classDetail) => classDetail.sId == classid);
   }
 
   void _showPublishDatePopup() {
@@ -729,10 +734,7 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                                 _durationController.text);
 
                             if (res != null && res != false) {
-                              setState(() {
-                                selectDate = "";
-                                selectedQuestionIds = [];
-                              });
+                              Navigator.pop(context);
                             }
                           }
                         },

@@ -8,6 +8,7 @@ import 'package:easy_padhai/model/register_model.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class Email extends StatefulWidget {
@@ -28,6 +29,12 @@ class _EmailState extends State<Email> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(0.0),
+          child: AppBar(
+            backgroundColor: AppColors.theme,
+            systemOverlayStyle: SystemUiOverlayStyle.light,
+          )),
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),

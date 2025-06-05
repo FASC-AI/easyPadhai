@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class OnlineTestListPopup extends StatelessWidget {
   final List<OnlineTestModel1Data> testList;
   final VoidCallback onCreateNew;
-  final void Function(String) onOptionSelect;
+  final void Function(List<Tests>) onOptionSelect;
 
   const OnlineTestListPopup({
     Key? key,
@@ -57,32 +57,35 @@ class OnlineTestListPopup extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: testList.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.symmetric(vertical: 4),
-                  decoration: BoxDecoration(
-                      color: Color(0xffF2F2F2),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.grey)),
-                  child: ListTile(
-                    leading: Text(
-                      "${(index + 1).toString()}.",
-                      style: TextStyle(fontSize: 14),
+            SizedBox(
+              height: 230,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: testList.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    decoration: BoxDecoration(
+                        color: Color(0xffF2F2F2),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.grey)),
+                    child: ListTile(
+                      leading: Text(
+                        "${(index + 1).toString()}.",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      title: Text(
+                          "Online Test(${testList[index].publishedDate!})"),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.more_vert),
+                        onPressed: () => onOptionSelect(testList[index].tests!),
+                      ),
                     ),
-                    title:
-                        Text("Online Test(${testList[index].publishedDate!})"),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.more_vert),
-                      onPressed: () =>
-                          onOptionSelect(testList[index].publishedDate!),
-                    ),
-                  ),
-                );
-              },
-            )
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 10),
           ],
         ),
       ),

@@ -5,14 +5,16 @@ import 'package:easy_padhai/model/homework_model1.dart';
 import 'package:easy_padhai/model/homework_model3.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 class AssignHomeworkScreen extends StatefulWidget {
+  String lessonId;
   final String tid;
-  AssignHomeworkScreen({super.key, required this.tid});
+  AssignHomeworkScreen({super.key, required this.tid, required this.lessonId});
 
   @override
   _AssignHomeworkScreenState createState() => _AssignHomeworkScreenState();
@@ -37,7 +39,10 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
     setState(() {
       isload = true;
     });
-    await dashboardController.getHWQbyTopic(widget.tid);
+
+    await dashboardController.getHWQbyTopic(widget.lessonId, widget.tid);
+
+    // await dashboardController.getHWQbyTopic(widget.tid);
     questions = dashboardController.queslist;
     await dashboardController.getPHWQbyTopic(widget.tid);
     prevH = dashboardController.prevHlist;
@@ -202,6 +207,7 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
 
                       // Questions List
                       Container(
+                        height: 300,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
                           border: Border.all(color: AppColors.grey7),
@@ -226,41 +232,66 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
-                            ListView.separated(
-                              itemCount: questions.length,
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              separatorBuilder: (context, index) {
-                                return const Divider(
-                                  color: Colors.grey,
-                                  thickness: 0.5,
-                                  height: 15,
-                                );
-                              },
-                              itemBuilder: (context, index) {
-                                return CheckboxListTile(
-                                  checkColor: Colors.white,
-                                  activeColor: const Color(0xff186BA5),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  title: Text(questions[index].question ?? ''),
-                                  value: questions[index].isPublished,
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      questions[index].isPublished =
-                                          value ?? false;
-                                      if (value == true) {
-                                        selectedQuestionIds
-                                            .add(questions[index].id ?? '');
-                                      } else {
-                                        selectedQuestionIds
-                                            .remove(questions[index].id ?? '');
-                                      }
-                                    });
-                                  },
-                                );
-                              },
+                            Expanded(
+                              child: questions.isNotEmpty
+                                  ? ListView.separated(
+                                      itemCount: questions.length,
+                                      shrinkWrap: true,
+                                      // physics:
+                                      //     const NeverScrollableScrollPhysics(),
+                                      separatorBuilder: (context, index) {
+                                        return const Divider(
+                                          color: Colors.grey,
+                                          thickness: 0.5,
+                                          height: 15,
+                                        );
+                                      },
+                                      itemBuilder: (context, index) {
+                                        return CheckboxListTile(
+                                          checkColor: Colors.white,
+                                          activeColor: const Color(0xff186BA5),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                          ),
+                                          title: Html(
+                                              data: questions[index].question ??
+                                                  ''),
+                                          value: questions[index].isPublished,
+                                          onChanged: (bool? value) {
+                                            setState(() {
+                                              questions[index].isPublished =
+                                                  value ?? false;
+                                              if (value == true) {
+                                                selectedQuestionIds.add(
+                                                    questions[index].id ?? '');
+                                              } else {
+                                                selectedQuestionIds.remove(
+                                                    questions[index].id ?? '');
+                                              }
+                                            });
+                                          },
+                                        );
+                                      },
+                                    )
+                                  : Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          'assets/no_notification.png', // Change with your icon/image path
+                                          height: 80,
+                                        ),
+                                        const SizedBox(height: 10),
+                                        const Text(
+                                          "No Questions Available",
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                             ),
                           ],
                         ),
@@ -298,8 +329,10 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
 
                                 if (res != null && res != false) {
                                   setState(() {
-                                    selectDate = "";
-                                    selectedQuestionIds = [];
+                                    // selectDate = "";
+                                    // selectedQuestionIds = [];
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
                                   });
                                 }
                               }
@@ -327,18 +360,23 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
                         children: prevH.map((homework) {
                           String formatdate =
                               formatDate(homework.publishedDate!);
-                          return Container(
-                            width: double.infinity,
-                            height: 40,
-                            margin: const EdgeInsets.only(bottom: 8),
-                            decoration: BoxDecoration(
-                              color: Color(0xff4186B6),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            padding: const EdgeInsets.all(12),
-                            child: Text(
-                              formatdate,
-                              style: const TextStyle(color: Colors.white),
+                          return GestureDetector(
+                            onTap: () {
+                              _showBottomSheet(context, prevH);
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              height: 40,
+                              margin: const EdgeInsets.only(bottom: 8),
+                              decoration: BoxDecoration(
+                                color: Color(0xff4186B6),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              padding: const EdgeInsets.all(12),
+                              child: Text(
+                                formatdate,
+                                style: const TextStyle(color: Colors.white),
+                              ),
                             ),
                           );
                         }).toList(),
@@ -358,6 +396,63 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
                 ),
               ),
       ),
+    );
+  }
+
+  void _showBottomSheet(BuildContext context, List<HomeworkModel3Data> prevH) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Added for better scrolling behavior
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height *
+                0.3, // Better height calculation
+          ),
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Questions",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                // Added Expanded for proper ListView sizing
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics:
+                      const ClampingScrollPhysics(), // Better scrolling physics
+                  itemCount: prevH.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Html(
+                        data: "${index + 1}. ${prevH[index].question}",
+                        style: {
+                          "body": Style(
+                            fontSize: FontSize(14.0),
+                            margin: Margins.zero, // Remove default margins
+                            // Remove default padding
+                          ),
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

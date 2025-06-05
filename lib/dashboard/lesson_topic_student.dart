@@ -17,13 +17,15 @@ class LessonTopic1Screen extends StatefulWidget {
   String id;
   String lesson_id;
   String sub_id;
+  String vid_link;
   LessonTopic1Screen(
       {super.key,
       required this.lessonContent,
       required this.title,
       required this.id,
       required this.lesson_id,
-      required this.sub_id});
+      required this.sub_id,
+      required this.vid_link});
 
   @override
   State<LessonTopic1Screen> createState() => _ProfileEditState();
@@ -52,6 +54,8 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
     });
     if (widget.id.isEmpty) {
       topic = widget.lessonContent;
+      vid_link = widget.vid_link;
+      vid_name = widget.title;
     } else {
       await dashboardController.getTopic(widget.id);
       topic = dashboardController.topic!.lessonTextContent!;

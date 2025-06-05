@@ -1,5 +1,6 @@
 import 'package:easy_padhai/common/constant.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class OtpPasscode extends StatefulWidget {
   final void Function(String) onCompleted;
@@ -84,46 +85,59 @@ class _OtpPasscodeState extends State<OtpPasscode> {
       borderSide: const BorderSide(color: Colors.white, width: 1),
     );
 
-    return Center(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(widget.digits, (index) {
-            return Container(
-              width: MediaQuery.of(context).size.width * .16,
-              height: MediaQuery.of(context).size.width * .15,
-              margin: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * .025),
-              child: Center(
-                child: TextField(
-                  controller: _controllers[index],
-                  focusNode: _focusNodes[index],
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  textAlignVertical: TextAlignVertical.center,
-                  cursorColor: AppColors.white,
-                  style: TextStyle(
-                    fontSize: MediaQuery.of(context).size.width * .06,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom:
+            MediaQuery.of(context).viewInsets.bottom, // Account for keyboard
+      ),
+      child: Center(
+        child: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(), // Smoother scrolling
+          scrollDirection: Axis.horizontal,
+          child: Container(
+            // Add a container with fixed height
+            height: MediaQuery.of(context).size.height * 0.15,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(widget.digits, (index) {
+                return Container(
+                  width: MediaQuery.of(context).size.width * .16,
+                  margin: EdgeInsets.symmetric(
+                    horizontal: MediaQuery.of(context).size.width * .025,
                   ),
-                  maxLength: 1,
-                  onChanged: (value) => _onOtpChanged(value, index),
-                  decoration: InputDecoration(
-                    counterText: '',
-                    enabledBorder: border,
-                    focusedBorder: border.copyWith(
-                      borderSide:
-                          const BorderSide(color: Colors.green, width: 2),
+                  child: Center(
+                    child: TextField(
+                      controller: _controllers[index],
+                      focusNode: _focusNodes[index],
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      textAlignVertical: TextAlignVertical.center,
+                      cursorColor: AppColors.white,
+                      style: TextStyle(
+                        fontSize: MediaQuery.of(context).size.width * .06,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      maxLength: 1,
+                      onChanged: (value) => _onOtpChanged(value, index),
+                      decoration: InputDecoration(
+                        counterText: '',
+                        enabledBorder: border,
+                        focusedBorder: border.copyWith(
+                          borderSide:
+                              const BorderSide(color: Colors.green, width: 2),
+                        ),
+                        filled: true,
+                        fillColor: Colors.transparent,
+                        contentPadding:
+                            EdgeInsets.zero, // Remove default padding
+                      ),
                     ),
-                    filled: true,
-                    fillColor: Colors.transparent,
                   ),
-                ),
-              ),
-            );
-          }),
+                );
+              }),
+            ),
+          ),
         ),
       ),
     );

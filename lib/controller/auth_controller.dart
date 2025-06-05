@@ -12,12 +12,14 @@ import 'package:easy_padhai/model/institution_list_model.dart';
 import 'package:easy_padhai/model/login_model.dart';
 import 'package:easy_padhai/model/register_model.dart';
 import 'package:easy_padhai/model/section_list_model.dart';
+import 'package:easy_padhai/model/simple_model.dart';
 import 'package:easy_padhai/model/state_model.dart';
 import 'package:easy_padhai/model/subject_list_model.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthController extends GetxController {
   final GoogleSignInHelper _googleSignInHelper = GoogleSignInHelper();
@@ -52,6 +54,7 @@ class AuthController extends GetxController {
   RxBool isLoading3 = false.obs;
   RxBool isLoading4 = false.obs;
   RxBool isLoading5 = false.obs;
+  RxString forgetEmail = ''.obs;
 
   @override
   void onInit() {
@@ -87,6 +90,42 @@ class AuthController extends GetxController {
     } else {
       selectedSubjectIds.add(subjectId);
     }
+  }
+
+  resetMpin(String email, String mpin) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {"email": email, "mpin": mpin};
+    final profileJson =
+        await apiHelper.post(ApiUrls.postmpin, queryParameter, data);
+    print(queryParameter);
+    if (profileJson != null && profileJson != false) {
+      SimpleModel response = SimpleModel.fromJson(profileJson);
+      if (response.status == true) {
+        // print(response.message);
+        Get.snackbar(
+          '',
+          '',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.transparent,
+          titleText: const SizedBox.shrink(),
+          messageText: const Text(
+            "MPIN reset successfully",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        );
+        Get.offAndToNamed(RouteName.login);
+        isLoading(false);
+        return response;
+      } else {
+        isLoading(false);
+      }
+    } else {}
+    isLoading(false);
   }
 
   googleSignin(String method) async {
@@ -278,7 +317,9 @@ class AuthController extends GetxController {
       "stateId": state,
       "districtId": district,
       "pinCode": pin,
-      "codee": inscode
+      "codee": inscode,
+      "isActive": false,
+      "isVerified": false
     };
 
     final countryJson =

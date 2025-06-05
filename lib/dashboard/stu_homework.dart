@@ -112,7 +112,7 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 10),
-                          child: Text(questiondata.question!),
+                          child: Html(data:questiondata.question!),
                         ),
                       ),
                     ],

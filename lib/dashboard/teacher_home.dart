@@ -33,7 +33,7 @@ class _ProfileEditState extends State<TeacherHome> {
   List<SubjectDetail> sublist = [];
   bool isLoading = false;
   String type = "";
-
+  String icode = "";
   String bclass = "";
   String bsec = "";
   late String selectedClass = "";
@@ -60,6 +60,7 @@ class _ProfileEditState extends State<TeacherHome> {
     sublist = data.data!.subjectDetail!;
     batches = dashboardController.batchlist;
     type = dashboardController.profileModel?.data?.type! ?? "";
+    icode = dashboardController.profileModel?.data?.instituteCode! ?? "";
     setState(() {
       isload = false;
     });
@@ -262,7 +263,10 @@ class _ProfileEditState extends State<TeacherHome> {
                                                   sub_id: batches[index]
                                                       .subject!
                                                       .sId!,
-                                                      sec_id: batches[index].sectionId!,
+                                                  sec_id:
+                                                      batches[index].sectionId!,
+                                                  isClassteacher: batches[index]
+                                                      .classTeacher!,
                                                 )),
                                       );
                                     },
@@ -310,7 +314,7 @@ class _ProfileEditState extends State<TeacherHome> {
                 //_showdoneBatchBottomSheet(context);
               } else if (index == 2) {
                 // Assuming index 1 is for creating batch
-                _showFollowBatchBottomSheet(context);
+                _showFollowBatchBottomSheetTeacher(context);
                 //_showdoneBatchBottomSheet(context);
               } else {
                 dashboardController.changeIndex(index);
@@ -325,7 +329,7 @@ class _ProfileEditState extends State<TeacherHome> {
     return DateFormat('EEE, dd MMM').format(dateTime);
   }
 
-  void _showFollowBatchBottomSheet(BuildContext context) {
+  void _showFollowBatchBottomSheetTeacher(BuildContext context) {
     TextEditingController tb_controller = TextEditingController();
     bool isVisible = false;
     String institution = '';
@@ -446,7 +450,11 @@ class _ProfileEditState extends State<TeacherHome> {
                             snackPosition: SnackPosition.BOTTOM);
                         return;
                       }
-
+                      if (institution.isEmpty && className.isEmpty) {
+                        Get.snackbar("Message", "Enter a valid Batch code",
+                            snackPosition: SnackPosition.BOTTOM);
+                        return;
+                      }
                       isLoading = true;
                       BinfoModel dta = await dashboardController.postbatchreq(
                           tb_controller.text.toString().trim(), "", "");
@@ -483,8 +491,8 @@ class _ProfileEditState extends State<TeacherHome> {
     );
   }
 
-  String generateBatchCode(
-      String sessionYear, String className, String type, String section) {
+  String generateBatchCode(String sessionYear, String className, String type,
+      String section, String code) {
     final random = Random();
     const letters = 'abcdefghijklmnopqrstuvwxyz';
 
@@ -502,10 +510,10 @@ class _ProfileEditState extends State<TeacherHome> {
         ? sessionYear.substring(sessionYear.length - 2)
         : sessionYear;
 
-    String ty = type.isNotEmpty ? type[0] : "SC";
+    String ty = type.isNotEmpty ? type[0] : "S";
 
     // Combine to form batch code
-    return '$sessionSuffix$ty$randomPart${className}${section.toUpperCase()}';
+    return '$sessionSuffix$ty$code${className}${section.toUpperCase()}';
   }
 
   void _showCreateBatchBottomSheet(BuildContext context) {
@@ -587,8 +595,8 @@ class _ProfileEditState extends State<TeacherHome> {
                     selectedClass = selectedClass1!.class1!;
                     if (!selectedClass.isEmpty && !sec.isEmpty) {
                       int? cls = extractClassNumber(selectedClass);
-                      String bcode =
-                          generateBatchCode('2025', cls.toString(), type, sec);
+                      String bcode = generateBatchCode(
+                          '2025', cls.toString(), type, sec, icode);
                       batchController.text = bcode;
                     }
                   }
@@ -639,8 +647,8 @@ class _ProfileEditState extends State<TeacherHome> {
                     );
                     sec = selectedsec!.section!;
                     int? cls = extractClassNumber(selectedClass);
-                    String bcode =
-                        generateBatchCode('2025', cls.toString(), type, sec);
+                    String bcode = generateBatchCode(
+                        '2025', cls.toString(), type, sec, icode);
                     batchController.text = bcode;
                   }
                 },

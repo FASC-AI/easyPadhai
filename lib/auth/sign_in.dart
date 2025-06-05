@@ -29,7 +29,7 @@ class _EmailState extends State<Email> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       appBar: PreferredSize(
+      appBar: PreferredSize(
           preferredSize: const Size.fromHeight(0.0),
           child: AppBar(
             backgroundColor: AppColors.theme,
@@ -58,30 +58,30 @@ class _EmailState extends State<Email> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Get.back();
-                        },
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              'assets/back.png',
-                              fit: BoxFit.fill,
-                              width: MediaQuery.of(context).size.width * .065,
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .02,
-                            ),
-                            Text(
-                              "Back",
-                              style: TextStyle(
-                                  color: AppColors.white,
-                                  fontSize:
-                                      MediaQuery.of(context).size.width * .035),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     Get.back();
+                      //   },
+                      //   child: Row(
+                      //     children: [
+                      //       Image.asset(
+                      //         'assets/back.png',
+                      //         fit: BoxFit.fill,
+                      //         width: MediaQuery.of(context).size.width * .065,
+                      //       ),
+                      //       SizedBox(
+                      //         width: MediaQuery.of(context).size.width * .02,
+                      //       ),
+                      //       Text(
+                      //         "Back",
+                      //         style: TextStyle(
+                      //             color: AppColors.white,
+                      //             fontSize:
+                      //                 MediaQuery.of(context).size.width * .035),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                       SizedBox(
                         height: MediaQuery.of(context).size.width * .1,
                       ),
@@ -118,8 +118,18 @@ class _EmailState extends State<Email> {
                         height: MediaQuery.of(context).size.height * .005,
                       ),
                       CustomInput(
-                        label: 'Enter Email',
+                        label: 'Email is required',
                         controller: emailController,
+                        validation: (value) {
+                          bool isEmail =
+                              RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")
+                                  .hasMatch(value!);
+
+                          if (!isEmail) {
+                            return "Please enter a valid email";
+                          }
+                          return null;
+                        },
                       ),
                       SizedBox(
                         height: MediaQuery.of(context).size.height * .02,

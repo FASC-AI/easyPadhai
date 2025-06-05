@@ -1,10 +1,12 @@
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
+import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_button.dart';
 import 'package:easy_padhai/custom_widgets/custom_input.dart';
 import 'package:easy_padhai/custom_widgets/text.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class ForgotPinEmail extends StatefulWidget {
@@ -18,12 +20,18 @@ class _ForgotPinEmailState extends State<ForgotPinEmail> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  AuthController authController = Get.find();
+  AuthController dashController = Get.find();
   final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(0.0),
+          child: AppBar(
+            backgroundColor: AppColors.theme,
+            systemOverlayStyle: SystemUiOverlayStyle.light,
+          )),
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -47,30 +55,30 @@ class _ForgotPinEmailState extends State<ForgotPinEmail> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Get.back();
-                        },
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              'assets/back.png',
-                              fit: BoxFit.fill,
-                              width: MediaQuery.of(context).size.width * .065,
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .02,
-                            ),
-                            Text(
-                              "Back",
-                              style: TextStyle(
-                                  color: AppColors.white,
-                                  fontSize:
-                                      MediaQuery.of(context).size.width * .035),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     Get.back();
+                      //   },
+                      //   child: Row(
+                      //     children: [
+                      //       Image.asset(
+                      //         'assets/back.png',
+                      //         fit: BoxFit.fill,
+                      //         width: MediaQuery.of(context).size.width * .065,
+                      //       ),
+                      //       SizedBox(
+                      //         width: MediaQuery.of(context).size.width * .02,
+                      //       ),
+                      //       Text(
+                      //         "Back",
+                      //         style: TextStyle(
+                      //             color: AppColors.white,
+                      //             fontSize:
+                      //                 MediaQuery.of(context).size.width * .035),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                       SizedBox(
                         height: MediaQuery.of(context).size.width * .1,
                       ),
@@ -109,6 +117,16 @@ class _ForgotPinEmailState extends State<ForgotPinEmail> {
                       CustomInput(
                         label: 'Enter Email',
                         controller: emailController,
+                        validation: (value) {
+                          bool isEmail =
+                              RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")
+                                  .hasMatch(value!);
+
+                          if (!isEmail) {
+                            return "Please enter a valid email";
+                          }
+                          return null;
+                        },
                       ),
                       SizedBox(
                         height: MediaQuery.of(context).size.height * .025,
@@ -157,7 +175,26 @@ class _ForgotPinEmailState extends State<ForgotPinEmail> {
                         child: CustomButton(
                           text: 'Continue',
                           onTap: () async {
-                            Get.toNamed(RouteName.forgotPin);
+                            emailController.text.isNotEmpty
+                                ? {
+                                    dashController.forgetEmail.value =
+                                        emailController.text.toString().trim(),
+                                    Get.toNamed(RouteName.forgotPin),
+                                  }
+                                : Get.snackbar(
+                                    '',
+                                    '',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: AppColors.red,
+                                    titleText: const SizedBox.shrink(),
+                                    messageText: const Text(
+                                      'Enter email Id',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  );
                           },
                         ),
                       ),

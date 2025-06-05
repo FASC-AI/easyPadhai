@@ -6,6 +6,7 @@ import 'package:easy_padhai/custom_widgets/otp_passcode.dart';
 import 'package:easy_padhai/custom_widgets/text.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class VerifyMpin extends StatefulWidget {
@@ -37,6 +38,12 @@ class _VerifyMPinState extends State<VerifyMpin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(0.0),
+          child: AppBar(
+            backgroundColor: AppColors.theme,
+            systemOverlayStyle: SystemUiOverlayStyle.light,
+          )),
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -60,30 +67,30 @@ class _VerifyMPinState extends State<VerifyMpin> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Get.back();
-                        },
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              'assets/back.png',
-                              fit: BoxFit.fill,
-                              width: MediaQuery.of(context).size.width * .065,
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .02,
-                            ),
-                            Text(
-                              "Back",
-                              style: TextStyle(
-                                  color: AppColors.white,
-                                  fontSize:
-                                      MediaQuery.of(context).size.width * .035),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // GestureDetector(
+                      //   onTap: () {
+                      //     Get.back();
+                      //   },
+                      //   child: Row(
+                      //     children: [
+                      //       Image.asset(
+                      //         'assets/back.png',
+                      //         fit: BoxFit.fill,
+                      //         width: MediaQuery.of(context).size.width * .065,
+                      //       ),
+                      //       SizedBox(
+                      //         width: MediaQuery.of(context).size.width * .02,
+                      //       ),
+                      //       Text(
+                      //         "Back",
+                      //         style: TextStyle(
+                      //             color: AppColors.white,
+                      //             fontSize:
+                      //                 MediaQuery.of(context).size.width * .035),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                       SizedBox(
                         height: MediaQuery.of(context).size.width * .1,
                       ),
@@ -133,7 +140,7 @@ class _VerifyMPinState extends State<VerifyMpin> {
                       ),
                       GestureDetector(
                           onTap: () {
-                            Get.toNamed(RouteName.forgotPin);
+                            Get.toNamed(RouteName.forgotPinEmail);
                           },
                           child: SizedBox(
                             width: MediaQuery.of(context).size.width * .85,

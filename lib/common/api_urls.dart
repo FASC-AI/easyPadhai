@@ -71,4 +71,9 @@ class ApiUrls {
   static const String deleteS = 'api/v1/request/removestudent';
   static const String testM = 'api/v1/test/studentmarkslist';
   static const String vid = 'api/v1/lesson/';
+  static const String latAssign = 'api/v1/studentnotification/lasthomework';
+  static const String submitLesson = 'api/v1/lessontest';
+  static const String sendMsg = 'api/v1/studentnotification/sendmessage';
+  static const String getleaderBoard = 'api/v1/test/leaderboard';
+  static const String postmpin = 'api/v1/auth/reset-mpin';
 }

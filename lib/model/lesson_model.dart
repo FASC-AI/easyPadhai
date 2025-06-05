@@ -36,13 +36,15 @@ class LData {
   bool? status;
   List<Topics>? topics;
   String? lessonDescription;
+  String? videoTutorialLink;
 
   LData(
       {this.sId,
       this.lesson,
       this.status,
       this.topics,
-      this.lessonDescription});
+      this.lessonDescription,
+      this.videoTutorialLink});
 
   LData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -55,6 +57,7 @@ class LData {
       });
     }
     lessonDescription = json['lessonDescription'];
+    videoTutorialLink = json['videoTutorialLink'];
   }
 
   Map<String, dynamic> toJson() {
@@ -66,6 +69,7 @@ class LData {
       data['topics'] = this.topics!.map((v) => v.toJson()).toList();
     }
     data['lessonDescription'] = this.lessonDescription;
+    data['videoTutorialLink'] = this.videoTutorialLink;
     return data;
   }
 }

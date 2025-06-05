@@ -1,10 +1,12 @@
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
+import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_button.dart';
 import 'package:easy_padhai/custom_widgets/otp_passcode.dart';
 import 'package:easy_padhai/custom_widgets/text.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class ForgotPIN extends StatefulWidget {
@@ -15,7 +17,7 @@ class ForgotPIN extends StatefulWidget {
 }
 
 class _ForgotPINState extends State<ForgotPIN> {
-  AuthController authController = Get.find();
+  AuthController dashboardController = Get.find();
   final formKey = GlobalKey<FormState>();
 
   String firstPin = "";
@@ -56,6 +58,12 @@ class _ForgotPINState extends State<ForgotPIN> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+       appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(0.0),
+          child: AppBar(
+            backgroundColor: AppColors.theme,
+            systemOverlayStyle: SystemUiOverlayStyle.light,
+          )),
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -174,8 +182,11 @@ class _ForgotPINState extends State<ForgotPIN> {
                           text: 'Reset',
                           onTap: () async {
                             if (firstPin.isNotEmpty && firstPin == confirmPin) {
-                              await authController.getClassList('');
-                              Get.toNamed(RouteName.classSelect);
+                              String email =
+                                  dashboardController.forgetEmail.value;
+                              await dashboardController.resetMpin(
+                                  email, confirmPin);
+                              //  Get.toNamed(RouteName.classSelect);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(

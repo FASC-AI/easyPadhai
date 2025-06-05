@@ -8,13 +8,17 @@ import 'package:easy_padhai/dashboard/popup1.dart';
 import 'package:easy_padhai/dashboard/popup2.dart';
 import 'package:easy_padhai/dashboard/popup3.dart';
 import 'package:easy_padhai/dashboard/question_paper.dart';
+import 'package:easy_padhai/dashboard/testview.dart';
 import 'package:easy_padhai/model/book_model.dart';
 import 'package:easy_padhai/model/bstudent_model.dart';
+import 'package:easy_padhai/model/latest_assgn_model.dart';
 import 'package:easy_padhai/model/online_test_model1.dart';
 import 'package:easy_padhai/model/test_marks_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
@@ -23,12 +27,14 @@ class TeacherClassScreen extends StatefulWidget {
   String id;
   String sub_id;
   String sec_id;
+  bool isClassteacher;
   TeacherClassScreen(
       {super.key,
       required this.title,
       required this.id,
       required this.sub_id,
-      required this.sec_id});
+      required this.sec_id,
+      required this.isClassteacher});
 
   @override
   State<TeacherClassScreen> createState() => _ProfileEditState();
@@ -44,6 +50,7 @@ class _ProfileEditState extends State<TeacherClassScreen> {
   bool isload = false;
   String id = "";
   String batchClassId = "";
+  LatestAssgnModelData? latestAssgnModelData;
   @override
   void initState() {
     // TODO: implement initState
@@ -66,6 +73,8 @@ class _ProfileEditState extends State<TeacherClassScreen> {
     students = dashboardController.studentList;
     await dashboardController.getStuTestMarks(batchClassId, id);
     markList = dashboardController.marksList;
+    await dashboardController.getAssignment(batchClassId, id);
+    latestAssgnModelData = dashboardController.assignData;
     setState(() {
       isload = false;
     });
@@ -108,18 +117,20 @@ class _ProfileEditState extends State<TeacherClassScreen> {
                   // Tab Content
                   Expanded(
                     child: Container(
-                        padding: const EdgeInsets.all(12),
-                        child: selectedTabIndex == 0
-                            ? AssignmentsTab(booklist, id)
-                            : selectedTabIndex == 1
-                                ? TestsTab(
-                                    markList: markList,
-                                  )
-                                : selectedTabIndex == 2
-                                    ? StudentSelectionScreen(
-                                        students: students,
-                                      )
-                                    : null),
+                      padding: const EdgeInsets.all(12),
+                      child: selectedTabIndex == 0
+                          ? AssignmentsTab(booklist, id, latestAssgnModelData)
+                          : selectedTabIndex == 1
+                              ? TestsTab(markList: markList)
+                              : selectedTabIndex == 2
+                                  ? StudentSelectionScreen(
+                                      students: students,
+                                      isClassteacher: widget.isClassteacher,
+                                      class_id: batchClassId,
+                                      sub_id: id,
+                                    )
+                                  : null,
+                    ),
                   ),
                 ],
               ),
@@ -134,7 +145,7 @@ class _ProfileEditState extends State<TeacherClassScreen> {
               reverse: false,
             )),
       bottomNavigationBar: Obx(() => CustomBottomNavBar3(
-            currentIndex: dashboardController.currentIndex.value,
+            currentIndex: dashboardController.currentIndex2.value,
             onTap: (index) {
               if (index == 1) {
                 // Assuming index 1 is for creating batch
@@ -185,8 +196,15 @@ class _ProfileEditState extends State<TeacherClassScreen> {
                       )),
             );
           },
-          onOptionSelect: (test) {
-            print("Options for $test");
+          onOptionSelect: (testList) {
+            //print("Options for $test");
+            Navigator.of(context).pop();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => TestQuestionListScreen(testList: testList),
+              ),
+            );
           },
         );
       },
@@ -198,7 +216,7 @@ class _ProfileEditState extends State<TeacherClassScreen> {
       context: context,
       builder: (BuildContext context) {
         return OfflineTestListPopup(
-          testList: testList,
+          testList: [],
           onCreateNew: () {
             Navigator.of(context).pop();
             Navigator.push(
@@ -243,107 +261,100 @@ class _ProfileEditState extends State<TeacherClassScreen> {
     );
   }
 }
+// replace with your controller import
 
 class AssignmentsTab extends StatelessWidget {
   final List<Books> booklist;
   final String id;
+  final LatestAssgnModelData? latestAssgnModelData;
   final DashboardController dashboardController = Get.find();
 
-  // 🔄 Corrected the constructor to initialize the class variables
-  AssignmentsTab(this.booklist, this.id, {super.key});
+  AssignmentsTab(this.booklist, this.id, this.latestAssgnModelData,
+      {super.key});
 
   String formatDate(String isoDate) {
-    final dateTime = DateTime.parse(isoDate).toLocal(); // Convert to local time
-    return DateFormat('EEE, dd MMM').format(dateTime);
+    try {
+      final dateTime = DateTime.parse(isoDate).toLocal();
+      return DateFormat('EEE, dd MMM').format(dateTime);
+    } catch (e) {
+      return isoDate; // fallback if date format fails
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.only(left: 10, right: 10),
-      children: [
-        Container(
-          width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: List.generate(
-              dashboardController.tNoti.length,
-              (index) {
-                String formatted =
-                    formatDate(dashboardController.tNoti[index].date!);
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (dashboardController.tNoti[index].message! != "")
-                        Text(
-                          formatted,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      const SizedBox(height: 8),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Html(
-                              data: dashboardController.tNoti[index].message!,
-                              style: {
-                                "body": Style(
-                                  margin: Margins.zero,
-                                  fontSize: FontSize.medium,
-                                ),
-                                "p": Style(
-                                  margin: Margins.zero,
-                                ),
-                              },
-                            ),
-                          ),
-                        ],
+    final formattedDate = latestAssgnModelData?.publishedDate != null
+        ? formatDate(latestAssgnModelData!.publishedDate!)
+        : "";
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Show assignment section if available
+          if (latestAssgnModelData?.question != null &&
+              latestAssgnModelData!.question!.isNotEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  formattedDate,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+                ...latestAssgnModelData!.question!.map((q) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Html(
+                        data: q.question ?? '',
+                        //  style: const TextStyle(fontSize: 14),
                       ),
-                    ],
-                  ),
-                );
-              },
+                    )),
+                const SizedBox(height: 16),
+              ],
             ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // 2 items per row
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 1, // Adjust as needed
-          ),
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: booklist.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => LessonScreen(
-                      title: booklist[index].book!,
-                      subId: id,
-                      bookId: booklist[index].sId!,
+
+          // Always show books
+          GridView.builder(
+            itemCount: booklist.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1,
+            ),
+            itemBuilder: (context, index) {
+              final book = booklist[index];
+              final imageUrl = book.images != null && book.images!.isNotEmpty
+                  ? book.images!.first.url ?? ""
+                  : "";
+
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LessonScreen(
+                        title: book.book ?? "",
+                        subId: id,
+                        bookId: book.sId ?? "",
+                      ),
                     ),
-                  ),
-                );
-              },
-              child: buildTile(
-                label: booklist[index].book!,
-                imageAsset: booklist[index].images!.isNotEmpty
-                    ? booklist[index].images![0].url!
-                    : "", // Replace with your image
-                color: Colors.black87,
-              ),
-            );
-          },
-        ),
-      ],
+                  );
+                },
+                child: buildTile(
+                  label: book.book ?? "",
+                  imageAsset: imageUrl,
+                  color: Colors.black87,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -357,13 +368,13 @@ class AssignmentsTab extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.black87,
+          color: color,
           image: imageAsset.isNotEmpty
               ? DecorationImage(
                   image: NetworkImage(imageAsset),
                   fit: BoxFit.cover,
                 )
-              : null, // Show only if there's an image
+              : null,
         ),
         alignment: Alignment.bottomLeft,
         padding: const EdgeInsets.all(12),
@@ -382,6 +393,7 @@ class AssignmentsTab extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
                 maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -474,7 +486,14 @@ class TestsTab extends StatelessWidget {
 
 class StudentSelectionScreen extends StatefulWidget {
   List<StudentModelData> students;
-  StudentSelectionScreen({required this.students});
+  bool isClassteacher;
+  String class_id;
+  String sub_id;
+  StudentSelectionScreen(
+      {required this.students,
+      required this.isClassteacher,
+      required this.class_id,
+      required this.sub_id});
   @override
   _StudentSelectionScreenState createState() => _StudentSelectionScreenState();
 }
@@ -482,7 +501,9 @@ class StudentSelectionScreen extends StatefulWidget {
 class _StudentSelectionScreenState extends State<StudentSelectionScreen> {
   List<StudentModelData> students = [];
   DashboardController dashboardController = Get.find();
-
+  TextEditingController messageController = TextEditingController();
+  bool isVisible = false;
+  bool isVisible1 = false;
   bool get isAllSelected => students.every((s) => s.isSelected);
   @override
   void initState() {
@@ -570,6 +591,7 @@ class _StudentSelectionScreenState extends State<StudentSelectionScreen> {
             padding: const EdgeInsets.all(16.0),
             child: TextField(
               maxLines: 4,
+              controller: messageController,
               decoration: InputDecoration(
                 hintText: "Type your message...",
                 border: OutlineInputBorder(
@@ -606,37 +628,121 @@ class _StudentSelectionScreenState extends State<StudentSelectionScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
-                Expanded(
-                  child: ElevatedButton(
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                    onPressed: () async {
-                      List<String> selectedStudentIds = students
-                          .where((student) => student.isSelected)
-                          .map((student) => student.sId!)
-                          .toList();
+                if (widget.isClassteacher)
+                  Expanded(
+                    child: ElevatedButton(
+                      style:
+                          ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      onPressed: () async {
+                        List<String> selectedStudentIds = students
+                            .where((student) => student.isSelected)
+                            .map((student) => student.sId!)
+                            .toList();
+                        if (selectedStudentIds.isEmpty) {
+                          Get.snackbar("Message", "Please select students",
+                              snackPosition: SnackPosition.BOTTOM);
+                          return;
+                        }
+                        setState(() {
+                          isVisible = true;
+                        });
 
-                      print("Selected Student IDs: $selectedStudentIds");
-                      var res = await dashboardController
-                          .removeStu(selectedStudentIds);
-                      if (res != null) {
-                        Navigator.pop(context);
-                      }
-                    },
-                    child: const Text(
-                      "Remove Student",
-                      style: TextStyle(color: Colors.white),
+                        // print("Selected Student IDs: $selectedStudentIds");
+
+                        var res = await dashboardController
+                            .removeStu(selectedStudentIds);
+                        if (res != null) {
+                          Navigator.pop(context);
+                          setState(() {
+                            isVisible = false;
+                          });
+                        } else {
+                          setState(() {
+                            isVisible = false;
+                          });
+                        }
+                      },
+                      child: !isVisible
+                          ? Text(
+                              "Remove Student",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize:
+                                    MediaQuery.of(context).size.width * .03,
+                              ),
+                            )
+                          : SizedBox(
+                              width: 30,
+                              height: 30,
+                              child: Lottie.asset(
+                                'assets/loading.json',
+                                width: MediaQuery.of(context).size.width,
+                                height: MediaQuery.of(context).size.height,
+                                repeat: true,
+                                animate: true,
+                                reverse: false,
+                              ),
+                            ),
                     ),
                   ),
-                ),
                 SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xff186BA5)),
-                    onPressed: () {},
-                    child: Text("Send Message",
-                        style: TextStyle(color: Colors.white)),
+                    onPressed: () async {
+                      List<String> selectedStudentIds = students
+                          .where((student) => student.isSelected)
+                          .map((student) => student.sId!)
+                          .toList();
+                      if (messageController.text.isEmpty) {
+                        Get.snackbar(
+                            "Message", "Please write any message to send",
+                            snackPosition: SnackPosition.BOTTOM);
+                        return;
+                      }
+                      if (selectedStudentIds.isEmpty) {
+                        Get.snackbar("Message", "Please select students",
+                            snackPosition: SnackPosition.BOTTOM);
+                        return;
+                      }
+                      setState(() {
+                        isVisible1 = true;
+                      });
+                      var res = await dashboardController.sendMesgStu(
+                          selectedStudentIds,
+                          messageController.text.toString().trim(),
+                          widget.class_id,
+                          widget.sub_id);
+                      if (res != null) {
+                        Navigator.pop(context);
+                        setState(() {
+                          isVisible1 = false;
+                        });
+                      } else {
+                        setState(() {
+                          isVisible1 = false;
+                        });
+                      }
+                    },
+                    child: !isVisible1
+                        ? Text("Send Message",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: MediaQuery.of(context).size.width * .03,
+                            ))
+                        : SizedBox(
+                            width: 30,
+                            height: 30,
+                            child: Lottie.asset(
+                              'assets/loading.json',
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height,
+                              repeat: true,
+                              animate: true,
+                              reverse: false,
+                            ),
+                          ),
                   ),
                 ),
               ],

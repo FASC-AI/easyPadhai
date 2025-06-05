@@ -1,16 +1,18 @@
 import 'package:easy_padhai/common/constant.dart';
+import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SubjectAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final String teacherName;
 
-  const SubjectAppBar({
+  SubjectAppBar({
     super.key,
     required this.title,
     required this.teacherName,
   });
-
+  DashboardController dashboardController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -71,5 +73,5 @@ class SubjectAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(140);
+  Size get preferredSize => Size.fromHeight(teacherName.isNotEmpty ? 140 : 80);
 }

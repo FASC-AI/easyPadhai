@@ -42,6 +42,7 @@ class ProfileData {
   bool? institutionRequired;
   bool? institution;
   String? instituteId;
+  String? instituteCode;
   State1? state;
   State1? district;
 
@@ -62,6 +63,7 @@ class ProfileData {
       this.institutionRequired,
       this.institution,
       this.instituteId,
+      this.instituteCode,
       this.state,
       this.district});
 
@@ -99,9 +101,18 @@ class ProfileData {
     institutionRequired = json['institutionRequired'];
     institution = json['institution'];
     instituteId = json['instituteId'];
-    state = json['state'] != null ? new State1.fromJson(json['state']) : null;
-    district =
-        json['district'] != null ? new State1.fromJson(json['district']) : null;
+    instituteCode = json['instituteCode'];
+    state = json.containsKey('state') && json['state'] != null
+        ? State1.fromJson(json['state'])
+        : null;
+
+    // Handle district - check if key exists and is non-null
+    district = json.containsKey('district') && json['district'] != null
+        ? State1.fromJson(json['district'])
+        : null;
+    // state = json['state'] != null ? new State1.fromJson(json['state']) : null;
+    // district =
+    //     json['district'] != null ? new State1.fromJson(json['district']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -120,13 +131,20 @@ class ProfileData {
       data['sectionDetail'] =
           this.sectionDetail!.map((v) => v.toJson()).toList();
     }
-    if (this.state != null) {
-      data['state'] = this.state!.toJson();
+    // if (this.state != null) {
+    //   data['state'] = this.state!.toJson();
+    // }
+    // if (this.district != null) {
+    //   data['district'] = this.district!.toJson();
+    // }
+    if (state != null) {
+      data['state'] = state!.toJson();
     }
-    if (this.district != null) {
-      data['district'] = this.district!.toJson();
+    if (district != null) {
+      data['district'] = district!.toJson();
     }
     data['institute'] = this.institute;
+    data['instituteCode'] = this.instituteCode;
     data['type'] = this.type;
     data['picture'] = this.picture;
     data['address1'] = this.address1;

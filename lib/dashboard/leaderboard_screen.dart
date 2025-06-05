@@ -1,4 +1,12 @@
+import 'package:easy_padhai/controller/dashboard_controller.dart';
+import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
+import 'package:easy_padhai/model/leader_model.dart';
+import 'package:easy_padhai/model/profile_model.dart';
+import 'package:easy_padhai/model/test_marks_model.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import 'package:lottie/lottie.dart';
 
 class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({Key? key}) : super(key: key);
@@ -9,162 +17,254 @@ class LeaderboardScreen extends StatefulWidget {
 
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
   int _selectedTabIndex = 0;
-  final List<String> _tabs = ['X', 'XI', 'XII'];
+  late List<ClassDetail> _tabs = [];
+  List<LeaderModelData> _leaderboard = [];
+  List<LeaderModelData1> _leaderboardData = [];
+  DashboardController dashboardController = Get.find();
+  List<TestMarksModelData> markList = [];
+  String subId = "";
+  bool isload = false;
 
-  final List<Map<String, dynamic>> _leaderboardData = [
-    {
-      'name': 'Archana Sharma',
-      'score': 20,
-      'date': '27 Dec, 2024',
-    },
-    {
-      'name': 'Rohit Sharma',
-      'score': 18,
-      'date': '27 Dec, 2024',
-    },
-    {
-      'name': 'Rohit Sharma',
-      'score': 17,
-      'date': '27 Dec, 2024',
-    },
-    {
-      'name': 'Abhishek Kumar Jha',
-      'score': 16,
-      'date': '27 Dec, 2024',
-    },
-    {
-      'name': 'Kritika Das',
-      'score': 14,
-      'date': '27 Dec, 2024',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    LoadData();
+  }
+
+  void LoadData() {
+    setState(() {
+      isload = true;
+    });
+    _tabs = dashboardController.profileModel?.data?.classDetail! ?? [];
+    subId =
+        dashboardController.profileModel?.data?.subjectDetail![0].sId! ?? "";
+    getLeader();
+    getAllMarks();
+    setState(() {
+      isload = false;
+    });
+  }
+
+  Future<void> getLeader() async {
+    String cls_id = _tabs[_selectedTabIndex].sId!;
+    await dashboardController.getleaderBoard(cls_id, subId);
+    setState(() {
+      if (dashboardController.leaderList.isNotEmpty) {
+        _leaderboard = dashboardController.leaderList;
+        if (_leaderboard.isNotEmpty) {
+          _leaderboardData = _leaderboard[0].data!;
+        }
+      } else {
+        _leaderboard = [];
+        _leaderboardData = [];
+      }
+    });
+  }
+
+  Future<void> getAllMarks() async {
+    String cls_id = _tabs[_selectedTabIndex].sId!;
+    await dashboardController.getStuTestMarks(cls_id, subId);
+    setState(() {
+      if (dashboardController.marksList.isNotEmpty) {
+        markList = dashboardController.marksList;
+      } else {
+        markList = [];
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Leaderboard',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
+      appBar: const CustomAppBar(
+        text: "Leaderboard",
       ),
-      body: Column(
-        children: [
-          // Tab Bar
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
-              borderRadius: BorderRadius.circular(25),
-            ),
-            child: Row(
-              children: List.generate(
-                _tabs.length,
-                (index) => Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => _selectedTabIndex = index),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: _selectedTabIndex == index
-                            ? const Color(0xFF1E88E5)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      child: Text(
-                        _tabs[index],
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: _selectedTabIndex == index
-                              ? Colors.white
-                              : Colors.black87,
-                          fontWeight: FontWeight.w600,
+      body: !isload
+          ? Column(
+              children: [
+                // Tab Bar
+                Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Row(
+                    children: List.generate(
+                      _tabs.length,
+                      (index) => Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedTabIndex = index;
+                            });
+                            getLeader();
+                            getAllMarks();
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            decoration: BoxDecoration(
+                              color: _selectedTabIndex == index
+                                  ? const Color(0xFF1E88E5)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            child: Text(
+                              _tabs[index].class1!,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: _selectedTabIndex == index
+                                    ? Colors.white
+                                    : Colors.black87,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          ),
 
-          // Leaderboard List
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 16,
-                bottom: MediaQuery.of(context).padding.bottom + 16,
-              ),
-              itemCount: _leaderboardData.length,
-              itemBuilder: (context, index) {
-                final data = _leaderboardData[index];
-                return Column(
-                  children: [
-                    LeaderboardItem(
-                      rank: index + 1,
-                      name: data['name'],
-                      score: data['score'],
-                      date: data['date'],
-                    ),
-                    if (index == 2)
-                      const SizedBox(height: 12), // Add space after top 3
-                  ],
-                );
-              },
-            ),
-          ),
+                // Leaderboard List - Now with dynamic height
+                Expanded(
+                  child: Column(
+                    children: [
+                      // Leaderboard List - Flexible part 1
+                      Flexible(
+                        flex: 2, // Takes 3 parts of available space
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.all(16),
+                          child: Column(
+                            children: List.generate(
+                              _leaderboardData.length,
+                              (index) {
+                                final data = _leaderboardData[index];
+                                String sanitizedUrl =
+                                    data.picture!.replaceAll('%20', '');
+                                return Column(children: [
+                                  LeaderboardItem(
+                                    rank: data.rank!,
+                                    name: data.name!,
+                                    score:
+                                        "${data.totalObtained}/${data.totalPossible}",
+                                    date: _leaderboard[0].publishedDate!,
+                                    img: sanitizedUrl,
+                                  ),
+                                  if (index == 2) const SizedBox(height: 12),
+                                ]);
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
 
-          // Date Filter Section
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  offset: const Offset(0, -2),
-                  blurRadius: 10,
+                      // Date Filter Section - Flexible part 2
+                      Flexible(
+                        flex: 8, // Takes 2 parts of available space
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                offset: const Offset(0, -2),
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: markList.isNotEmpty
+                              ? Padding(
+                                  padding: const EdgeInsets.all(16),
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: markList.length,
+                                    itemBuilder: (context, index) {
+                                      return Container(
+                                        margin:
+                                            const EdgeInsets.only(bottom: 8),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFF5F5F5),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: _buildDateFilterTile(
+                                          markList[index].publishedDate!,
+                                          markList[index].submissions ?? [],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                )
+                              : Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        'assets/no_notification.png', // Change with your icon/image path
+                                        height: 80,
+                                      ),
+                                      const SizedBox(height: 10),
+                                      const Text(
+                                        "No data available",
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  _buildDateFilterTile('Mon, 17 December 2024'),
-                  _buildDateFilterTile('Fri, 16 December 2024'),
-                  _buildDateFilterTile('Tue, 13 December 2024'),
-                  _buildDateFilterTile('Wed, 8 December 2024'),
-                ],
+            )
+          : Center(
+              child: Lottie.asset(
+                'assets/loading.json',
+                width: MediaQuery.of(context).size.width * .2,
+                height: MediaQuery.of(context).size.height * .2,
+                repeat: true,
+                animate: true,
+                reverse: false,
               ),
             ),
-          ),
-        ],
+    );
+  }
+
+  Widget studentScoreRow(String name, String score) {
+    final isAbsent = score.toLowerCase() == "ab";
+    return ListTile(
+      contentPadding: EdgeInsets.symmetric(vertical: 0),
+      title: Text(
+        overflow: TextOverflow.ellipsis,
+        name,
+        style: TextStyle(fontSize: 14),
+      ),
+      trailing: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: isAbsent ? Colors.red : Color(0xFF186BA5),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          score,
+          style: TextStyle(color: Colors.white, fontSize: 12),
+        ),
       ),
     );
   }
 
-  Widget _buildDateFilterTile(String date) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
+  Widget _buildDateFilterTile(String date, List<Submissions> students) {
+    return ExpansionTile(
+      title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
@@ -175,9 +275,25 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               color: Colors.black87,
             ),
           ),
-          const Icon(Icons.keyboard_arrow_down, color: Colors.black54),
+          //  const Icon(Icons.keyboard_arrow_down, color: Colors.black54),
         ],
       ),
+      children: [
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: students.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: studentScoreRow(
+                students[index].name ?? 'Unknown',
+                students[index].result ?? '0',
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }
@@ -185,16 +301,18 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 class LeaderboardItem extends StatelessWidget {
   final int rank;
   final String name;
-  final int score;
+  final String score;
   final String date;
+  final String img;
 
-  const LeaderboardItem({
-    Key? key,
-    required this.rank,
-    required this.name,
-    required this.score,
-    required this.date,
-  }) : super(key: key);
+  const LeaderboardItem(
+      {Key? key,
+      required this.rank,
+      required this.name,
+      required this.score,
+      required this.date,
+      required this.img})
+      : super(key: key);
 
   Color _getBackgroundColor() {
     switch (rank) {
@@ -246,7 +364,7 @@ class LeaderboardItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: _getBackgroundColor(),
-        borderRadius: _getBorderRadius(),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           if (!isTopRank)
             BoxShadow(
@@ -284,7 +402,7 @@ class LeaderboardItem extends StatelessWidget {
           CircleAvatar(
             radius: 20,
             backgroundImage: NetworkImage(
-              'https://picsum.photos/seed/$name/100/100', // Placeholder image
+              img, // Placeholder image
             ),
           ),
           const SizedBox(width: 12),
@@ -349,15 +467,6 @@ class LeaderboardItem extends StatelessWidget {
                         : const Color(0xFF1E88E5),
                   ),
                 ),
-                Text(
-                  '/20',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: isTopRank
-                        ? Colors.white.withOpacity(0.7)
-                        : Colors.black45,
-                  ),
-                ),
               ],
             ),
           ),
@@ -366,3 +475,5 @@ class LeaderboardItem extends StatelessWidget {
     );
   }
 }
+
+// Keep your LeaderboardItem class the same as before

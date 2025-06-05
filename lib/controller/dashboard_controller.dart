@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:easy_padhai/common/api_helper.dart';
 import 'package:easy_padhai/common/api_urls.dart';
 import 'package:easy_padhai/common/app_storage.dart';
+import 'package:easy_padhai/dashboard/pdf_open.dart';
 import 'package:easy_padhai/dashboard/stu_online_test.dart';
 import 'package:easy_padhai/model/banner_model.dart';
 import 'package:easy_padhai/model/batch_model.dart';
@@ -21,6 +22,8 @@ import 'package:easy_padhai/model/homework_model3.dart';
 import 'package:easy_padhai/model/image_model.dart';
 import 'package:easy_padhai/model/institution_list_model.dart';
 import 'package:easy_padhai/model/joinedModel.dart';
+import 'package:easy_padhai/model/latest_assgn_model.dart';
+import 'package:easy_padhai/model/leader_model.dart';
 import 'package:easy_padhai/model/lesson_model.dart';
 import 'package:easy_padhai/model/lesson_test_model.dart';
 import 'package:easy_padhai/model/noti_model.dart';
@@ -39,19 +42,26 @@ import 'package:easy_padhai/model/topic_model.dart';
 import 'package:easy_padhai/model/tpupdate_model.dart';
 import 'package:easy_padhai/model/video_clip_model.dart';
 import 'package:easy_padhai/route/route_name.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:image/image.dart' as img;
 
 import 'package:path/path.dart' as path;
+import 'package:url_launcher/url_launcher.dart';
 
 class DashboardController extends GetxController {
   RxBool isLoading = false.obs;
   ApiHelper apiHelper = ApiHelper();
   var currentIndex = 0.obs;
   var currentIndex1 = 0.obs;
+  var currentIndex2 = 0.obs;
   List<InstitutesList> institutiondataList = [];
   List<Banners> Bannerlist = [];
   List<Notifications> tNoti = [];
@@ -78,10 +88,15 @@ class DashboardController extends GetxController {
   RxString instituteName = ''.obs;
   RxBool isJoined = false.obs;
   RxBool isLoading4 = false.obs;
-  BatchId? batchData;
+  List<JoinedData> batchData = [];
   List<LessonTestModelData> lessonQList = [];
   List<TestMarksModelData> marksList = [];
+  List<LeaderModelData> leaderList = [];
   VideoClipModelData? vidList;
+  LatestAssgnModelData? assignData;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+ 
 
   @override
   void onInit() {
@@ -92,7 +107,29 @@ class DashboardController extends GetxController {
     // getBatch();
   }
 
-  void changeIndex(int index) {
+  Future<void> signOut() async {
+    try {
+      // Sign out from Firebase
+      await _auth.signOut();
+
+      // Sign out from Google
+      await _googleSignIn.signOut();
+      await _googleSignIn.disconnect();
+
+      // Clear local storage
+      //  await _storage.erase();
+
+      // Optional: Reset any state management (like GetX)
+      // Get.reset();
+
+      print('User signed out successfully');
+    } catch (e) {
+      print('Error signing out: $e');
+      throw Exception('Failed to sign out');
+    }
+  }
+
+  Future<void> changeIndex(int index) async {
     if (currentIndex.value == index) return;
     currentIndex.value = index;
     switch (index) {
@@ -106,6 +143,10 @@ class DashboardController extends GetxController {
         // Get.offAllNamed(RouteName.teacherHome);
         break;
       case 3:
+        await openWhatsAppChat(
+          phoneNumber: '+919810168391',
+          message: '',
+        );
         // Get.offAllNamed(RouteName.teacherHome);
         break;
       case 4:
@@ -114,7 +155,7 @@ class DashboardController extends GetxController {
     }
   }
 
-  void changeIndex1(int index) {
+  Future<void> changeIndex1(int index) async {
     if (currentIndex1.value == index) return;
     currentIndex1.value = index;
     switch (index) {
@@ -122,10 +163,14 @@ class DashboardController extends GetxController {
         Get.offAllNamed(RouteName.studentHome);
         break;
       case 1:
-        Get.offAllNamed(RouteName.joinBatch);
+        // Get.offAllNamed(RouteName.joinBatch);
         break;
       case 2:
         //Get.offAllNamed(RouteName.support);
+        await openWhatsAppChat(
+          phoneNumber: '+918882130397',
+          message: '',
+        );
         break;
       case 3:
         Get.offAllNamed(RouteName.profile);
@@ -133,9 +178,9 @@ class DashboardController extends GetxController {
     }
   }
 
-  void changeIndex3(int index) {
-    if (currentIndex.value == index) return;
-    currentIndex.value = index;
+  Future<void> changeIndex3(int index) async {
+    if (currentIndex2.value == index) return;
+    currentIndex2.value = index;
     switch (index) {
       case 0:
         Get.offAllNamed(RouteName.teacherHome);
@@ -145,10 +190,33 @@ class DashboardController extends GetxController {
         break;
       case 2:
         // Get.offAllNamed(RouteName.teacherHome);
+        await openWhatsAppChat(
+          phoneNumber: '+919810168391',
+          message: '',
+        );
         break;
       case 3:
         Get.offAllNamed(RouteName.profile);
         break;
+    }
+  }
+
+  Future<void> openWhatsAppChat({
+    required String phoneNumber,
+    String message = '',
+  }) async {
+    // Format phone number (remove any non-digit characters)
+    final formattedNumber = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+
+    // Create the WhatsApp URL
+    final url = Uri.parse(
+        'https://wa.me/$formattedNumber?text=${Uri.encodeComponent(message)}');
+
+    // Try launching WhatsApp
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch WhatsApp';
     }
   }
 
@@ -252,7 +320,7 @@ class DashboardController extends GetxController {
         uNoti.clear();
         List<Notifications> list = response.data!.notifications!;
         for (int i = 0; i < list.length; i++) {
-          if (list[i].type![0].nameEn == "teacher") {
+          if (list[i].type![0].nameEn == "Teacher") {
             tNoti.add(list[i]);
           } else {
             uNoti.add(list[i]);
@@ -488,11 +556,13 @@ class DashboardController extends GetxController {
     isLoading(true);
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {
-      "lessonId": lesson_id,
-      "topicId": id,
-      "status": true
-    };
+    Map<String, dynamic>? queryParameter;
+    if (id.isEmpty) {
+      queryParameter = {"lessonId": lesson_id, "status": true};
+    } else {
+      queryParameter = {"lessonId": lesson_id, "topicId": id, "status": true};
+    }
+    print(queryParameter);
     final profileJson =
         await apiHelper.patch(ApiUrls.updatetopic, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -532,13 +602,21 @@ class DashboardController extends GetxController {
     isLoading(false);
   }
 
-  getHWQbyTopic(String id) async {
+  getHWQbyTopic(String id, String tid) async {
     isLoading(true);
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {
-      "topicId": id,
-    };
+    Map<String, dynamic>? queryParameter;
+    if (tid.isEmpty) {
+      queryParameter = {
+        "lessonId": id,
+      };
+    } else {
+      queryParameter = {
+        "topicId": tid,
+      };
+    }
+
     final profileJson =
         await apiHelper.get(ApiUrls.getques, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -621,9 +699,12 @@ class DashboardController extends GetxController {
     if (profileJson != null && profileJson != false) {
       Joinedmodel response = Joinedmodel.fromJson(profileJson);
       if (response.status == true) {
-        isJoined.value = response.data!.approve!;
+        if (response.data!.isNotEmpty) {
+          isJoined.value = true;
+        }
+
         // Update box storage with profile data
-        batchData = response.data!.batchId!;
+        batchData = response.data!;
         isLoading(false);
         return response.data!;
       } else {
@@ -645,6 +726,7 @@ class DashboardController extends GetxController {
       "classId": classid,
       "sections": secid
     };
+    print(queryParameter);
     final profileJson = await apiHelper.get(ApiUrls.geth, queryParameter, data);
     if (profileJson != null && profileJson != false) {
       HomeworkModel2 response = HomeworkModel2.fromJson(profileJson);
@@ -931,16 +1013,77 @@ class DashboardController extends GetxController {
     //  print("picture :  ${userPic()}");
   }
 
+  // Future<void> downloadAndOpenPdf(
+  //   String sub,
+  //   String classid,
+  //   String top,
+  //   String lesson,
+  //   List<String> quesId,
+  //   String sess,
+  //   String dur,
+  //   String book,
+  // ) async {
+  //   final url =
+  //       Uri.parse('https://codesuperb.com/api/v1/offlinetest/previewtest');
+
+  //   Map<String, dynamic> body = {
+  //     "subjectId": sub,
+  //     "classId": classid,
+  //     "topicId": top,
+  //     "lessonId": lesson,
+  //     "testIds": quesId,
+  //     "session": sess,
+  //     "duration": dur,
+  //     "bookId": book,
+  //   };
+
+  //   final tokenValue = await token(); // get token from your token() method
+
+  //   try {
+  //     final response = await http.post(
+  //       url,
+  //       headers: {
+  //         'Authorization': 'Bearer $tokenValue',
+  //         'Accept': 'application/pdf',
+  //         'Content-Type': 'application/json', // Add this line
+  //       },
+  //       body: jsonEncode(body),
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final bytes = response.bodyBytes;
+
+  //       final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  //       final dir = await getTemporaryDirectory();
+  //       final file = File('${dir.path}/$timestamp-offline-paper.pdf');
+
+  //       await file.writeAsBytes(bytes);
+
+  //       await OpenFile.open(file.path);
+  //       Get.snackbar("Message", response.statusCode as String,
+  //           snackPosition: SnackPosition.BOTTOM);
+  //     } else {
+  //       print('Failed to load PDF: ${response.statusCode}');
+  //       print('Response body: ${response.body}');
+  //       Get.snackbar("Message", response.statusCode as String,
+  //           snackPosition: SnackPosition.BOTTOM);
+  //     }
+  //   } catch (e) {
+  //     print('Error downloading PDF: $e');
+  //     Get.snackbar("Message", e as String, snackPosition: SnackPosition.BOTTOM);
+  //   }
+  // }
+
   Future<void> downloadAndOpenPdf(
-    String sub,
-    String classid,
-    String top,
-    String lesson,
-    List<String> quesId,
-    String sess,
-    String dur,
-    String book,
-  ) async {
+      String sub,
+      String classid,
+      String top,
+      String lesson,
+      List<String> quesId,
+      String sess,
+      String dur,
+      String book,
+      BuildContext context) async {
     final url =
         Uri.parse('https://codesuperb.com/api/v1/offlinetest/previewtest');
 
@@ -955,40 +1098,64 @@ class DashboardController extends GetxController {
       "bookId": book,
     };
 
-    final tokenValue = await token(); // get token from your token() method
+    final tokenValue = await token();
 
     try {
+      // Show loading indicator
+      Get.dialog(
+        Center(
+          child: Lottie.asset(
+            'assets/loading.json',
+            width: MediaQuery.of(context).size.width * .2,
+            height: MediaQuery.of(context).size.height * .2,
+            repeat: true,
+            animate: true,
+            reverse: false,
+          ),
+        ),
+        barrierDismissible: false,
+      );
+
       final response = await http.post(
         url,
         headers: {
           'Authorization': 'Bearer $tokenValue',
           'Accept': 'application/pdf',
-          'Content-Type': 'application/json', // Add this line
+          'Content-Type': 'application/json',
         },
         body: jsonEncode(body),
       );
 
+      // Remove loading indicator
+      Navigator.pop(context);
+
       if (response.statusCode == 200) {
         final bytes = response.bodyBytes;
 
-        final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-        final dir = await getTemporaryDirectory();
-        final file = File('${dir.path}/$timestamp-offline-paper.pdf');
+        // Navigate to PDF viewer screen
 
-        await file.writeAsBytes(bytes);
+        // Get.to(
+        //   () => PdfViewerScreen(pdfBytes: bytes),
+        //   transition: Transition.cupertino,
+        // );
 
-        await OpenFile.open(file.path);
-        Get.snackbar("Message", response.statusCode as String,
-            snackPosition: SnackPosition.BOTTOM);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => PdfViewerScreen(pdfBytes: bytes)),
+        );
       } else {
-        print('Failed to load PDF: ${response.statusCode}');
-        print('Response body: ${response.body}');
-        Get.snackbar("Message", response.statusCode as String,
-            snackPosition: SnackPosition.BOTTOM);
+        //Navigator.pop(context);
+        throw Exception('Failed to load PDF: ${response.statusCode}');
       }
     } catch (e) {
+      Navigator.pop(context); // Ensure loading indicator is removed
+      Get.snackbar(
+        "Error",
+        "Failed to download PDF: ${e.toString()}",
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 5),
+      );
       print('Error downloading PDF: $e');
-      Get.snackbar("Message", e as String, snackPosition: SnackPosition.BOTTOM);
     }
   }
 
@@ -1022,20 +1189,36 @@ class DashboardController extends GetxController {
   }
 
   updatePro(String name, String mob, String add1, String add2, String pin,
-      String state, String dist, String pic) async {
+      String state, String dist, String pic, String instituteId) async {
     isLoading(true);
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {
-      "name": {"english": name},
-      "mobile": mob,
-      "address1": add1,
-      "address2": add2,
-      "pinCode": pin,
-      "state": state,
-      "district": dist,
-      "picture": pic
-    };
+    Map<String, dynamic>? queryParameter;
+    if (userRole() == 'student') {
+      queryParameter = {
+        "name": {"english": name},
+        "mobile": mob,
+        "address1": add1,
+        "address2": add2,
+        "pinCode": pin,
+        "state": state,
+        "district": dist,
+        "picture": pic
+      };
+    } else {
+      queryParameter = {
+        "name": {"english": name},
+        "mobile": mob,
+        "address1": add1,
+        "address2": add2,
+        "pinCode": pin,
+        "state": state,
+        "district": dist,
+        "picture": pic,
+        "institution": instituteId
+      };
+    }
+
     print(queryParameter);
     final profileJson = await apiHelper.patch(
         ApiUrls.profileUp + userid(), queryParameter, data);
@@ -1190,4 +1373,129 @@ class DashboardController extends GetxController {
     } else {}
     isLoading(false);
   }
+
+  getAssignment(String clsid, String subid) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "classId": clsid,
+      "subjectId": subid
+    };
+    print(queryParameter);
+    final profileJson =
+        await apiHelper.get(ApiUrls.latAssign, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      LatestAssgnModel response = LatestAssgnModel.fromJson(profileJson);
+      if (response.status == true) {
+        // print(response.message);
+        assignData = response.data!;
+        // Update box storage with profile data
+
+        isLoading(false);
+        return assignData;
+      } else {
+        assignData = null;
+        isLoading(false);
+      }
+    } else {}
+    isLoading(false);
+  }
+
+  submitLessonTest(List<Map<String, dynamic>> resp, String clsId, String subId,
+      String lesson_id) async {
+    isLoading(true);
+    dynamic data;
+    String id = await userid();
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "test": resp,
+      "userId": id,
+      "classId": clsId,
+      "subjectId": subId,
+      "lessonId": lesson_id
+    };
+    print(queryParameter);
+    final profileJson =
+        await apiHelper.post(ApiUrls.submitLesson, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      SimpleModel response = SimpleModel.fromJson(profileJson);
+      if (response.status == true) {
+        print(response.message);
+        Get.snackbar("Message", response.message!,
+            snackPosition: SnackPosition.BOTTOM);
+        // Update box storage with profile data
+        // Get.offAllNamed(RouteName.studentHome);
+
+        isLoading(false);
+        return response;
+      } else {
+        isLoading(false);
+      }
+    } else {}
+    isLoading(false);
+  }
+
+  sendMesgStu(List<String> stu, String msg, String clsid, String subid) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "userIds": stu,
+      "message": msg,
+      "classId": clsid,
+      "subjectId": subid,
+    };
+    print(queryParameter);
+    final profileJson =
+        await apiHelper.post(ApiUrls.sendMsg, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      SimpleModel response = SimpleModel.fromJson(profileJson);
+      if (response.status == true) {
+        print(response.status);
+        Get.snackbar("Message", "Message sent successfully",
+            snackPosition: SnackPosition.BOTTOM);
+        // Update box storage with profile data
+
+        isLoading(false);
+        return response;
+      } else {
+        Get.snackbar("Message", response.message!,
+            snackPosition: SnackPosition.BOTTOM);
+        isLoading(false);
+      }
+    } else {}
+    isLoading(false);
+  }
+
+  getleaderBoard(String class_id, String sub_id) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "classId": class_id,
+      "subjectId": sub_id
+    };
+    final profileJson =
+        await apiHelper.get(ApiUrls.getleaderBoard, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      LeaderModel response = LeaderModel.fromJson(profileJson);
+      if (response.status == true) {
+        // print(response.message);
+        leaderList = response.data!;
+        // Update box storage with profile data
+
+        isLoading(false);
+        return leaderList;
+      } else {
+        leaderList = [];
+        isLoading(false);
+      }
+    } else {
+      leaderList = [];
+    }
+    isLoading(false);
+  }
+
+
 }

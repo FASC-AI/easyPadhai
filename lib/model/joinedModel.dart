@@ -2,7 +2,7 @@ class Joinedmodel {
   int? code;
   bool? status;
   String? message;
-  JoinedData? data;
+  List<JoinedData>? data;
 
   Joinedmodel({this.code, this.status, this.message, this.data});
 
@@ -10,7 +10,12 @@ class Joinedmodel {
     code = json['code'];
     status = json['status'];
     message = json['message'];
-    data = json['data'] != null ? new JoinedData.fromJson(json['data']) : null;
+    if (json['data'] != null) {
+      data = <JoinedData>[];
+      json['data'].forEach((v) {
+        data!.add(new JoinedData.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -19,7 +24,7 @@ class Joinedmodel {
     data['status'] = this.status;
     data['message'] = this.message;
     if (this.data != null) {
-      data['data'] = this.data!.toJson();
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -27,8 +32,8 @@ class Joinedmodel {
 
 class JoinedData {
   String? sId;
-  String? userId;
-  BatchId? batchId;
+  UserId? userId;
+  String? batchId;
   bool? approve;
   String? createdAt;
   String? updatedAt;
@@ -45,9 +50,9 @@ class JoinedData {
 
   JoinedData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    userId = json['userId'];
-    batchId =
-        json['batchId'] != null ? new BatchId.fromJson(json['batchId']) : null;
+    userId =
+        json['userId'] != null ? new UserId.fromJson(json['userId']) : null;
+    batchId = json['batchId'];
     approve = json['approve'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
@@ -57,9 +62,11 @@ class JoinedData {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
-    data['userId'] = this.userId;
+    if (this.userId != null) {
+      data['userId'] = this.userId!.toJson();
+    }
     if (this.batchId != null) {
-      data['batchId'] = this.batchId!.toJson();
+      data['batchId'] = this.batchId;
     }
     data['approve'] = this.approve;
     data['createdAt'] = this.createdAt;
@@ -69,56 +76,7 @@ class JoinedData {
   }
 }
 
-class BatchId {
-  String? sId;
-  String? sectionId;
-  String? classId;
-  String? code;
-  ClassTeacherId? classTeacherId;
-  String? createdAt;
-  String? updatedAt;
-  int? iV;
-
-  BatchId(
-      {this.sId,
-      this.sectionId,
-      this.classId,
-      this.code,
-      this.classTeacherId,
-      this.createdAt,
-      this.updatedAt,
-      this.iV});
-
-  BatchId.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    sectionId = json['sectionId'];
-    classId = json['classId'];
-    code = json['code'];
-    classTeacherId = json['classTeacherId'] != null
-        ? new ClassTeacherId.fromJson(json['classTeacherId'])
-        : null;
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    iV = json['__v'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['sectionId'] = this.sectionId;
-    data['classId'] = this.classId;
-    data['code'] = this.code;
-    if (this.classTeacherId != null) {
-      data['classTeacherId'] = this.classTeacherId!.toJson();
-    }
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
-    data['__v'] = this.iV;
-    return data;
-  }
-}
-
-class ClassTeacherId {
+class UserId {
   Name? name;
   LastLogin? lastLogin;
   String? sId;
@@ -127,7 +85,7 @@ class ClassTeacherId {
   String? activeSessionId;
   bool? deleted;
   String? loginMethod;
-
+  List<Null>? passwordHistory;
   String? googleId;
   bool? emailVerified;
   String? createdAt;
@@ -136,9 +94,12 @@ class ClassTeacherId {
   String? password;
   String? token;
   String? userRole;
-  String? id;
+  String? mobile;
+  String? picture;
+  String? subject;
+  String? subjectId;
 
-  ClassTeacherId(
+  UserId(
       {this.name,
       this.lastLogin,
       this.sId,
@@ -147,6 +108,7 @@ class ClassTeacherId {
       this.activeSessionId,
       this.deleted,
       this.loginMethod,
+      this.passwordHistory,
       this.googleId,
       this.emailVerified,
       this.createdAt,
@@ -155,9 +117,12 @@ class ClassTeacherId {
       this.password,
       this.token,
       this.userRole,
-      this.id});
+      this.mobile,
+      this.picture,
+      this.subject,
+      this.subjectId});
 
-  ClassTeacherId.fromJson(Map<String, dynamic> json) {
+  UserId.fromJson(Map<String, dynamic> json) {
     name = json['name'] != null ? new Name.fromJson(json['name']) : null;
     lastLogin = json['lastLogin'] != null
         ? new LastLogin.fromJson(json['lastLogin'])
@@ -182,7 +147,10 @@ class ClassTeacherId {
     password = json['password'];
     token = json['token'];
     userRole = json['userRole'];
-    id = json['id'];
+    mobile = json['mobile'];
+    picture = json['picture'];
+    subject = json['subject'];
+    subjectId = json['subjectId'];
   }
 
   Map<String, dynamic> toJson() {
@@ -211,7 +179,10 @@ class ClassTeacherId {
     data['password'] = this.password;
     data['token'] = this.token;
     data['userRole'] = this.userRole;
-    data['id'] = this.id;
+    data['mobile'] = this.mobile;
+    data['picture'] = this.picture;
+    data['subject'] = this.subject;
+    data['subjectId'] = this.subjectId;
     return data;
   }
 }

@@ -5,6 +5,7 @@ import 'package:easy_padhai/dashboard/assign_homework.dart';
 import 'package:easy_padhai/dashboard/lessonTest.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
@@ -32,7 +33,7 @@ class _LessonScreenState extends State<LessonTopics> {
   String content = "";
   late PageController _pageController;
   DashboardController dashboardController = Get.find();
-
+  late final WebViewController _webViewController;
   late List<String> pages;
   // Example content list
   // final List<String> content = [
@@ -45,12 +46,29 @@ class _LessonScreenState extends State<LessonTopics> {
     super.initState();
     _pageController = PageController();
     // head = widget.topic!.topic ?? "";
-
+    _webViewController = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0xffF6F9FF))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {
+            // Show loading indicator if needed
+          },
+          onPageStarted: (String url) {},
+          onPageFinished: (String url) {},
+          onWebResourceError: (WebResourceError error) {},
+        ),
+      );
     // pages = _splitTextIntoPages(widget.topic!.lessonTextContent ?? "");
   }
 
   Future<void> update() async {
-    await dashboardController.getTopicUpdate(widget.topic_id, widget.lesson_id);
+    if (widget.topic_id.isEmpty) {
+      await dashboardController.getTopicUpdate("", widget.lesson_id);
+    } else {
+      await dashboardController.getTopicUpdate(
+          widget.topic_id, widget.lesson_id);
+    }
   }
 
   @override
@@ -92,107 +110,108 @@ class _LessonScreenState extends State<LessonTopics> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF6F9FF),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Container(
-            //   alignment: Alignment.topLeft,
-            //   margin: EdgeInsets.only(bottom: 20),
-            //   child: Text(
-            //     head,
-            //     style: const TextStyle(
-            //         color: Colors.black,
-            //         fontSize: 18,
-            //         fontWeight: FontWeight.bold),
-            //   ),
-            // ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Html(
-                      data: widget.topic!,
-                      //  style: const TextStyle(fontSize: 18, color: Colors.grey),
-                      style: {
-                        "body": Style(
-                          margin: Margins.zero,
-                          fontSize: FontSize.medium,
-                        ),
-                        "p": Style(
-                          margin: Margins.zero,
-                        ),
-                      },
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: WebViewWidget(
+                controller: _webViewController..loadHtmlString('''
+                <!DOCTYPE html>
+                <html>
+                  <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+                    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+                    <style>
+                      body {
+                        font-family: Arial;
+                        font-size: 16px;
+                        line-height: 1.6;
+                        color: #333;
+                        background-color: #F6F9FF;
+                        padding: 10px;
+                        margin: 0;
+                      }
+                      p {
+                        margin: 0 0 16px 0;
+                      }
+                    </style>
+                  </head>
+                  <body>
+                    ${widget.topic ?? ''}
+                    </body>
+                  </html>
+                '''),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          if (userRole() == "teacher")
+            ElevatedButton(
+              onPressed: () async {
+                update();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AssignHomeworkScreen(
+                      lessonId: widget.lesson_id,
+                      tid: widget.topic_id,
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    if (userRole() == "teacher")
-                      ElevatedButton(
-                        onPressed: () async {
-                          update();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => AssignHomeworkScreen(
-                                      tid: widget.topic_id,
-                                    )),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          maximumSize: Size.fromWidth(300),
-                          backgroundColor: AppColors.theme,
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 20),
-                        ),
-                        child: const Text(
-                          'Assign Homework & Continue',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    if (userRole() == "student")
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            onPressed: previousPage,
-                            icon: SvgPicture.asset('assets/prev.svg'),
-                            // padding: EdgeInsets.all(12),
-                          ),
-                          IconButton(
-                            onPressed: nextPage,
-                            icon: SvgPicture.asset('assets/next.svg'),
-                          ),
-                        ],
-                      ),
-                    if (userRole() == "student")
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(right: 20, bottom: 10),
-                            width: 50,
-                            height: 27,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: AppColors.theme,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Text('Skip',
-                                style: TextStyle(color: Colors.white)),
-                          ),
-                        ),
-                      ),
-                  ],
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                maximumSize: const Size.fromWidth(300),
+                backgroundColor: AppColors.theme,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+              ),
+              child: const Text(
+                'Assign Homework & Continue',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          if (userRole() == "student")
+            SizedBox(
+              height: 80,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: previousPage,
+                    icon: SvgPicture.asset('assets/prev.svg'),
+                  ),
+                  IconButton(
+                    onPressed: nextPage,
+                    icon: SvgPicture.asset('assets/next.svg'),
+                  ),
+                ],
+              ),
+            ),
+          if (userRole() == "student")
+            Align(
+              alignment: Alignment.bottomRight,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(right: 20, bottom: 20),
+                  width: 50,
+                  height: 27,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: AppColors.theme,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child:
+                      const Text('Skip', style: TextStyle(color: Colors.white)),
                 ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }

@@ -85,6 +85,8 @@ class _LessonScreenState extends State<LessonScreen> {
                                       id: "",
                                       lesson_id: lessonList[index].sId!,
                                       sub_id: widget.subId,
+                                      vid_link:
+                                          lessonList[index].videoTutorialLink!,
                                     )),
                           );
                           setState(() {
@@ -161,6 +163,8 @@ class _LessonScreenState extends State<LessonScreen> {
                                                   .sId!,
                                               lesson_id: lessonList[index].sId!,
                                               sub_id: widget.subId,
+                                              vid_link: lessonList[index]
+                                                  .videoTutorialLink!,
                                             )),
                                   );
                                   setState(() {

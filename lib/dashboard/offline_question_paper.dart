@@ -331,9 +331,9 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                         SizedBox(
                           width: 80,
                           child: CustomInput(
-                            readOnly: true,
                             label: 'Session',
                             controller: sessionController,
+                            inputType: TextInputType.number,
                           ),
                         ),
                         SizedBox(
@@ -767,10 +767,12 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                             mcqPub = value ?? false;
                                             if (value == true) {
                                               selectedQuestionIds.add(
-                                                  mcqQuestions[index].sId ?? '');
+                                                  mcqQuestions[index].sId ??
+                                                      '');
                                             } else {
                                               selectedQuestionIds.remove(
-                                                  mcqQuestions[index].sId ?? '');
+                                                  mcqQuestions[index].sId ??
+                                                      '');
                                             }
                                           });
                                         },
@@ -941,8 +943,10 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                   snackPosition: SnackPosition.BOTTOM);
               return;
             } else {
-              List<String> arr = selectedQuestionIds+
-                  selectedQuestionAR + selectedQuestionTF + selectedQuestionDS;
+              List<String> arr = selectedQuestionIds +
+                  selectedQuestionAR +
+                  selectedQuestionTF +
+                  selectedQuestionDS;
               await dashboardController.downloadAndOpenPdf(
                   sub_id,
                   widget.bClassId,
@@ -951,8 +955,9 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                   arr,
                   sessionController.text.toString().trim(),
                   _durationController.text.toString().trim(),
-                  selectedbook!.sId!);
-              Navigator.pop(context);
+                  selectedbook!.sId!,
+                  context);
+              // Navigator.pop(context);
               // if (res != false) {
               //   Navigator.pop(context);
               // }

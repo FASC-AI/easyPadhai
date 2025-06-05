@@ -159,9 +159,9 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
   bool isvisible = false;
 
   Future<void> submit() async {
-    // setState(() {
-    //   isvisible = true;
-    // });
+    setState(() {
+      isvisible = true;
+    });
     if (testType == "True/False") {
       answersMap[currentTest!.sId!] = [_selectedAnswer];
     } else {
@@ -178,21 +178,21 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
       });
     }
 
-    // SubmitTestModel res = await dashboardController.submitCurrTest(
-    //     response, cls_id, widget.sub_id);
-    // if (res.status == true) {
-    //   Navigator.pop(context);
-    //   Navigator.pop(context);
-    //   setState(() {
-    //     isvisible = false;
-    //   });
-    // } else {
-    //   Navigator.pop(context);
-    //   Navigator.pop(context);
-    //   setState(() {
-    //     isvisible = false;
-    //   });
-    // }
+    final res = await dashboardController.submitLessonTest(
+        response, cls_id, widget.sub_id, widget.lesson_id);
+    if (res.status == true) {
+      Navigator.pop(context);
+      Navigator.pop(context);
+      setState(() {
+        isvisible = false;
+      });
+    } else {
+      Navigator.pop(context);
+      Navigator.pop(context);
+      setState(() {
+        isvisible = false;
+      });
+    }
   }
 
   void _handlePrev() {
@@ -255,7 +255,7 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
       ),
       body: !isload
           ? Container(
-            width: double.infinity,
+              width: double.infinity,
               margin: const EdgeInsets.all(30.0),
               padding: const EdgeInsets.all(30.0),
               decoration: BoxDecoration(

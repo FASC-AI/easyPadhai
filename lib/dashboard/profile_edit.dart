@@ -38,7 +38,7 @@ class _ProfileEditState extends State<ProfileEdit> {
   TextEditingController controllerState = TextEditingController();
   TextEditingController controllerDistrict = TextEditingController();
   DashboardController dashboardController = Get.find();
-  String stateId = "", distId = "";
+  String stateId = "", distId = "", insId = "";
   AuthController controller = Get.find();
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
@@ -52,7 +52,7 @@ class _ProfileEditState extends State<ProfileEdit> {
 
   Future<void> _loadProfileData() async {
     await dashboardController.getProfile();
-   // print("picture :  ${userPic()}");
+    // print("picture :  ${userPic()}");
     setState(() {
       nameController.text =
           dashboardController.profileModel?.data?.userDetails?.name ?? '';
@@ -70,12 +70,28 @@ class _ProfileEditState extends State<ProfileEdit> {
           dashboardController.profileModel?.data?.address2 ?? '';
       pinController.text =
           dashboardController.profileModel?.data?.pincode ?? '';
-      controllerState.text =
-          dashboardController.profileModel?.data?.state?.name!.english ?? '';
-      stateId = dashboardController.profileModel?.data?.state?.sId ?? '';
-      controllerDistrict.text =
-          dashboardController.profileModel?.data?.district?.name!.english ?? '';
-      distId = dashboardController.profileModel?.data?.district?.sId ?? '';
+      if (dashboardController.profileModel?.data?.state != null) {
+        controllerState.text =
+            dashboardController.profileModel!.data!.state!.name?.english ?? '';
+        stateId = dashboardController.profileModel!.data!.state!.sId ?? '';
+      } else {
+        controllerState.text = '';
+        stateId = '';
+        // debugPrint('State data not available in API response');
+      }
+
+// Check if district exists in the response
+      if (dashboardController.profileModel?.data?.district != null) {
+        controllerDistrict.text =
+            dashboardController.profileModel!.data!.district!.name?.english ??
+                '';
+        distId = dashboardController.profileModel!.data!.district!.sId ?? '';
+      } else {
+        controllerDistrict.text = '';
+        distId = '';
+        // debugPrint('District data not available in API response');
+      }
+      insId = dashboardController.profileModel?.data?.instituteId ?? '';
     });
   }
 
@@ -338,6 +354,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                           setState(() {
                             instituteController.text =
                                 dashboardController.instituteName.value;
+                            insId = dashboardController.instituteId.value;
                           });
                         }
                       },
@@ -616,7 +633,8 @@ class _ProfileEditState extends State<ProfileEdit> {
                 pinController.text.toString().trim(),
                 stateId,
                 distId,
-                userPic());
+                userPic(),
+                insId);
             if (res.status == true) {
               Get.offNamed(RouteName.profile);
             }

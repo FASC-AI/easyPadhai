@@ -29,41 +29,45 @@ class _SplashScreenState extends State<SplashScreen>
   dynamic loginData;
   bool isloading = false;
   String? data;
+  Timer? _animationTimer;
 
   @override
   void initState() {
     super.initState();
+    _initializeAnimations();
+    _startAnimationLoop();
+    startTimeiOS();
+  }
 
-    // Initialize Animation Controller
+  void _initializeAnimations() {
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 700), // Smooth transition duration
+      duration: const Duration(milliseconds: 700),
       vsync: this,
     );
 
-    // Fade Animation
     _fadeAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
+  }
 
-    // Start animation loop
-    Timer.periodic(const Duration(seconds: 3), (Timer timer) {
-      setState(() {
-        showFirstImage = !showFirstImage;
-      });
+  void _startAnimationLoop() {
+    _animationTimer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
+      if (!mounted) return;
+      setState(() => showFirstImage = !showFirstImage);
       _controller.forward().then((_) => _controller.reverse());
     });
-    startTimeiOS();
+  }
+
+  @override
+  void dispose() {
+    _animationTimer?.cancel();
+    _controller.dispose();
+    super.dispose();
   }
 
   startTimeiOS() async {
     var duration = const Duration(seconds: 4);
     return Timer(duration, navigationPage);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   Future<void> navigationPage() async {

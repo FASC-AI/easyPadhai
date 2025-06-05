@@ -36,6 +36,7 @@ class _InstitutionRegistrationState extends State<InstitutionRegistration> {
   TextEditingController add2 = TextEditingController();
   TextEditingController pincode = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  AuthController authController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -252,7 +253,10 @@ class _InstitutionRegistrationState extends State<InstitutionRegistration> {
               if (res != null && res.status == true) {
                 Get.snackbar("Message", "Institution added sucessfully!",
                     snackPosition: SnackPosition.BOTTOM);
-                Get.toNamed(RouteName.selectInstitution);
+                // Get.toNamed(RouteName.selectInstitution);
+                authController.instituteName.value = res.data!.institutesName!;
+                authController.instituteId.value = res.data!.sId!;
+                await authController.postUpdateAuthInfo('institute');
               } else {
                 Get.snackbar(
                     "Message", "Something went wrong please try again later!",

@@ -7,6 +7,7 @@ import 'package:easy_padhai/dashboard/stu_online_test.dart';
 import 'package:easy_padhai/model/book_model.dart';
 import 'package:easy_padhai/model/home_noti_model.dart';
 import 'package:easy_padhai/model/homework_model2.dart';
+import 'package:easy_padhai/model/joinedModel.dart';
 import 'package:easy_padhai/model/notification_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -29,7 +30,9 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
   bool isload = false;
   String teacher = "";
   List<NData1> hlist = [];
+  String subId = "";
   DashboardController dashboardController = Get.find();
+  List<JoinedData> batData = [];
 
   @override
   void initState() {
@@ -42,6 +45,7 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
     setState(() {
       isload = true;
     });
+    subId = widget.id;
     String cls_id =
         dashboardController.profileModel?.data?.classDetail?[0].sId! ?? "";
     String sec_id =
@@ -49,16 +53,40 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
     await dashboardController.getBook(widget.id, cls_id);
     booklist = dashboardController.booklist;
     if (dashboardController.isJoined.value) {
-      teacher =
-          dashboardController.batchData?.classTeacherId?.name?.english! ?? "";
+      batData = dashboardController.batchData;
+      if (batData.isNotEmpty) {
+        List<String> teacherNames = getTeacherNamesForSubject(batData, subId);
+        if (teacherNames.isNotEmpty) {
+          setState(() {
+            teacher = teacherNames[0];
+          });
+        }
+      }
     }
     await dashboardController.getStuHomework(widget.id, cls_id, sec_id);
     await dashboardController.getStuNoti();
-    hlist = dashboardController.stuNotilist;
-
+    List<NData1> filteredList = dashboardController.stuNotilist;
+    hlist = filterBySubjectId(filteredList, subId);
     setState(() {
       isload = false;
     });
+  }
+
+  List<NData1> filterBySubjectId(List<NData1>? allNotifications, String subId) {
+    if (allNotifications == null) return [];
+
+    return allNotifications.where((notification) {
+      return notification.subjectId?.contains(subId) ?? false;
+    }).toList();
+  }
+
+  List<String> getTeacherNamesForSubject(
+      List<JoinedData> batData, String subId) {
+    return batData
+        .where((batch) => batch.userId?.subjectId == subId)
+        .map((batch) => batch.userId?.name?.english ?? 'Unknown')
+        .where((name) => name != 'Unknown')
+        .toList();
   }
 
   String formatDate(String isoDate) {
@@ -74,6 +102,15 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
   @override
   Widget build(BuildContext context) {
     // final String title = Get.arguments?['title'] ?? 'Subject';
+    final Map<String, List<NData1>> groupedByDate = {};
+
+    for (var item in hlist) {
+      String date = formatDate(item.publishedDate!);
+      if (!groupedByDate.containsKey(date)) {
+        groupedByDate[date] = [];
+      }
+      groupedByDate[date]!.add(item);
+    }
     return Scaffold(
       appBar: SubjectAppBar(
         title: widget.title,
@@ -85,7 +122,7 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Attention card
-                  if (teacher.isEmpty)
+                  if (!dashboardController.isJoined.value)
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Container(
@@ -139,92 +176,112 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                         child: hlist.isNotEmpty
                             ? Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: List.generate(
-                                  hlist.length,
-                                  (index) {
-                                    String formatted =
-                                        formatDate(hlist[index].publishedDate!);
-                                    return Padding(
-                                      padding: const EdgeInsets.only(bottom: 8),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          if (hlist.isNotEmpty)
+                                children: groupedByDate.entries.map((entry) {
+                                  String date = entry.key;
+                                  List<NData1> items = entry.value;
+
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // Date header with count
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
                                             Text(
-                                              formatted,
+                                              date,
                                               style: const TextStyle(
-                                                  fontWeight: FontWeight.bold),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16),
                                             ),
-                                          const SizedBox(height: 8),
-                                          GestureDetector(
+                                            // Text(
+                                            //   "${items.length} item${items.length > 1 ? 's' : ''}",
+                                            //   style: TextStyle(
+                                            //       color: Colors.grey.shade600,
+                                            //       fontSize: 12),
+                                            // ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 5),
+
+                                        // Items under this date
+                                        ...items.map((item) {
+                                          String type = item.type ?? "";
+                                          String topic =
+                                              item.data?.isNotEmpty == true
+                                                  ? item.data![0].topic ?? ""
+                                                  : "";
+
+                                          return GestureDetector(
                                             onTap: () {
-                                              if (hlist[index].type! ==
-                                                  "homework") {
+                                              if (type == "homework") {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (_) =>
                                                           HomeworkScreen()),
                                                 );
-                                              } else if (hlist[index].type! ==
-                                                  "test") {
-                                                String date = formatDate1(
-                                                    hlist[index]
-                                                        .publishedDate!);
+                                              } else if (type == "test") {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                      builder: (_) =>
-                                                          StuOnlineTest(
-                                                            subId: hlist[index].subjectId![0] ,
-                                                          )),
+                                                    builder: (_) =>
+                                                        StuOnlineTest(
+                                                      subId: item.subjectId
+                                                              ?.first ??
+                                                          "",
+                                                    ),
+                                                  ),
                                                 );
-                                              } else {}
+                                              }
                                             },
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                hlist[index].type! == "homework"
-                                                    ? SvgPicture.asset(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 0),
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  if (type == "homework")
+                                                    SvgPicture.asset(
                                                         "assets/hw.svg")
-                                                    : hlist[index].type! ==
-                                                            "test"
-                                                        ? SizedBox(
-                                                            width: 30,
-                                                            height: 30,
-                                                            child: Image.asset(
-                                                                "assets/testq.png"),
-                                                          )
-                                                        : SvgPicture.asset(
-                                                            "assets/notes.svg"),
-                                                const SizedBox(width: 10),
-                                                Expanded(
-                                                  child: hlist[index].type! ==
-                                                          "homework"
-                                                      ? Text(
-                                                          "${hlist[index].data![0].topic!} is a homework on $formatted",
-                                                        )
-                                                      : hlist[index].type! ==
-                                                              "test"
-                                                          ? Text(
-                                                              "${hlist[index].data![0].topic!} test is on $formatted",
-                                                            )
-                                                          : Text("Notes"),
-                                                ),
-                                              ],
+                                                  else if (type == "test")
+                                                    SizedBox(
+                                                      width: 30,
+                                                      height: 30,
+                                                      child: Image.asset(
+                                                          "assets/testq.png"),
+                                                    )
+                                                  else
+                                                    SvgPicture.asset(
+                                                        "assets/notes.svg"),
+                                                  const SizedBox(width: 10),
+                                                  Expanded(
+                                                    child: Text(
+                                                      type == "homework"
+                                                          ? "$topic is a homework on $date"
+                                                          : type == "test"
+                                                              ? "$topic test is on $date"
+                                                              : topic,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                ),
+                                          );
+                                        }).toList(),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
                               )
-                            : Center(child: Text("No Homework")),
+                            : const Center(child: Text("No Homework")),
                       ),
                     ),
+
                   const SizedBox(height: 20),
                   // Subject tiles
                   Padding(
@@ -270,6 +327,7 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                           // ),
                         }),
                   ),
+                  const SizedBox(height: 20),
                 ],
               ),
             )

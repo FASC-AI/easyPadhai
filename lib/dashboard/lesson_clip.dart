@@ -19,6 +19,7 @@ class _LessonClipsScreenState extends State<LessonClipsScreen> {
     // TODO: implement initState
     super.initState();
     videoLinks = parseVideoLinks(widget.vid_link);
+    print(videoLinks);
   }
 
   // Sample data
@@ -69,7 +70,7 @@ class _LessonClipsScreenState extends State<LessonClipsScreen> {
   }
 
   Widget _buildVideoCard(String link, String title) {
-    final String videoId = YoutubePlayer.convertUrlToId(link)!;
+    final String? videoId = YoutubePlayer.convertUrlToId(link);
 
     return SizedBox(
       height: 280,
@@ -81,13 +82,20 @@ class _LessonClipsScreenState extends State<LessonClipsScreen> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-              child: YoutubePlayer(
-                controller: YoutubePlayerController(
-                  initialVideoId: videoId,
-                  flags: YoutubePlayerFlags(autoPlay: false),
-                ),
-                showVideoProgressIndicator: true,
-              ),
+              child: videoId != null
+                  ? YoutubePlayer(
+                      controller: YoutubePlayerController(
+                        initialVideoId: videoId,
+                        flags: YoutubePlayerFlags(autoPlay: false),
+                      ),
+                      showVideoProgressIndicator: true,
+                    )
+                  : Container(
+                      height: 200,
+                      color: Colors.grey.shade300,
+                      alignment: Alignment.center,
+                      child: Text('Invalid video link'),
+                    ),
             ),
             ListTile(
               // leading: CircleAvatar(

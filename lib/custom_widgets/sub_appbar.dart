@@ -1,5 +1,6 @@
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
+import 'package:easy_padhai/route/route_name.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -26,7 +27,7 @@ class SubjectAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               // Back Button
               GestureDetector(
-                onTap: () => Navigator.pop(context),
+                onTap: () => Get.offAllNamed(RouteName.studentHome),
                 child: Image.asset(
                   'assets/back.png',
                   fit: BoxFit.fill,

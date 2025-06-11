@@ -5,61 +5,203 @@ import 'package:easy_padhai/dashboard/assign_homework.dart';
 import 'package:easy_padhai/dashboard/lessonTest.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:lottie/lottie.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-
-import '../model/topic_model.dart';
+import 'package:easy_padhai/model/lesson_model.dart' as lessonModel;
+import 'package:easy_padhai/model/topic_model.dart';
 
 class LessonTopics extends StatefulWidget {
   String? topic;
   String topic_id;
   String lesson_id;
   String sub_id;
+  final List<dynamic> wordMeanings;
   LessonTopics(
       {super.key,
       required this.topic,
       required this.topic_id,
       required this.lesson_id,
-      required this.sub_id});
+      required this.sub_id,
+      required this.wordMeanings});
   @override
   _LessonScreenState createState() => _LessonScreenState();
 }
 
 class _LessonScreenState extends State<LessonTopics> {
   int currentPage = 0;
-  Data? topicData;
+
   String head = "";
   String content = "";
+  bool _isLoading = true;
+  late List<WordMeanings> wordMeaningList;
   late PageController _pageController;
   DashboardController dashboardController = Get.find();
   late final WebViewController _webViewController;
   late List<String> pages;
-  // Example content list
-  // final List<String> content = [
-  //   'Act 3: Nora\'s Realization and Decision\n\nIn the third act of A Doll\'s House, Nora has a momentous realization about her marriage and her role as a wife and mother. The act begins with the tension rising between Nora and her husband, Torvald, as he reacts to the crisis caused by Krogstad’s blackmail.',
-  //   '1. Torvald\'s Reaction to the Forged Loan:\n\nAfter Krogstad\'s letter exposes Nora’s forgery, Torvald is initially outraged and chastises Nora for her actions. His reaction is selfish and concerned more with the scandal and his reputation than with Nora’s well-being.',
-  //   '2. The Disillusionment:\n\nNora starts to see Torvald for who he really is: a man who loves her not for who she is but for the image of her that fits his ideal of a delicate, dependent wife.',
-  // ];
+
   @override
   void initState() {
     super.initState();
+     print(widget.topic_id);
+
+    wordMeaningList = widget.wordMeanings.map((item) {
+      if (item is WordMeanings) {
+        return WordMeanings(word: item.word, meaning: item.meaning);
+      } else if (item is lessonModel.WordMeanings) {
+        // The class from lesson_model.dart (use actual name if different)
+        return WordMeanings(word: item.word, meaning: item.meaning);
+      } else if (item is Map<String, dynamic>) {
+        return WordMeanings.fromJson(item);
+      } else {
+        return WordMeanings(word: '', meaning: '');
+      }
+    }).toList();
     _pageController = PageController();
-    // head = widget.topic!.topic ?? "";
     _webViewController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..addJavaScriptChannel(
+        'VocabularyChannel',
+        onMessageReceived: (message) {
+          String tappedWord = message.message.toLowerCase();
+          String? meaning = wordMeaningList
+              .firstWhere((w) => w.word?.toLowerCase() == tappedWord,
+                  orElse: () => WordMeanings(word: '', meaning: ''))
+              .meaning;
+
+          if (meaning != null && meaning.isNotEmpty) {
+            showModalBottomSheet(
+              context: context,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              builder: (_) {
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Word:',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      Text(
+                        tappedWord,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Meaning:',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      Text(
+                        meaning,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 16),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Close'),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+            );
+          }
+        },
+      )
       ..setBackgroundColor(const Color(0xffF6F9FF))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onProgress: (int progress) {
-            // Show loading indicator if needed
+          onPageStarted: (String url) {
+            setState(() {
+              _isLoading = true;
+            });
           },
-          onPageStarted: (String url) {},
-          onPageFinished: (String url) {},
-          onWebResourceError: (WebResourceError error) {},
+          onPageFinished: (String url) {
+            setState(() {
+              _isLoading = false;
+            });
+          },
+          onWebResourceError: (WebResourceError error) {
+            setState(() {
+              _isLoading = false;
+            });
+          },
         ),
-      );
-    // pages = _splitTextIntoPages(widget.topic!.lessonTextContent ?? "");
+      )
+      ..loadHtmlString('''
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+      window.MathJax = {
+        options: {
+          enableMenu: false
+        },
+        loader: {
+          load: ['input/tex', 'output/chtml']
+        },
+        chtml: {
+          useGlobalCache: false
+        },
+        startup: {
+          ready: () => {
+            MathJax.startup.defaultReady();
+            MathJax.config.chtml.useGlobalCache = false;
+          }
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+      body {
+        font-family: Arial;
+        font-size: 16px;
+        line-height: 1.6;
+        color: #333;
+        background-color: #F6F9FF;
+        padding: 10px;
+        margin: 0;
+      }
+      .vocab-word {
+        text-decoration: underline;
+        color: blue;
+        cursor: pointer;
+      }
+      p {
+        margin: 0 0 16px 0;
+      }
+    </style>
+    <script>
+      function setupClickHandlers() {
+        document.querySelectorAll('.vocab-word').forEach(function(span) {
+          span.onclick = function() {
+            VocabularyChannel.postMessage(span.innerText);
+          };
+        });
+      }
+      window.onload = setupClickHandlers;
+    </script>
+  </head>
+  <body>
+    ${widget.topic ?? ''}
+  </body>
+</html>
+''');
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<void> update() async {
@@ -75,20 +217,6 @@ class _LessonScreenState extends State<LessonTopics> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
-  }
-
-  List<String> _splitTextIntoPages(String text) {
-    const int maxLength = 500; // Max characters per page (tweak this as needed)
-    List<String> pageContent = [];
-
-    int start = 0;
-    while (start < text.length) {
-      int end =
-          (start + maxLength < text.length) ? start + maxLength : text.length;
-      pageContent.add(text.substring(start, end));
-      start = end;
-    }
-    return pageContent;
   }
 
   void nextPage() {
@@ -113,41 +241,28 @@ class _LessonScreenState extends State<LessonTopics> {
       body: Column(
         children: [
           Expanded(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: WebViewWidget(
-                controller: _webViewController..loadHtmlString('''
-                <!DOCTYPE html>
-                <html>
-                  <head>
-                    <meta charset="utf-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1">
-                    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-                    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-                    <style>
-                      body {
-                        font-family: Arial;
-                        font-size: 16px;
-                        line-height: 1.6;
-                        color: #333;
-                        background-color: #F6F9FF;
-                        padding: 10px;
-                        margin: 0;
-                      }
-                      p {
-                        margin: 0 0 16px 0;
-                      }
-                    </style>
-                  </head>
-                  <body>
-                    ${widget.topic ?? ''}
-                    </body>
-                  </html>
-                '''),
-              ),
+            child: Stack(
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: WebViewWidget(controller: _webViewController),
+                ),
+                if (_isLoading)
+                  Center(
+                    child: Lottie.asset(
+                      'assets/loading.json',
+                      width: MediaQuery.of(context).size.width * .2,
+                      height: MediaQuery.of(context).size.height * .2,
+                      repeat: true,
+                      animate: true,
+                      reverse: false,
+                    ),
+                  ),
+              ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           if (userRole() == "teacher")
             ElevatedButton(
               onPressed: () async {
@@ -173,6 +288,7 @@ class _LessonScreenState extends State<LessonTopics> {
                 style: TextStyle(color: Colors.white),
               ),
             ),
+          const SizedBox(height: 10),
           if (userRole() == "student")
             SizedBox(
               height: 80,

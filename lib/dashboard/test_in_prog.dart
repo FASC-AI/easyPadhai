@@ -240,6 +240,22 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
     }
   }
 
+  void _showCannotGoBackDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Cannot go back"),
+        content: const Text("You must submit the test before exiting."),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("OK"),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -258,7 +274,8 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
             width: MediaQuery.of(context).size.width * 0.09,
           ),
           onPressed: () {
-            Navigator.pop(context);
+            // Navigator.pop(context);
+            _showCannotGoBackDialog;
           },
         ),
         titleSpacing: 10,

@@ -67,9 +67,9 @@ class _ProfileEditState extends State<TeacherClassScreen> {
     id = dashboardController.profileModel?.data?.subjectDetail![0].sId! ?? "";
     await dashboardController.getBook(id, widget.id);
     booklist = dashboardController.booklist;
-    await dashboardController.getAllPubTest();
+    await dashboardController.getAllPubTest(batchClassId, id);
     testList = dashboardController.testList;
-    await dashboardController.getStudentfromBatch(batchClassId, widget.sec_id);
+    await dashboardController.getStudentfromBatch(batchClassId);
     students = dashboardController.studentList;
     await dashboardController.getStuTestMarks(batchClassId, id);
     markList = dashboardController.marksList;

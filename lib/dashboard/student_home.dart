@@ -7,6 +7,7 @@ import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
 import 'package:easy_padhai/custom_widgets/custum_nav_bar2.dart';
 import 'package:easy_padhai/model/binfo.dart';
+import 'package:easy_padhai/model/noti_count.dart';
 import 'package:easy_padhai/model/notification_model.dart';
 import 'package:easy_padhai/model/profile_model.dart';
 import 'package:easy_padhai/route/route_name.dart';
@@ -34,7 +35,8 @@ class _ProfileEditState extends State<StudentHome> {
 
   List<SubjectDetail> sublist = [];
   List<NData1> hlist = [];
-  List<NData1> subjectNotilist = [];
+  List<NotiCountData> clist = [];
+  List<NotiCountData> subjectNotilist = [];
   String name = "";
   String class1 = "";
 
@@ -47,13 +49,17 @@ class _ProfileEditState extends State<StudentHome> {
     await dashboardController.getNotification();
     await dashboardController.getbatchjoined();
     //await dashboardController.getBatchReq();
-    await dashboardController.getStuNoti();
-    hlist = dashboardController.stuNotilist;
+    if (dashboardController.isJoined.value) {
+      await dashboardController.getStuNoti();
+      hlist = dashboardController.stuNotilist;
+      await dashboardController.countNoti();
+      clist = dashboardController.countNotilist;
+    }
     sublist = data.data!.subjectDetail!;
     name = data.data!.userDetails!.name!;
     homeNoti();
     class1 =
-        "(${extractClassNumber(data.data!.classDetail![0].class1!).toString()}${data.data!.sectionDetail![0].section!})";
+        "(${extractClassNumber(data.data!.classDetail![0].class1!).toString()})";
     setState(() {
       isload = false;
     });
@@ -67,10 +73,10 @@ class _ProfileEditState extends State<StudentHome> {
 
   void homeNoti() {
     for (int i = 0; i < sublist.length; i++) {
-      for (int j = 0; j < hlist.length; j++) {
-        if (sublist[i].sId == hlist[j].subjectId![0]) {
-          if (hlist[j].type == "homework") {
-            subjectNotilist.add(hlist[j]);
+      for (int j = 0; j < clist.length; j++) {
+        if (sublist[i].sId == clist[j].subjectId![0]) {
+          if (clist[j].isReaded == false) {
+            subjectNotilist.add(clist[j]);
           }
         }
       }

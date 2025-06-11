@@ -47,7 +47,8 @@ class SelectClass extends StatelessWidget {
                 onTap: () async {
                   authController.selectedClassIds.isNotEmpty
                       ? {
-                          await authController.getsectionList(''),
+                          await authController.getsubjectList(''),
+                        //  await authController.getsectionList(''),
                           await authController.postUpdateAuthInfo('class')
                         }
                       : Get.snackbar(

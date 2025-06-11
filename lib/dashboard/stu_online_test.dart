@@ -13,7 +13,8 @@ import 'package:lottie/lottie.dart';
 
 class StuOnlineTest extends StatefulWidget {
   String subId;
-  StuOnlineTest({super.key, required this.subId});
+  String classId;
+  StuOnlineTest({super.key, required this.subId, required this.classId});
 
   @override
   State<StuOnlineTest> createState() => _ProfileEditState();
@@ -36,7 +37,7 @@ class _ProfileEditState extends State<StuOnlineTest> {
     setState(() {
       isload = true;
     });
-    await dashboardController.getPrevTest();
+    await dashboardController.getPrevTest(widget.classId, widget.subId);
     testList = dashboardController.prevTest;
     setState(() {
       isload = false;

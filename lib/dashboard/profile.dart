@@ -459,56 +459,55 @@ class Profile extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            GetBuilder<AuthController>(
-              builder: (controller) => DropdownButtonFormField<String>(
-                isExpanded: true,
-                icon: const SizedBox.shrink(),
-                dropdownColor: Colors.white,
-                // menuMaxHeight: 300,
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 18,
+            if (type == 'School')
+              GetBuilder<AuthController>(
+                builder: (controller) => DropdownButtonFormField<String>(
+                  isExpanded: true,
+                  icon: const SizedBox.shrink(),
+                  dropdownColor: Colors.white,
+                  // menuMaxHeight: 300,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 18,
+                    ),
+                    hintText: 'Select Section',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                    suffixIcon: const Icon(Icons.keyboard_arrow_down),
                   ),
-                  hintText: 'Select Section',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.grey),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.grey),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.grey),
-                  ),
-                  suffixIcon: const Icon(Icons.keyboard_arrow_down),
+                  items: controller.sectiondataList
+                      .map((e) => DropdownMenuItem(
+                            value: e.sId,
+                            child: Text(e.sectionsName ?? ''),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      controller.toggleSectionSelection(value);
+                      bsec = value;
+                      final selectedsec = controller.sectiondataList.firstWhere(
+                        (e) => e.sId == value,
+                      );
+                      sec = selectedsec.sectionsName!;
+                      int? cls = extractClassNumber(selectedClass);
+                      String bcode = generateBatchCode(
+                          '2025', cls.toString(), type, sec, icode);
+                      batchController.text = bcode;
+                    }
+                  },
                 ),
-                items: dashboardController.profileModel?.data?.sectionDetail!
-                    .map((e) => DropdownMenuItem(
-                          value: e.sId,
-                          child: Text(e.section ?? ''),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    controller.toggleSectionSelection(value);
-                    bsec = value;
-                    final selectedsec = dashboardController
-                        .profileModel?.data?.sectionDetail!
-                        .firstWhere(
-                      (e) => e.sId == value,
-                    );
-                    sec = selectedsec!.section!;
-                    int? cls = extractClassNumber(selectedClass);
-                    String bcode = generateBatchCode(
-                        '2025', cls.toString(), type, sec, icode);
-                    batchController.text = bcode;
-                  }
-                },
               ),
-            ),
             const SizedBox(height: 20),
             GetBuilder<AuthController>(
               builder: (controller) => TextFormField(

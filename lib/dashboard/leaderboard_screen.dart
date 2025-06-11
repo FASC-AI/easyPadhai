@@ -1,3 +1,4 @@
+import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
 import 'package:easy_padhai/model/leader_model.dart';
@@ -399,11 +400,23 @@ class LeaderboardItem extends StatelessWidget {
           const SizedBox(width: 12),
 
           // Profile Image
+
           CircleAvatar(
             radius: 20,
             backgroundImage: NetworkImage(
-              img, // Placeholder image
+              img,
+              // Placeholder image
             ),
+            child: (img.isEmpty)
+                ? Text(
+                    userName().isNotEmpty ? userName()[0].toUpperCase() : '',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                : null,
           ),
           const SizedBox(width: 12),
 

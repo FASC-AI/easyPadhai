@@ -254,146 +254,151 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
         ),
       ),
       body: !isload
-          ? Container(
-              width: double.infinity,
-              margin: const EdgeInsets.all(30.0),
-              padding: const EdgeInsets.all(30.0),
-              decoration: BoxDecoration(
-                  color: AppColors.white,
-                  shape: BoxShape.rectangle,
-                  border: Border.all(color: AppColors.grey7)),
-              child: tests.isNotEmpty
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("QUESTION ${_currentIndex + 1} / ${tests.length}",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.black.withOpacity(0.5))),
-                        const SizedBox(height: 8),
-                        Html(data: currentTest!.description ?? ''),
-                        const SizedBox(height: 16),
-                        if (testType == "True/False")
-                          ...options.map((option) {
-                            return Container(
-                              margin: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                  color: _selectedAnswer == option
-                                      ? Colors.blue.shade50
-                                      : Colors.white,
-                                  shape: BoxShape.rectangle,
-                                  border: Border.all(color: AppColors.grey7)),
-                              child: RadioListTile(
-                                title: Text(option),
-                                value: option,
-                                groupValue: _selectedAnswer,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedAnswer = value.toString();
-                                  });
-                                },
-                              ),
-                            );
-                          }).toList()
-                        else
-                          ...options.map((option) {
-                            return Container(
-                              margin: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                  color: _selectedAnswer == option
-                                      ? Colors.blue.shade50
-                                      : Colors.white,
-                                  shape: BoxShape.rectangle,
-                                  border: Border.all(color: AppColors.grey7)),
-                              child: CheckboxListTile(
-                                checkColor: Colors.white,
-                                activeColor: const Color(0xff186BA5),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4),
+          ? SingleChildScrollView(
+              child: Container(
+                width: double.infinity,
+                margin: const EdgeInsets.all(30.0),
+                padding: const EdgeInsets.all(30.0),
+                decoration: BoxDecoration(
+                    color: AppColors.white,
+                    shape: BoxShape.rectangle,
+                    border: Border.all(color: AppColors.grey7)),
+                child: tests.isNotEmpty
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                              "QUESTION ${_currentIndex + 1} / ${tests.length}",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.black.withOpacity(0.5))),
+                          const SizedBox(height: 8),
+                          Html(data: currentTest!.description ?? ''),
+                          const SizedBox(height: 16),
+                          if (testType == "True/False")
+                            ...options.map((option) {
+                              return Container(
+                                margin: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    color: _selectedAnswer == option
+                                        ? Colors.blue.shade50
+                                        : Colors.white,
+                                    shape: BoxShape.rectangle,
+                                    border: Border.all(color: AppColors.grey7)),
+                                child: RadioListTile(
+                                  title: Text(option),
+                                  value: option,
+                                  groupValue: _selectedAnswer,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedAnswer = value.toString();
+                                    });
+                                  },
                                 ),
-                                title: Text(option),
-                                value: _selectedAnswers.contains(option),
-                                onChanged: (value) {
-                                  setState(() {
-                                    value == true
-                                        ? _selectedAnswers.add(option)
-                                        : _selectedAnswers.remove(option);
-                                  });
-                                },
-                              ),
-                            );
-                          }).toList(),
-                        const Spacer(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.white,
-                                shape: RoundedRectangleBorder(
-                                  side: BorderSide(
-                                      color: _currentIndex > 0
-                                          ? AppColors.theme
-                                          : AppColors.grey),
-                                  borderRadius: BorderRadius.circular(20),
+                              );
+                            }).toList()
+                          else
+                            ...options.map((option) {
+                              return Container(
+                                margin: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    color: _selectedAnswer == option
+                                        ? Colors.blue.shade50
+                                        : Colors.white,
+                                    shape: BoxShape.rectangle,
+                                    border: Border.all(color: AppColors.grey7)),
+                                child: CheckboxListTile(
+                                  checkColor: Colors.white,
+                                  activeColor: const Color(0xff186BA5),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  title: Text(option),
+                                  value: _selectedAnswers.contains(option),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      value == true
+                                          ? _selectedAnswers.add(option)
+                                          : _selectedAnswers.remove(option);
+                                    });
+                                  },
                                 ),
-                              ),
-                              onPressed: _currentIndex > 0 ? _handlePrev : null,
-                              child: const Text("Prev"),
-                            ),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.theme,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                              );
+                            }).toList(),
+                          const Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.white,
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                        color: _currentIndex > 0
+                                            ? AppColors.theme
+                                            : AppColors.grey),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
                                 ),
+                                onPressed:
+                                    _currentIndex > 0 ? _handlePrev : null,
+                                child: const Text("Prev"),
                               ),
-                              onPressed: _currentIndex < tests.length - 1
-                                  ? _handleNext
-                                  : submit,
-                              child: !isvisible
-                                  ? Text(
-                                      _currentIndex < tests.length - 1
-                                          ? "Next"
-                                          : "Submit",
-                                      style: TextStyle(color: Colors.white),
-                                    )
-                                  : SizedBox(
-                                      width: 30,
-                                      height: 30,
-                                      child: Lottie.asset(
-                                        'assets/loading.json',
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        repeat: true,
-                                        animate: true,
-                                        reverse: false,
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.theme,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                onPressed: _currentIndex < tests.length - 1
+                                    ? _handleNext
+                                    : submit,
+                                child: !isvisible
+                                    ? Text(
+                                        _currentIndex < tests.length - 1
+                                            ? "Next"
+                                            : "Submit",
+                                        style: TextStyle(color: Colors.white),
+                                      )
+                                    : SizedBox(
+                                        width: 30,
+                                        height: 30,
+                                        child: Lottie.asset(
+                                          'assets/loading.json',
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          height: MediaQuery.of(context)
+                                              .size
+                                              .height,
+                                          repeat: true,
+                                          animate: true,
+                                          reverse: false,
+                                        ),
                                       ),
-                                    ),
-                            ),
-                          ],
-                        )
-                      ],
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/no_notification.png', // Change with your icon/image path
-                          height: 80,
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          "No Questions Available",
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 16,
+                              ),
+                            ],
+                          )
+                        ],
+                      )
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/no_notification.png', // Change with your icon/image path
+                            height: 80,
                           ),
-                        ),
-                      ],
-                    ),
+                          const SizedBox(height: 10),
+                          const Text(
+                            "No Questions Available",
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
             )
           : Center(
               child: Lottie.asset(

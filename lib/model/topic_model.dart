@@ -28,14 +28,26 @@ class TopicModel {
 class Data {
   String? sId;
   String? topic;
+  List<WordMeanings>? wordMeanings;
   String? lessonDescription;
   String? lessonTextContent;
 
-  Data({this.sId, this.topic, this.lessonDescription, this.lessonTextContent});
+  Data(
+      {this.sId,
+      this.topic,
+      this.wordMeanings,
+      this.lessonDescription,
+      this.lessonTextContent});
 
   Data.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     topic = json['topic'];
+    if (json['wordMeanings'] != null) {
+      wordMeanings = <WordMeanings>[];
+      json['wordMeanings'].forEach((v) {
+        wordMeanings!.add(new WordMeanings.fromJson(v));
+      });
+    }
     lessonDescription = json['lessonDescription'];
     lessonTextContent = json['lessonTextContent'];
   }
@@ -44,8 +56,33 @@ class Data {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
     data['topic'] = this.topic;
+    if (this.wordMeanings != null) {
+      data['wordMeanings'] = this.wordMeanings!.map((v) => v.toJson()).toList();
+    }
     data['lessonDescription'] = this.lessonDescription;
     data['lessonTextContent'] = this.lessonTextContent;
+    return data;
+  }
+}
+
+class WordMeanings {
+  String? word;
+  String? meaning;
+  String? sId;
+
+  WordMeanings({this.word, this.meaning, this.sId});
+
+  WordMeanings.fromJson(Map<String, dynamic> json) {
+    word = json['word'];
+    meaning = json['meaning'];
+    sId = json['_id'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['word'] = this.word;
+    data['meaning'] = this.meaning;
+    data['_id'] = this.sId;
     return data;
   }
 }

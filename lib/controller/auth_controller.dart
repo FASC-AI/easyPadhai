@@ -63,6 +63,7 @@ class AuthController extends GetxController {
     if (classesdataList.isEmpty) {
       getClassList('');
     }
+    getsubjectList('');
     if (sectiondataList.isEmpty) {
       getsectionList('');
     }
@@ -118,7 +119,7 @@ class AuthController extends GetxController {
             ),
           ),
         );
-        Get.offAndToNamed(RouteName.login);
+        Get.offAllNamed(RouteName.login);
         isLoading(false);
         return response;
       } else {
@@ -246,33 +247,33 @@ class AuthController extends GetxController {
         box.write('email', response.data!.email);
         box.write('userRole', response.data!.userRole);
         box.write('propic', response.data!.picture);
-        print("token:  ${userEmail()}");
+        print("userEmail:  ${userEmail()}");
         response.data!.isProfileSet!.classSet == false
             ? {await getClassList(''), Get.toNamed(RouteName.classSelect)}
-            : response.data!.isProfileSet!.section == false
-                ? Get.toNamed(RouteName.sectionSelect)
-                : response.data!.isProfileSet!.subject == false
-                    ? Get.toNamed(RouteName.subjectSelect)
-                    : response.data!.userRole == "teacher"
-                        ? response.data!.isProfileSet!.institution == false
-                            ? Get.toNamed(RouteName.selectInstitution)
-                            : {
-                                Get.lazyPut(() => DashboardController()),
-                                box.write(
-                                    'username', response.data!.name!.english),
-                                box.write('email', response.data!.email),
-                                box.write('userRole', response.data!.userRole),
-                                box.write('propic', response.data!.picture),
-                                Get.offAllNamed(RouteName.teacherHome)
-                              }
+            :
+            // response.data!.isProfileSet!.section == false
+            //     ? Get.toNamed(RouteName.sectionSelect)
+            response.data!.isProfileSet!.subject == false
+                ? Get.toNamed(RouteName.subjectSelect)
+                : response.data!.userRole == "teacher"
+                    ? response.data!.isProfileSet!.institution == false
+                        ? Get.toNamed(RouteName.selectInstitution)
                         : {
                             Get.lazyPut(() => DashboardController()),
                             box.write('username', response.data!.name!.english),
                             box.write('email', response.data!.email),
                             box.write('userRole', response.data!.userRole),
                             box.write('propic', response.data!.picture),
-                            Get.offAllNamed(RouteName.studentHome)
-                          };
+                            Get.offAllNamed(RouteName.teacherHome)
+                          }
+                    : {
+                        Get.lazyPut(() => DashboardController()),
+                        box.write('username', response.data!.name!.english),
+                        box.write('email', response.data!.email),
+                        box.write('userRole', response.data!.userRole),
+                        box.write('propic', response.data!.picture),
+                        Get.offAllNamed(RouteName.studentHome)
+                      };
 
         isLoading.value = false;
       } else {
@@ -509,19 +510,21 @@ class AuthController extends GetxController {
           ? queryParameters = {
               "classId": selectedClassIds,
             }
-          : type == "section"
+          :
+          // type == "section"
+          //     ? queryParameters = {
+          //         "sections": selectedSectionIds,
+          //       }
+          //     :
+          type == "subject"
               ? queryParameters = {
-                  "sections": selectedSectionIds,
+                  "subjectId": selectedSubjectIds,
                 }
-              : type == "subject"
+              : type == "institute"
                   ? queryParameters = {
-                      "subjectId": selectedSubjectIds,
+                      "institution": instituteId.value,
                     }
-                  : type == "institute"
-                      ? queryParameters = {
-                          "institution": instituteId.value,
-                        }
-                      : queryParameters = {};
+                  : queryParameters = {};
 
       final signUpJson =
           await apiHelper.post(ApiUrls.updateProfile, queryParameters, data);
@@ -532,22 +535,23 @@ class AuthController extends GetxController {
           isLoading.value = false;
 
           type == 'class'
-              ? Get.toNamed(RouteName.sectionSelect)
-              : type == "section"
-                  ? Get.toNamed(RouteName.subjectSelect)
-                  : type == "subject" && response.data!.role == "teacher"
-                      ? Get.toNamed(RouteName
-                          .selectInstitution) // have to chk student or teacher
-                      : type == "institute"
-                          ? {
-                              Get.lazyPut(() => DashboardController()),
-                              Get.offAllNamed(RouteName.teacherHome)
-                            }
-                          // : queryParameters = {}
-                          : {
-                              Get.lazyPut(() => DashboardController()),
-                              Get.offAllNamed(RouteName.studentHome)
-                            };
+              // ? Get.toNamed(RouteName.sectionSelect)
+              // :
+              //  type == "section"
+              ? Get.toNamed(RouteName.subjectSelect)
+              : type == "subject" && response.data!.role == "teacher"
+                  ? Get.toNamed(RouteName
+                      .selectInstitution) // have to chk student or teacher
+                  : type == "institute"
+                      ? {
+                          Get.lazyPut(() => DashboardController()),
+                          Get.offAllNamed(RouteName.teacherHome)
+                        }
+                      // : queryParameters = {}
+                      : {
+                          Get.lazyPut(() => DashboardController()),
+                          Get.offAllNamed(RouteName.studentHome)
+                        };
         } else {
           Get.snackbar(
             '',

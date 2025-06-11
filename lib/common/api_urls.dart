@@ -76,4 +76,6 @@ class ApiUrls {
   static const String sendMsg = 'api/v1/studentnotification/sendmessage';
   static const String getleaderBoard = 'api/v1/test/leaderboard';
   static const String postmpin = 'api/v1/auth/reset-mpin';
+  static const String updateNoti = 'api/v1/studentnotification/readnotification';
+  static const String countNoti = 'api/v1/studentnotification/notificationcount';
 }

@@ -59,31 +59,34 @@ class OnlineTestListPopup extends StatelessWidget {
             const SizedBox(height: 16),
             SizedBox(
               height: 230,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: testList.length,
-                itemBuilder: (context, index) {
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    decoration: BoxDecoration(
-                        color: Color(0xffF2F2F2),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: AppColors.grey)),
-                    child: ListTile(
-                      leading: Text(
-                        "${(index + 1).toString()}.",
-                        style: TextStyle(fontSize: 14),
-                      ),
-                      title: Text(
-                          "Online Test(${testList[index].publishedDate!})"),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.more_vert),
-                        onPressed: () => onOptionSelect(testList[index].tests!),
-                      ),
-                    ),
-                  );
-                },
-              ),
+              child: testList.isNotEmpty
+                  ? ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: testList.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          decoration: BoxDecoration(
+                              color: Color(0xffF2F2F2),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: AppColors.grey)),
+                          child: ListTile(
+                            leading: Text(
+                              "${(index + 1).toString()}.",
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            title: Text(
+                                "Online Test(${testList[index].publishedDate!})"),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.more_vert),
+                              onPressed: () =>
+                                  onOptionSelect(testList[index].tests!),
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : Center(child: Text("No Online Tests")),
             ),
             const SizedBox(height: 10),
           ],

@@ -18,6 +18,7 @@ class LessonTopic1Screen extends StatefulWidget {
   String lesson_id;
   String sub_id;
   String vid_link;
+  final List<dynamic> wordMeanings;
   LessonTopic1Screen(
       {super.key,
       required this.lessonContent,
@@ -25,7 +26,8 @@ class LessonTopic1Screen extends StatefulWidget {
       required this.id,
       required this.lesson_id,
       required this.sub_id,
-      required this.vid_link});
+      required this.vid_link,
+      required this.wordMeanings});
 
   @override
   State<LessonTopic1Screen> createState() => _ProfileEditState();
@@ -39,6 +41,7 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
   String? topic;
   String vid_link = "";
   String vid_name = "";
+  List<dynamic> wordMeanings = [];
 
   @override
   void initState() {
@@ -56,9 +59,11 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
       topic = widget.lessonContent;
       vid_link = widget.vid_link;
       vid_name = widget.title;
+      wordMeanings = widget.wordMeanings;
     } else {
       await dashboardController.getTopic(widget.id);
       topic = dashboardController.topic!.lessonTextContent!;
+      wordMeanings = dashboardController.topic!.wordMeanings!;
       await dashboardController.getVideo(widget.id);
       vid_link = dashboardController.vidList!.videoTutorialLink!;
       vid_name = dashboardController.vidList!.topic!;
@@ -108,6 +113,7 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
                                 lesson_id: lesson_id,
                                 topic_id: widget.id,
                                 sub_id: widget.sub_id,
+                                wordMeanings: wordMeanings,
                               )
                             : selectedTabIndex == 1
                                 ? LessonClipsScreen(

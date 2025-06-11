@@ -26,6 +26,7 @@ import 'package:easy_padhai/model/latest_assgn_model.dart';
 import 'package:easy_padhai/model/leader_model.dart';
 import 'package:easy_padhai/model/lesson_model.dart';
 import 'package:easy_padhai/model/lesson_test_model.dart';
+import 'package:easy_padhai/model/noti_count.dart';
 import 'package:easy_padhai/model/noti_model.dart';
 import 'package:easy_padhai/model/notification_model.dart';
 import 'package:easy_padhai/model/offline_test_model.dart';
@@ -92,11 +93,11 @@ class DashboardController extends GetxController {
   List<LessonTestModelData> lessonQList = [];
   List<TestMarksModelData> marksList = [];
   List<LeaderModelData> leaderList = [];
+  List<NotiCountData> countNotilist = [];
   VideoClipModelData? vidList;
   LatestAssgnModelData? assignData;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
- 
 
   @override
   void onInit() {
@@ -717,14 +718,14 @@ class DashboardController extends GetxController {
     isLoading(false);
   }
 
-  getStuHomework(String subid, String classid, String secid) async {
+  getStuHomework(String subid, String classid) async {
     isLoading(true);
     dynamic data;
     data = await token();
     Map<String, dynamic>? queryParameter = {
       "subjectId": subid,
       "classId": classid,
-      "sections": secid
+      // "sections": secid
     };
     print(queryParameter);
     final profileJson = await apiHelper.get(ApiUrls.geth, queryParameter, data);
@@ -835,11 +836,14 @@ class DashboardController extends GetxController {
     isLoading(false);
   }
 
-  getAllPubTest() async {
+  getAllPubTest(String clsId, String subId) async {
     isLoading(true);
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {};
+    Map<String, dynamic>? queryParameter = {
+      "classId": clsId,
+      "subjectId": subId
+    };
     final profileJson =
         await apiHelper.get(ApiUrls.getAllTest, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -923,11 +927,14 @@ class DashboardController extends GetxController {
     isLoading(false);
   }
 
-  getPrevTest() async {
+  getPrevTest(String classid, String subid) async {
     isLoading(true);
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {};
+    Map<String, dynamic>? queryParameter = {
+      "classId": classid,
+      "subjectId": subid,
+    };
     final profileJson =
         await apiHelper.get(ApiUrls.prevTest, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -961,6 +968,7 @@ class DashboardController extends GetxController {
       "lessonId": lesson,
       "topicId": topic
     };
+    print(queryParameter);
     final profileJson =
         await apiHelper.get(ApiUrls.offlineTest, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -1159,13 +1167,13 @@ class DashboardController extends GetxController {
     }
   }
 
-  getStudentfromBatch(String cls_id, String sec_id) async {
+  getStudentfromBatch(String cls_id) async {
     isLoading(true);
     dynamic data;
     data = await token();
     Map<String, dynamic>? queryParameter = {
       "classId": cls_id,
-      "sectionId": sec_id
+      //   "sectionId": sec_id
     };
     final profileJson =
         await apiHelper.get(ApiUrls.stulist, queryParameter, data);
@@ -1330,6 +1338,7 @@ class DashboardController extends GetxController {
       "classId": class_id,
       "subjectId": sub_id
     };
+    print(queryParameter);
     final profileJson =
         await apiHelper.get(ApiUrls.testM, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -1497,5 +1506,58 @@ class DashboardController extends GetxController {
     isLoading(false);
   }
 
+  updateNoti(String sub_id, String cls_id) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "classId": cls_id,
+      "subjectId": sub_id
+    };
+    final profileJson =
+        await apiHelper.patch(ApiUrls.updateNoti, queryParameter, data);
 
+    if (profileJson != null && profileJson != false) {
+      SimpleModel response = SimpleModel.fromJson(profileJson);
+      print(response.message);
+      if (response.status == true) {
+        //topic = response.data!;
+        // Update box storage with profile data
+        print(response.message);
+        isLoading(false);
+        return response;
+      } else {
+        isLoading(false);
+      }
+    }
+    isLoading(false);
+  }
+
+  countNoti() async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {};
+    final profileJson =
+        await apiHelper.get(ApiUrls.countNoti, queryParameter, data);
+
+    if (profileJson != null && profileJson != false) {
+      NotiCount response = NotiCount.fromJson(profileJson);
+      //  print(response.message);
+      if (response.status == true) {
+        countNotilist = response.data!;
+        // Update box storage with profile data
+        // print(response.message);
+
+        isLoading(false);
+        return countNotilist;
+      } else {
+        countNotilist = [];
+        isLoading(false);
+      }
+    } else {
+      countNotilist = [];
+    }
+    isLoading(false);
+  }
 }

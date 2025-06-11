@@ -35,6 +35,7 @@ class LData {
   String? lesson;
   bool? status;
   List<Topics>? topics;
+  List<WordMeanings>? wordMeanings;
   String? lessonDescription;
   String? videoTutorialLink;
 
@@ -43,6 +44,7 @@ class LData {
       this.lesson,
       this.status,
       this.topics,
+      this.wordMeanings,
       this.lessonDescription,
       this.videoTutorialLink});
 
@@ -56,6 +58,12 @@ class LData {
         topics!.add(new Topics.fromJson(v));
       });
     }
+    if (json['wordMeanings'] != null) {
+      wordMeanings = <WordMeanings>[];
+      json['wordMeanings'].forEach((v) {
+        wordMeanings!.add(new WordMeanings.fromJson(v));
+      });
+    }
     lessonDescription = json['lessonDescription'];
     videoTutorialLink = json['videoTutorialLink'];
   }
@@ -67,6 +75,9 @@ class LData {
     data['status'] = this.status;
     if (this.topics != null) {
       data['topics'] = this.topics!.map((v) => v.toJson()).toList();
+    }
+    if (this.wordMeanings != null) {
+      data['wordMeanings'] = this.wordMeanings!.map((v) => v.toJson()).toList();
     }
     data['lessonDescription'] = this.lessonDescription;
     data['videoTutorialLink'] = this.videoTutorialLink;
@@ -92,6 +103,28 @@ class Topics {
     data['_id'] = this.sId;
     data['topic'] = this.topic;
     data['status'] = this.status;
+    return data;
+  }
+}
+
+class WordMeanings {
+  String? word;
+  String? meaning;
+  String? sId;
+
+  WordMeanings({this.word, this.meaning, this.sId});
+
+  WordMeanings.fromJson(Map<String, dynamic> json) {
+    word = json['word'];
+    meaning = json['meaning'];
+    sId = json['_id'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['word'] = this.word;
+    data['meaning'] = this.meaning;
+    data['_id'] = this.sId;
     return data;
   }
 }

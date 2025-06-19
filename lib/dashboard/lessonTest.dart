@@ -4,6 +4,7 @@ import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
 import 'package:easy_padhai/custom_widgets/custum_nav_bar2.dart';
+import 'package:easy_padhai/dashboard/HtmlLatexViewer.dart';
 import 'package:easy_padhai/dashboard/student_bottomsheet.dart';
 import 'package:easy_padhai/model/lesson_test_model.dart';
 import 'package:easy_padhai/model/submit_test_model.dart';
@@ -289,7 +290,7 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Html(data: currentTest!.description ?? ''),
+                          HtmlLatexViewer(htmlContent: currentTest!.description ?? ''),
                           const SizedBox(height: 16),
                           if (testType == "True/False")
                             ...options.map((option) {

@@ -2,6 +2,7 @@ import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
 import 'package:easy_padhai/custom_widgets/custum_nav_bar2.dart';
+import 'package:easy_padhai/dashboard/HtmlLatexViewer.dart';
 import 'package:easy_padhai/dashboard/student_bottomsheet.dart';
 import 'package:easy_padhai/dashboard/test_in_prog.dart';
 import 'package:easy_padhai/model/current_test_model.dart';
@@ -345,7 +346,7 @@ class _ProfileEditState extends State<StuOnlineTest> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Html(data: test.testId!.description ?? ""),
+            HtmlLatexViewer(htmlContent: test.testId!.description ?? ""),
             const SizedBox(height: 12),
             ListView.builder(
               shrinkWrap: true,

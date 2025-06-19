@@ -3,6 +3,7 @@ import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
 import 'package:easy_padhai/custom_widgets/custom_input.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
+import 'package:easy_padhai/dashboard/HtmlLatexViewer.dart';
 import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
 import 'package:easy_padhai/model/book_model.dart';
 import 'package:easy_padhai/model/editTestModel.dart';
@@ -634,7 +635,7 @@ class _EditTestScreenState extends State<EditTestScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            title: Html(data: question.description ?? ''),
+                            title: HtmlLatexViewer(htmlContent: question.description ?? ''),
                             value: question.isPublished,
                             onChanged: (bool? value) {
                               setState(() {

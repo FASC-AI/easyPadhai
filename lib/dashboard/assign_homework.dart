@@ -2,6 +2,7 @@ import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
+import 'package:easy_padhai/dashboard/HtmlLatexViewer.dart';
 import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
 import 'package:easy_padhai/model/homework_model1.dart';
 import 'package:easy_padhai/model/homework_model3.dart';
@@ -261,8 +262,8 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(4),
                                           ),
-                                          title: Html(
-                                              data: questions[index].question ??
+                                          title: HtmlLatexViewer(
+                                              htmlContent: questions[index].question ??
                                                   ''),
                                           value: questions[index].isPublished,
                                           onChanged: (bool? value) {
@@ -458,15 +459,15 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Html(
-                        data: "${index + 1}. ${prevH[index].question}",
-                        style: {
-                          "body": Style(
-                            fontSize: FontSize(14.0),
-                            margin: Margins.zero, // Remove default margins
-                            // Remove default padding
-                          ),
-                        },
+                      child: HtmlLatexViewer(
+                        htmlContent: "${index + 1}. ${prevH[index].question}",
+                        // style: {
+                        //   "body": Style(
+                        //     fontSize: FontSize(14.0),
+                        //     margin: Margins.zero, // Remove default margins
+                        //     // Remove default padding
+                        //   ),
+                        // },
                       ),
                     );
                   },

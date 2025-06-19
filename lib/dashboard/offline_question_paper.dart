@@ -3,6 +3,7 @@ import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_input.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
 import 'package:easy_padhai/custom_widgets/text.dart';
+import 'package:easy_padhai/dashboard/HtmlLatexViewer.dart';
 import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
 import 'package:easy_padhai/model/book_model.dart';
 import 'package:easy_padhai/model/homework_model1.dart';
@@ -833,8 +834,8 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                           borderRadius:
                                               BorderRadius.circular(4),
                                         ),
-                                        title: Html(
-                                            data: mcqQuestions[index]
+                                        title: HtmlLatexViewer(
+                                            htmlContent: mcqQuestions[index]
                                                     .description ??
                                                 ''),
                                         value: selectedQuestionIds
@@ -898,7 +899,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              title: Html(data: questiondata.description ?? ''),
+                              title: HtmlLatexViewer(htmlContent: questiondata.description ?? ''),
                               value:
                                   selectedQuestionTF.contains(questiondata.sId),
                               onChanged: (bool? value) {
@@ -935,7 +936,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          title: Html(data: questiondata.description ?? ''),
+                          title: HtmlLatexViewer(htmlContent: questiondata.description ?? ''),
                           value: selectedQuestionAR.contains(questiondata.sId),
                           onChanged: (bool? value) {
                             setState(() {
@@ -973,7 +974,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          title: Html(data: questiondata.description ?? ''),
+                          title: HtmlLatexViewer(htmlContent: questiondata.description ?? ''),
                           value: selectedQuestionDS.contains(questiondata.sId),
                           onChanged: (bool? value) {
                             setState(() {

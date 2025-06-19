@@ -1,5 +1,6 @@
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
+import 'package:easy_padhai/dashboard/HtmlLatexViewer.dart';
 import 'package:easy_padhai/model/current_test_model.dart';
 import 'package:easy_padhai/model/online_test_model1.dart';
 import 'package:easy_padhai/model/submit_test_model.dart';
@@ -326,7 +327,7 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
                               fontWeight: FontWeight.bold,
                               color: AppColors.black.withOpacity(0.5))),
                       const SizedBox(height: 8),
-                      Html(data: currentTest!.description ?? ''),
+                      HtmlLatexViewer(htmlContent: currentTest!.description ?? ''),
                       const SizedBox(height: 16),
                       if (testType == "True/False")
                         ...options.map((option) {

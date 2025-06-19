@@ -4,6 +4,7 @@ import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar3.dart';
+import 'package:easy_padhai/dashboard/HtmlLatexViewer.dart';
 import 'package:easy_padhai/dashboard/edit_offlinetest.dart';
 import 'package:easy_padhai/dashboard/lesson.dart';
 import 'package:easy_padhai/dashboard/offline_question_paper.dart';
@@ -481,8 +482,8 @@ class _ProfileEditState1 extends State<AssignmentsTab> {
                 const SizedBox(height: 8),
                 ...widget.latestAssgnModelData!.question!.map((q) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Html(
-                        data: q.question ?? '',
+                      child: HtmlLatexViewer(
+                        htmlContent: q.question ?? '',
                         //  style: const TextStyle(fontSize: 14),
                       ),
                     )),

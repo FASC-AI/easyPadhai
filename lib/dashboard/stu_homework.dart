@@ -2,6 +2,7 @@ import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
 import 'package:easy_padhai/custom_widgets/custum_nav_bar2.dart';
+import 'package:easy_padhai/dashboard/HtmlLatexViewer.dart';
 import 'package:easy_padhai/dashboard/student_bottomsheet.dart';
 import 'package:easy_padhai/model/home_noti_model.dart';
 import 'package:easy_padhai/model/homework_model2.dart';
@@ -133,9 +134,10 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
                             ),
                             const SizedBox(width: 10),
                             Expanded(
-                              child: Html(
-                                  data: questionData.question ??
-                                      "No question available"),
+                              child: HtmlLatexViewer(
+                                htmlContent: questionData.question ??
+                                    "No question available",
+                              ),
                             ),
                           ],
                         ),
@@ -189,8 +191,8 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
                 ],
               ),
               const SizedBox(height: 10),
-              Html(
-                data: hint.isNotEmpty ? hint : "No hint available.",
+              HtmlLatexViewer(
+                htmlContent: hint.isNotEmpty ? hint : "No hint available.",
                 //  style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 20),

@@ -2,6 +2,7 @@ import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
+import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
 import 'package:easy_padhai/model/batchlist_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -230,10 +231,12 @@ class _ProfileEditState extends State<BatchListScreen> {
             onTap: (index) {
               if (index == 1) {
                 // Assuming index 1 is for creating batch
-                //  _showCreateBatchBottomSheet(context);
+                BatchHelperTeacher.showCreateBatchBottomSheet(context);
+                //_showdoneBatchBottomSheet(context);
               } else if (index == 2) {
                 // Assuming index 1 is for creating batch
-                // _showFollowBatchBottomSheet(context);
+                BatchHelperTeacher.showFollowBatchBottomSheetTeacher(context);
+                //_showdoneBatchBottomSheet(context);
               } else {
                 dashboardController.changeIndex(index);
               }

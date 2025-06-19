@@ -15,6 +15,7 @@ import 'package:easy_padhai/model/binfo.dart';
 import 'package:easy_padhai/model/book_model.dart';
 import 'package:easy_padhai/model/bstudent_model.dart';
 import 'package:easy_padhai/model/current_test_model.dart';
+import 'package:easy_padhai/model/editTestModel.dart';
 import 'package:easy_padhai/model/home_noti_model.dart';
 import 'package:easy_padhai/model/homework_model1.dart';
 import 'package:easy_padhai/model/homework_model2.dart';
@@ -26,9 +27,11 @@ import 'package:easy_padhai/model/latest_assgn_model.dart';
 import 'package:easy_padhai/model/leader_model.dart';
 import 'package:easy_padhai/model/lesson_model.dart';
 import 'package:easy_padhai/model/lesson_test_model.dart';
+import 'package:easy_padhai/model/notes_model.dart';
 import 'package:easy_padhai/model/noti_count.dart';
 import 'package:easy_padhai/model/noti_model.dart';
 import 'package:easy_padhai/model/notification_model.dart';
+import 'package:easy_padhai/model/offline_test_list.dart';
 import 'package:easy_padhai/model/offline_test_model.dart';
 import 'package:easy_padhai/model/online_test_model1.dart';
 import 'package:easy_padhai/model/prev_test_model.dart';
@@ -53,7 +56,7 @@ import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:image/image.dart' as img;
-
+import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -92,8 +95,12 @@ class DashboardController extends GetxController {
   List<JoinedData> batchData = [];
   List<LessonTestModelData> lessonQList = [];
   List<TestMarksModelData> marksList = [];
+  List<EData> qList = [];
   List<LeaderModelData> leaderList = [];
   List<NotiCountData> countNotilist = [];
+  List<NotesData> notelist = [];
+  List<OfflineTestListData> offlinetestList = [];
+
   VideoClipModelData? vidList;
   LatestAssgnModelData? assignData;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -680,7 +687,7 @@ class DashboardController extends GetxController {
         // Update box storage with profile data
         Get.snackbar("Message", response.message!,
             snackPosition: SnackPosition.BOTTOM);
-        print("Topic updated:" + response.message!);
+        // print("Topic updated:" + response.message!);
         isLoading(false);
         return response;
       } else {
@@ -759,6 +766,7 @@ class DashboardController extends GetxController {
       "lessonId": lesson,
       "topicId": topic
     };
+    print(queryParameter);
     final profileJson =
         await apiHelper.get(ApiUrls.getq1, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -793,6 +801,36 @@ class DashboardController extends GetxController {
     };
     final profileJson =
         await apiHelper.patch(ApiUrls.updateq1, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      TpupdateModel response = TpupdateModel.fromJson(profileJson);
+      if (response.status == true) {
+        //topic = response.data!;
+        // Update box storage with profile data
+        Get.snackbar("Message", response.message!,
+            snackPosition: SnackPosition.BOTTOM);
+        print("Question updated:" + response.message!);
+        isLoading(false);
+        return response;
+      } else {
+        isLoading(false);
+      }
+    }
+    isLoading(false);
+  }
+
+  updateTest(
+      List<String> ids, String date, String time, String duration) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "ids": ids,
+      "publishedDate": date,
+      "publishedTime": time,
+      "duration": duration
+    };
+    final profileJson =
+        await apiHelper.patch(ApiUrls.updateq2, queryParameter, data);
     if (profileJson != null && profileJson != false) {
       TpupdateModel response = TpupdateModel.fromJson(profileJson);
       if (response.status == true) {
@@ -977,7 +1015,7 @@ class DashboardController extends GetxController {
         print(response.message);
         OffquesList = response.data!.groupedTests!;
         // Update box storage with profile data
-
+        //  print(OffquesList.length);
         isLoading(false);
         return OffquesList;
       } else {
@@ -1091,6 +1129,7 @@ class DashboardController extends GetxController {
       String sess,
       String dur,
       String book,
+      String ids,
       BuildContext context) async {
     final url =
         Uri.parse('https://codesuperb.com/api/v1/offlinetest/previewtest');
@@ -1149,7 +1188,19 @@ class DashboardController extends GetxController {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => PdfViewerScreen(pdfBytes: bytes)),
+          MaterialPageRoute(
+              builder: (_) => PdfViewerScreen(
+                    pdfBytes: bytes,
+                    sub: sub,
+                    classid: classid,
+                    top: top,
+                    lesson: lesson,
+                    quesId: quesId,
+                    sess: sess,
+                    dur: dur,
+                    book: book,
+                    ids: ids,
+                  )),
         );
       } else {
         //Navigator.pop(context);
@@ -1164,6 +1215,57 @@ class DashboardController extends GetxController {
         duration: Duration(seconds: 5),
       );
       print('Error downloading PDF: $e');
+    }
+  }
+
+  saveOffline(
+      String sub,
+      String classid,
+      String top,
+      String lesson,
+      List<String> quesId,
+      String sess,
+      String dur,
+      String book,
+      String id,
+      BuildContext context) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParams = {
+      "download": true,
+      "subjectId": sub,
+      "classId": classid,
+      "topicId": top,
+      "lessonId": lesson,
+      "testIds": quesId,
+      "session": sess,
+      "duration": dur,
+      "bookId": book,
+      "id": id
+    };
+    print(queryParams);
+    final countryJson =
+        await apiHelper.post(ApiUrls.posttest, queryParams, data);
+    if (countryJson != null && countryJson != false) {
+      //  print(countryJson);
+      SimpleModel response = SimpleModel.fromJson(countryJson);
+      print(response.status);
+      if (response.status == true) {
+        Get.snackbar(
+          "Message",
+          "Offline Test saved successfully",
+          snackPosition: SnackPosition.BOTTOM,
+          duration: Duration(seconds: 5),
+        );
+        getofflinePubTest(classid, sub);
+        Navigator.pop(context);
+        Navigator.pop(context);
+        isLoading(true);
+        return response;
+      } else {
+        isLoading(true);
+      }
     }
   }
 
@@ -1280,7 +1382,7 @@ class DashboardController extends GetxController {
     isLoading(false);
   }
 
-  removeStu(List<String> stu) async {
+  removeStu(List<String> stu, BuildContext context) async {
     isLoading(true);
     dynamic data;
     data = await token();
@@ -1296,7 +1398,8 @@ class DashboardController extends GetxController {
         Get.snackbar("Message", "Student removed successfully!",
             snackPosition: SnackPosition.BOTTOM);
         // Update box storage with profile data
-
+        Navigator.pop(context);
+        Navigator.pop(context);
         isLoading(false);
         return response;
       } else {
@@ -1341,6 +1444,36 @@ class DashboardController extends GetxController {
     print(queryParameter);
     final profileJson =
         await apiHelper.get(ApiUrls.testM, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      TestMarksModel response = TestMarksModel.fromJson(profileJson);
+      if (response.status == true) {
+        // print(response.message);
+        marksList = response.data!;
+        // Update box storage with profile data
+
+        isLoading(false);
+        return marksList;
+      } else {
+        marksList = [];
+        isLoading(false);
+      }
+    } else {
+      marksList = [];
+    }
+    isLoading(false);
+  }
+
+  getStuTestMarks1(String class_id, String sub_id) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "classId": class_id,
+      "subjectId": sub_id
+    };
+    print(queryParameter);
+    final profileJson =
+        await apiHelper.get(ApiUrls.testMS, queryParameter, data);
     if (profileJson != null && profileJson != false) {
       TestMarksModel response = TestMarksModel.fromJson(profileJson);
       if (response.status == true) {
@@ -1558,6 +1691,299 @@ class DashboardController extends GetxController {
     } else {
       countNotilist = [];
     }
+    isLoading(false);
+  }
+
+  getOnTest(String class_id, String sub_id, String bookId, String lessonId,
+      String topicId, String pubdate, String pubtime) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "classId": class_id,
+      "subjectId": sub_id,
+      "bookId": bookId,
+      "lessonId": lessonId,
+      "topicId": topicId,
+      "publishedTime": pubtime,
+      "publishedDate": pubdate
+    };
+    print(queryParameter);
+    final profileJson =
+        await apiHelper.get(ApiUrls.getOnques, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      Edittestmodel response = Edittestmodel.fromJson(profileJson);
+      if (response.status == true) {
+        // print(response.message);
+        qList = response.data!;
+        // Update box storage with profile data
+
+        isLoading(false);
+        return qList;
+      } else {
+        qList = [];
+        isLoading(false);
+      }
+    } else {
+      qList = [];
+    }
+    isLoading(false);
+  }
+
+  deleteOntest(String duration, String pubdate, String pubtime, String clsId,
+      String subId, BuildContext context) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "duration": duration,
+      "publishedTime": pubtime,
+      "publishedDate": pubdate
+    };
+    print(queryParameter);
+    final profileJson =
+        await apiHelper.delete(ApiUrls.deletetest, queryParameter, data);
+    print(profileJson);
+    if (profileJson != null && profileJson != false) {
+      SimpleModel response = SimpleModel.fromJson(profileJson);
+      if (response.status == true) {
+        print(response.status);
+        Get.snackbar("Message", "Test deleted successfully!",
+            snackPosition: SnackPosition.BOTTOM);
+        // Update box storage with profile data
+        getAllPubTest(clsId, subId);
+        Navigator.pop(context);
+        Navigator.pop(context);
+        isLoading(false);
+        return response;
+      } else {
+        Get.snackbar("Message", response.message!,
+            snackPosition: SnackPosition.BOTTOM);
+        isLoading(false);
+      }
+    } else {}
+    isLoading(false);
+  }
+
+  Future<void> uploadPdfFile(
+      File file, String title, String subid, String clsid) async {
+    final uri = Uri.parse(
+        "https://codesuperb.com/api/v1/image/upload"); // Replace with your API
+    final request = http.MultipartRequest('POST', uri);
+
+    request.files.add(await http.MultipartFile.fromPath(
+      'image', // API field name
+      file.path,
+      contentType: MediaType('application', 'pdf'),
+    ));
+
+    // Optionally add fields:
+    // request.fields['noteTitle'] = 'Physics Notes';
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      print('Upload successful');
+      var response1 = await http.Response.fromStream(response);
+      final responseData = json.decode(response1.body);
+      // isLoading.value = false;
+      ImageModel.fromJson(responseData);
+      ImageModel dta = ImageModel.fromJson(responseData);
+      updatePfd(dta.data!.url!, title, subid, clsid);
+      Get.offAllNamed(RouteName.teacherHome);
+    } else {
+      print('Upload failed: ${response.statusCode}');
+      Get.snackbar("Message", "Note Upload failed",
+          snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
+  updatePfd(String url, String title, String subid, String clsid) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    List<String> sub = [];
+    sub.add(subid);
+    List<String> cls = [];
+    cls.add(clsid);
+    Map<String, dynamic>? queryParameter = {
+      "title": title,
+      "fileUrl": url,
+      "classIds": cls,
+      "subjectIds": sub
+    };
+    print(queryParameter);
+    final profileJson =
+        await apiHelper.post(ApiUrls.addnote, queryParameter, data);
+
+    if (profileJson != null && profileJson != false) {
+      SimpleModel response = SimpleModel.fromJson(profileJson);
+      print(response.message);
+      if (response.status == true) {
+        //topic = response.data!;
+        // Update box storage with profile data
+        Get.snackbar("Message", "Note added successfully",
+            snackPosition: SnackPosition.BOTTOM);
+        isLoading(false);
+        print(response.message);
+        isLoading(false);
+        return response;
+      } else {
+        isLoading(false);
+      }
+    }
+    isLoading(false);
+  }
+
+  getNotes(String batchClassId, String id) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "classId": batchClassId,
+      "subjectId": id,
+    };
+    final profileJson =
+        await apiHelper.get(ApiUrls.getnote, queryParameter, data);
+
+    if (profileJson != null && profileJson != false) {
+      NotesModel response = NotesModel.fromJson(profileJson);
+      // print(response.message);
+      if (response.status == true) {
+        notelist = response.data!;
+        // Update box storage with profile data
+        // print(response.message);
+
+        isLoading(false);
+        return notelist;
+      } else {
+        notelist = [];
+        isLoading(false);
+      }
+    } else {
+      notelist = [];
+    }
+    isLoading(false);
+  }
+
+  deleteNote(
+      String id, String clsId, String subId, BuildContext context) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {};
+    print(queryParameter);
+    final profileJson =
+        await apiHelper.delete(ApiUrls.deletenote + id, queryParameter, data);
+    print(profileJson);
+    if (profileJson != null && profileJson != false) {
+      SimpleModel response = SimpleModel.fromJson(profileJson);
+      if (response.status == true) {
+        print(response.status);
+        Get.snackbar("Message", "Note deleted successfully!",
+            snackPosition: SnackPosition.BOTTOM);
+        // Update box storage with profile data
+        getNotes(clsId, subId);
+
+        // Navigator.pop(context);
+        isLoading(false);
+        return response;
+      } else {
+        Get.snackbar("Message", response.message!,
+            snackPosition: SnackPosition.BOTTOM);
+        isLoading(false);
+      }
+    } else {}
+    isLoading(false);
+  }
+
+  deleteOffline(
+      String id, String clsId, String subId, BuildContext context) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {};
+    print(queryParameter);
+    final profileJson =
+        await apiHelper.delete(ApiUrls.deleteOffine + id, queryParameter, data);
+    print(profileJson);
+    if (profileJson != null && profileJson != false) {
+      SimpleModel response = SimpleModel.fromJson(profileJson);
+      if (response.status == true) {
+        print(response.status);
+        Get.snackbar("Message", "Offline test deleted successfully!",
+            snackPosition: SnackPosition.BOTTOM);
+        // Update box storage with profile data
+        getofflinePubTest(clsId, subId);
+        Navigator.pop(context);
+        Navigator.pop(context);
+
+        isLoading(false);
+        return response;
+      } else {
+        Get.snackbar("Message", response.message!,
+            snackPosition: SnackPosition.BOTTOM);
+        isLoading(false);
+      }
+    } else {}
+    isLoading(false);
+  }
+
+  getofflinePubTest(String clsId, String subId) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "classId": clsId,
+      "subjectId": subId
+    };
+    final profileJson =
+        await apiHelper.get(ApiUrls.getofflineTest, queryParameter, data);
+    if (profileJson != null && profileJson != false) {
+      OfflineTestList response = OfflineTestList.fromJson(profileJson);
+      if (response.status == true) {
+        offlinetestList = response.data!;
+        print(offlinetestList.length);
+        // Update box storage with profile data
+
+        isLoading(false);
+        return offlinetestList;
+      } else {
+        offlinetestList = [];
+        isLoading(false);
+      }
+    } else {
+      offlinetestList = [];
+    }
+    isLoading(false);
+  }
+
+  postVideo(String id, String link, BuildContext context) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    print(id);
+    Map<String, dynamic>? queryParameter = {"videoTutorialLink": link};
+    final profileJson =
+        await apiHelper.patch(ApiUrls.postvid + id, queryParameter, data);
+    print(profileJson);
+    if (profileJson != null && profileJson != false) {
+      SimpleModel response = SimpleModel.fromJson(profileJson);
+      if (response.status == true) {
+        print(response.message);
+        Get.snackbar("Message", "Video added successfully!",
+            snackPosition: SnackPosition.BOTTOM);
+        // Update box storage with profile data
+
+        Navigator.pop(context);
+        Navigator.pop(context);
+
+        isLoading(false);
+        return response;
+      } else {
+        isLoading(false);
+      }
+    } else {}
     isLoading(false);
   }
 }

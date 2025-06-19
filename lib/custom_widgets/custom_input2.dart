@@ -127,12 +127,12 @@ class _CustomInput2State extends State<CustomInput2> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: const BorderSide(
-                              color: AppColors.grey7, width: 1.0),
+                              color: AppColors.grey, width: 1.0),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: const BorderSide(
-                              color: AppColors.white, width: 1.0),
+                              color: AppColors.grey, width: 1.0),
                         ),
                         errorBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),

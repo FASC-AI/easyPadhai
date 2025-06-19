@@ -26,6 +26,7 @@ class ApiUrls {
   // Api End Point
 
   // Auth
+
   static const String googleLogin = 'api/v1/auth/google-login';
   static const String setverifyMpin = 'api/v1/auth/set-verify-mpin/';
   static const String classList = 'api/v1/class/list';
@@ -58,6 +59,7 @@ class ApiUrls {
   static const String geth = 'api/v1/homework/homeworkbyclasssubject';
   static const String getq1 = 'api/v1/test/testbybookinfo';
   static const String updateq1 = 'api/v1/test/publishtest';
+  static const String updateq2 = 'api/v1/test/republishtest';
   static const String stuNoti = 'api/v1/studentnotification/notification';
   static const String getAllTest = 'api/v1/test/publishedtestinfo';
   static const String getCurrTest = 'api/v1/test/getcurrentdaytest';
@@ -70,12 +72,24 @@ class ApiUrls {
   static const String lessonQ = 'api/v1/test/testbylessontopic';
   static const String deleteS = 'api/v1/request/removestudent';
   static const String testM = 'api/v1/test/studentmarkslist';
+  static const String testMS = 'api/v1/test/markslist';
   static const String vid = 'api/v1/lesson/';
   static const String latAssign = 'api/v1/studentnotification/lasthomework';
   static const String submitLesson = 'api/v1/lessontest';
   static const String sendMsg = 'api/v1/studentnotification/sendmessage';
   static const String getleaderBoard = 'api/v1/test/leaderboard';
   static const String postmpin = 'api/v1/auth/reset-mpin';
-  static const String updateNoti = 'api/v1/studentnotification/readnotification';
-  static const String countNoti = 'api/v1/studentnotification/notificationcount';
+  static const String updateNoti =
+      'api/v1/studentnotification/readnotification';
+  static const String countNoti =
+      'api/v1/studentnotification/notificationcount';
+  static const String getOnques = 'api/v1/test/userpublishtest';
+  static const String deletetest = 'api/v1/test/deletepublishedtest';
+  static const String addnote = 'api/v1/notes';
+  static const String getnote = 'api/v1/notes/noteslist';
+  static const String deletenote = 'api/v1/notes/deletenote/';
+  static const String posttest = 'api/v1/offlinetest/previewtest';
+  static const String getofflineTest = 'api/v1/offlinetest/paper';
+  static const String deleteOffine = 'api/v1/offlinetest/';
+  static const String postvid = 'api/v1/lesson/videolink/';
 }

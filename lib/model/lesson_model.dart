@@ -33,24 +33,30 @@ class LessonModel {
 class LData {
   String? sId;
   String? lesson;
+  String? lessonKey;
   bool? status;
   List<Topics>? topics;
   List<WordMeanings>? wordMeanings;
   String? lessonDescription;
   String? videoTutorialLink;
+  bool? isTestRequired;
 
   LData(
       {this.sId,
       this.lesson,
+      this.lessonKey,
       this.status,
       this.topics,
       this.wordMeanings,
       this.lessonDescription,
-      this.videoTutorialLink});
+      this.videoTutorialLink,
+      this.isTestRequired});
 
   LData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     lesson = json['lesson'];
+
+    lessonKey = json['lessonKey'];
     status = json['status'];
     if (json['topics'] != null) {
       topics = <Topics>[];
@@ -66,12 +72,14 @@ class LData {
     }
     lessonDescription = json['lessonDescription'];
     videoTutorialLink = json['videoTutorialLink'];
+    isTestRequired = json['isTestRequired'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
     data['lesson'] = this.lesson;
+    data['lessonKey'] = this.lessonKey;
     data['status'] = this.status;
     if (this.topics != null) {
       data['topics'] = this.topics!.map((v) => v.toJson()).toList();
@@ -81,6 +89,7 @@ class LData {
     }
     data['lessonDescription'] = this.lessonDescription;
     data['videoTutorialLink'] = this.videoTutorialLink;
+    data['isTestRequired'] = this.isTestRequired;
     return data;
   }
 }

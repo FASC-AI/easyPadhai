@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:easy_padhai/controller/auth_controller.dart';
-import 'package:easy_padhai/model/institution_list_model.dart';
-import 'package:easy_padhai/model/state_model.dart';
+import 'package:easy_padhai/model/district_model.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
@@ -21,7 +21,7 @@ class _DistrictViewState extends State<DistrictView1> {
   final formKey = GlobalKey<FormState>();
   AuthController authController = Get.find();
 
-  late List<List1> filteredData = [];
+  late List<List2> filteredData = [];
   bool isLoading = false;
   Timer? debouncer;
   String query = '';
@@ -56,8 +56,14 @@ class _DistrictViewState extends State<DistrictView1> {
     setState(() {
       isLoading = false;
     });
-    // filteredData = await authController.searchInstitutes(query) ?? [];
-    filteredData = await authController.getdistrictList();
+    final allDistricts = await authController.getdistrictList();
+
+// Then filter by state ID
+    final stateId = authController.stateId.value;
+    filteredData = allDistricts
+        .where((district) => district.state?.sId == stateId)
+        .toList();
+
     setState(() {
       isLoading = true;
     });
@@ -82,7 +88,7 @@ class _DistrictViewState extends State<DistrictView1> {
                 Expanded(
                     child: Center(
                         child: Text(
-                  'Select Institute',
+                  'Select District',
                   style: TextStyle(
                       color: AppColors.black,
                       fontWeight: FontWeight.w500,
@@ -99,10 +105,10 @@ class _DistrictViewState extends State<DistrictView1> {
                 ),
               ],
             ),
-            SearchWidget(
-              text: query,
-              onChanged: searchTitle,
-            ),
+            // SearchWidget(
+            //   text: query,
+            //   onChanged: searchTitle,
+            // ),
             isLoading
                 ? SizedBox(
                     height: dialogHeight,
@@ -216,15 +222,15 @@ class _DistrictViewState extends State<DistrictView1> {
     );
   }
 
-  void searchTitle(String query) async => debounce(() async {
-        filteredData = await authController.searchInstitutes(query) ?? [];
-        // ignore: unnecessary_null_comparison
-        if (filteredData != null) {
-          if (!mounted) return;
-          setState(() {
-            this.query = query;
-            filteredData = filteredData;
-          });
-        }
-      });
+  // void searchTitle(String query) async => debounce(() async {
+  //       filteredData = await authController.searchInstitutes(query) ?? [];
+  //       // ignore: unnecessary_null_comparison
+  //       if (filteredData != null) {
+  //         if (!mounted) return;
+  //         setState(() {
+  //           this.query = query;
+  //           filteredData = filteredData;
+  //         });
+  //       }
+  //     });
 }

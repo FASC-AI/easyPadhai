@@ -31,13 +31,38 @@ class HomeworkModel3 {
 }
 
 class HomeworkModel3Data {
+  String? publishedDate;
+  List<Homeworks>? homeworks;
+
+  HomeworkModel3Data({this.publishedDate, this.homeworks});
+
+  HomeworkModel3Data.fromJson(Map<String, dynamic> json) {
+    publishedDate = json['publishedDate'];
+    if (json['homeworks'] != null) {
+      homeworks = <Homeworks>[];
+      json['homeworks'].forEach((v) {
+        homeworks!.add(new Homeworks.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['publishedDate'] = this.publishedDate;
+    if (this.homeworks != null) {
+      data['homeworks'] = this.homeworks!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Homeworks {
   String? sId;
   List<String>? subjectId;
   List<String>? classId;
   List<String>? lessonId;
   List<String>? bookId;
   List<String>? topicId;
-  bool? isPublished;
   String? question;
   String? solution;
   String? videoTutorialLink;
@@ -47,17 +72,16 @@ class HomeworkModel3Data {
   String? createdAt;
   String? updatedAt;
   int? iV;
-  String? publishedBy;
+  bool? isLast;
   String? publishedDate;
 
-  HomeworkModel3Data(
+  Homeworks(
       {this.sId,
       this.subjectId,
       this.classId,
       this.lessonId,
       this.bookId,
       this.topicId,
-      this.isPublished,
       this.question,
       this.solution,
       this.videoTutorialLink,
@@ -67,17 +91,16 @@ class HomeworkModel3Data {
       this.createdAt,
       this.updatedAt,
       this.iV,
-      this.publishedBy,
+      this.isLast,
       this.publishedDate});
 
-  HomeworkModel3Data.fromJson(Map<String, dynamic> json) {
+  Homeworks.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     subjectId = json['subjectId'].cast<String>();
     classId = json['classId'].cast<String>();
     lessonId = json['lessonId'].cast<String>();
     bookId = json['bookId'].cast<String>();
     topicId = json['topicId'].cast<String>();
-    isPublished = json['isPublished'];
     question = json['question'];
     solution = json['solution'];
     videoTutorialLink = json['videoTutorialLink'];
@@ -87,7 +110,7 @@ class HomeworkModel3Data {
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     iV = json['__v'];
-    publishedBy = json['publishedBy'];
+    isLast = json['isLast'];
     publishedDate = json['publishedDate'];
   }
 
@@ -99,7 +122,6 @@ class HomeworkModel3Data {
     data['lessonId'] = this.lessonId;
     data['bookId'] = this.bookId;
     data['topicId'] = this.topicId;
-    data['isPublished'] = this.isPublished;
     data['question'] = this.question;
     data['solution'] = this.solution;
     data['videoTutorialLink'] = this.videoTutorialLink;
@@ -109,7 +131,7 @@ class HomeworkModel3Data {
     data['createdAt'] = this.createdAt;
     data['updatedAt'] = this.updatedAt;
     data['__v'] = this.iV;
-    data['publishedBy'] = this.publishedBy;
+    data['isLast'] = this.isLast;
     data['publishedDate'] = this.publishedDate;
     return data;
   }

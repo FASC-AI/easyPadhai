@@ -1,7 +1,12 @@
+import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
+import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
+import 'package:easy_padhai/custom_widgets/custum_nav_bar2.dart';
 import 'package:easy_padhai/dashboard/lesson_topic_student.dart';
+import 'package:easy_padhai/dashboard/student_bottomsheet.dart';
+import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
 import 'package:easy_padhai/model/lesson_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -89,6 +94,9 @@ class _LessonScreenState extends State<LessonScreen> {
                                           lessonList[index].videoTutorialLink!,
                                       wordMeanings:
                                           lessonList[index].wordMeanings!,
+                                      lessonkey: lessonList[index].lessonKey!,
+                                      istestreq:
+                                          lessonList[index].isTestRequired!,
                                     )),
                           );
                           setState(() {
@@ -169,6 +177,10 @@ class _LessonScreenState extends State<LessonScreen> {
                                                   .videoTutorialLink!,
                                               wordMeanings: lessonList[index]
                                                   .wordMeanings!,
+                                              lessonkey:
+                                                  lessonList[index].lessonKey!,
+                                              istestreq: lessonList[index]
+                                                  .isTestRequired!,
                                             )),
                                   );
                                   setState(() {
@@ -200,6 +212,36 @@ class _LessonScreenState extends State<LessonScreen> {
                 reverse: false,
               ),
             ),
+      bottomNavigationBar: userRole() == 'student'
+          ? Obx(() => CustomBottomNavBar2(
+                currentIndex: dashboardController.currentIndex1.value,
+                onTap: (index) {
+                  if (index == 1) {
+                    // Assuming index 1 is for creating batch
+                    BatchHelper.showFollowBatchBottomSheet(context);
+                    //_showdoneBatchBottomSheet(context);
+                  } else {
+                    dashboardController.changeIndex1(index);
+                  }
+                },
+              ))
+          : Obx(() => CustomBottomNavBar(
+                currentIndex: dashboardController.currentIndex.value,
+                onTap: (index) {
+                  if (index == 1) {
+                    // Assuming index 1 is for creating batch
+                    BatchHelperTeacher.showCreateBatchBottomSheet(context);
+                    //_showdoneBatchBottomSheet(context);
+                  } else if (index == 2) {
+                    // Assuming index 1 is for creating batch
+                    BatchHelperTeacher.showFollowBatchBottomSheetTeacher(
+                        context);
+                    //_showdoneBatchBottomSheet(context);
+                  } else {
+                    dashboardController.changeIndex(index);
+                  }
+                },
+              )),
     );
   }
 }

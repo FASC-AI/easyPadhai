@@ -17,6 +17,7 @@ class LessonTopics extends StatefulWidget {
   String topic_id;
   String lesson_id;
   String sub_id;
+  bool istestreq;
   final List<dynamic> wordMeanings;
   LessonTopics(
       {super.key,
@@ -24,6 +25,7 @@ class LessonTopics extends StatefulWidget {
       required this.topic_id,
       required this.lesson_id,
       required this.sub_id,
+      required this.istestreq,
       required this.wordMeanings});
   @override
   _LessonScreenState createState() => _LessonScreenState();
@@ -44,7 +46,7 @@ class _LessonScreenState extends State<LessonTopics> {
   @override
   void initState() {
     super.initState();
-     print(widget.topic_id);
+    print(widget.topic_id);
 
     wordMeaningList = widget.wordMeanings.map((item) {
       if (item is WordMeanings) {
@@ -71,6 +73,7 @@ class _LessonScreenState extends State<LessonTopics> {
               .meaning;
 
           if (meaning != null && meaning.isNotEmpty) {
+            // _showTooltip(tappedWord, meaning);
             showModalBottomSheet(
               context: context,
               shape: const RoundedRectangleBorder(
@@ -204,6 +207,58 @@ class _LessonScreenState extends State<LessonTopics> {
     });
   }
 
+  OverlayEntry? _tooltipOverlay;
+
+  void _showTooltip(String word, String meaning) {
+    _removeTooltip(); // remove old one if any
+
+    _tooltipOverlay = OverlayEntry(
+      builder: (context) => Positioned(
+        top: 100, // Adjust as needed
+        left: 20,
+        right: 20,
+        child: Material(
+          color: Colors.transparent,
+          child: Center(
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    word,
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    meaning,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(_tooltipOverlay!);
+
+    Future.delayed(const Duration(seconds: 3), () {
+      _removeTooltip();
+    });
+  }
+
+  void _removeTooltip() {
+    _tooltipOverlay?.remove();
+    _tooltipOverlay = null;
+  }
+
   Future<void> update() async {
     if (widget.topic_id.isEmpty) {
       await dashboardController.getTopicUpdate("", widget.lesson_id);
@@ -220,7 +275,6 @@ class _LessonScreenState extends State<LessonTopics> {
   }
 
   void nextPage() {
-    update();
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -235,25 +289,27 @@ class _LessonScreenState extends State<LessonTopics> {
   void previousPage() {}
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xffF6F9FF),
-      body: Column(
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: const Color(0xffF6F9FF),
+    resizeToAvoidBottomInset: true, // To avoid keyboard pushing UI off
+    body: SafeArea(
+      child: Column(
         children: [
+          // WebView Area with Loader
           Expanded(
             child: Stack(
               children: [
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: WebViewWidget(controller: _webViewController),
                 ),
                 if (_isLoading)
                   Center(
                     child: Lottie.asset(
                       'assets/loading.json',
-                      width: MediaQuery.of(context).size.width * .2,
-                      height: MediaQuery.of(context).size.height * .2,
+                      width: MediaQuery.of(context).size.width * 0.2,
+                      height: MediaQuery.of(context).size.height * 0.2,
                       repeat: true,
                       animate: true,
                       reverse: false,
@@ -262,73 +318,78 @@ class _LessonScreenState extends State<LessonTopics> {
               ],
             ),
           ),
+
           const SizedBox(height: 10),
+
+          // Teacher Button
           if (userRole() == "teacher")
-            ElevatedButton(
-              onPressed: () async {
-                update();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AssignHomeworkScreen(
-                      lessonId: widget.lesson_id,
-                      tid: widget.topic_id,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: ElevatedButton(
+                onPressed: () async {
+                  update();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AssignHomeworkScreen(
+                        lessonId: widget.lesson_id,
+                        tid: widget.topic_id,
+                      ),
                     ),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                maximumSize: const Size.fromWidth(300),
-                backgroundColor: AppColors.theme,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-              ),
-              child: const Text(
-                'Assign Homework & Continue',
-                style: TextStyle(color: Colors.white),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  maximumSize: const Size.fromWidth(300),
+                  backgroundColor: AppColors.theme,
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                ),
+                child: const Text(
+                  'Assign Homework & Continue',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ),
-          const SizedBox(height: 10),
+
+          // Student Navigation (Next + Skip)
           if (userRole() == "student")
-            SizedBox(
-              height: 80,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: previousPage,
-                    icon: SvgPicture.asset('assets/prev.svg'),
-                  ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+               // Spacer for alignment
+                if (widget.istestreq)
                   IconButton(
                     onPressed: nextPage,
-                    icon: SvgPicture.asset('assets/next.svg'),
+                    icon: SvgPicture.asset('assets/next.svg', width: 70, height: 70),
                   ),
-                ],
-              ),
+              ],
             ),
+
           if (userRole() == "student")
-            Align(
-              alignment: Alignment.bottomRight,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(right: 20, bottom: 20),
-                  width: 50,
-                  height: 27,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: AppColors.theme,
-                    borderRadius: BorderRadius.circular(30),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16, right: 16),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTap: () {
+                    update();
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    width: 60,
+                    height: 30,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.theme,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Text('Skip', style: TextStyle(color: Colors.white)),
                   ),
-                  child:
-                      const Text('Skip', style: TextStyle(color: Colors.white)),
                 ),
               ),
             ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
+import 'package:easy_padhai/custom_widgets/custum_nav_bar2.dart';
+import 'package:easy_padhai/dashboard/student_bottomsheet.dart';
 import 'package:easy_padhai/model/lesson_test_model.dart';
 import 'package:easy_padhai/model/submit_test_model.dart';
 import 'package:flutter/material.dart';
@@ -81,6 +83,15 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
     setState(() {
       isload = false;
     });
+  }
+
+  Future<void> update() async {
+    if (widget.topic_id.isEmpty) {
+      await dashboardController.getTopicUpdate("", widget.lesson_id);
+    } else {
+      await dashboardController.getTopicUpdate(
+          widget.topic_id, widget.lesson_id);
+    }
   }
 
   DateTime _getTodayDateTime(String timeStr) {
@@ -177,7 +188,7 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
         "answer": entry.value, // Note the plural "answers" since it's a list
       });
     }
-
+    update();
     final res = await dashboardController.submitLessonTest(
         response, cls_id, widget.sub_id, widget.lesson_id);
     if (res.status == true) {
@@ -260,18 +271,23 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                 margin: const EdgeInsets.all(30.0),
                 padding: const EdgeInsets.all(30.0),
                 decoration: BoxDecoration(
-                    color: AppColors.white,
-                    shape: BoxShape.rectangle,
-                    border: Border.all(color: AppColors.grey7)),
+                  color: AppColors.white,
+                  shape: BoxShape.rectangle,
+                  border: Border.all(color: AppColors.grey7),
+                ),
                 child: tests.isNotEmpty
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    ? ListView(
+                        shrinkWrap: true,
+                        physics:
+                            const NeverScrollableScrollPhysics(), // Prevent nested scroll
                         children: [
                           Text(
-                              "QUESTION ${_currentIndex + 1} / ${tests.length}",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.black.withOpacity(0.5))),
+                            "QUESTION ${_currentIndex + 1} / ${tests.length}",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.black.withOpacity(0.5),
+                            ),
+                          ),
                           const SizedBox(height: 8),
                           Html(data: currentTest!.description ?? ''),
                           const SizedBox(height: 16),
@@ -280,11 +296,12 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                               return Container(
                                 margin: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                    color: _selectedAnswer == option
-                                        ? Colors.blue.shade50
-                                        : Colors.white,
-                                    shape: BoxShape.rectangle,
-                                    border: Border.all(color: AppColors.grey7)),
+                                  color: _selectedAnswer == option
+                                      ? Colors.blue.shade50
+                                      : Colors.white,
+                                  shape: BoxShape.rectangle,
+                                  border: Border.all(color: AppColors.grey7),
+                                ),
                                 child: RadioListTile(
                                   title: Text(option),
                                   value: option,
@@ -302,11 +319,12 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                               return Container(
                                 margin: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                    color: _selectedAnswer == option
-                                        ? Colors.blue.shade50
-                                        : Colors.white,
-                                    shape: BoxShape.rectangle,
-                                    border: Border.all(color: AppColors.grey7)),
+                                  color: _selectedAnswers.contains(option)
+                                      ? Colors.blue.shade50
+                                      : Colors.white,
+                                  shape: BoxShape.rectangle,
+                                  border: Border.all(color: AppColors.grey7),
+                                ),
                                 child: CheckboxListTile(
                                   checkColor: Colors.white,
                                   activeColor: const Color(0xff186BA5),
@@ -325,7 +343,7 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                                 ),
                               );
                             }).toList(),
-                          const Spacer(),
+                          const SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -359,18 +377,16 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                                         _currentIndex < tests.length - 1
                                             ? "Next"
                                             : "Submit",
-                                        style: TextStyle(color: Colors.white),
+                                        style: const TextStyle(
+                                            color: Colors.white),
                                       )
                                     : SizedBox(
                                         width: 30,
                                         height: 30,
                                         child: Lottie.asset(
                                           'assets/loading.json',
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          height: MediaQuery.of(context)
-                                              .size
-                                              .height,
+                                          width: 30,
+                                          height: 30,
                                           repeat: true,
                                           animate: true,
                                           reverse: false,
@@ -378,14 +394,14 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                                       ),
                               ),
                             ],
-                          )
+                          ),
                         ],
                       )
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(
-                            'assets/no_notification.png', // Change with your icon/image path
+                            'assets/no_notification.png',
                             height: 80,
                           ),
                           const SizedBox(height: 10),
@@ -407,9 +423,20 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                 height: MediaQuery.of(context).size.height * .2,
                 repeat: true,
                 animate: true,
-                reverse: false,
               ),
             ),
+             bottomNavigationBar: Obx(() => CustomBottomNavBar2(
+            currentIndex: dashboardController.currentIndex1.value,
+            onTap: (index) {
+              if (index == 1) {
+                // Assuming index 1 is for creating batch
+                BatchHelper.showFollowBatchBottomSheet(context);
+                //_showdoneBatchBottomSheet(context);
+              } else {
+                dashboardController.changeIndex1(index);
+              }
+            },
+          )),
     );
   }
 

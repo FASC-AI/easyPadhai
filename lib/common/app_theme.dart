@@ -23,7 +23,7 @@ class AppTheme {
       colorScheme: ColorScheme.fromSwatch().copyWith(
         secondary: AppColors.backGroundColor,
         onSecondary: AppColors.backGroundColor,
-        onPrimary: AppColors.backGroundColor,
+        onPrimary: Colors.white,
         primary: AppColors.backGroundColor,
       ),
     );

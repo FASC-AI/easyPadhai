@@ -5,11 +5,10 @@ import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
 import 'package:easy_padhai/custom_widgets/text.dart';
 import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
 import 'package:easy_padhai/model/book_model.dart';
-import 'package:easy_padhai/model/homework_model1.dart';
 import 'package:easy_padhai/model/lesson_model.dart';
+import 'package:easy_padhai/model/offline_test_list.dart';
 import 'package:easy_padhai/model/offline_test_model.dart';
 import 'package:easy_padhai/model/profile_model.dart';
-import 'package:easy_padhai/model/question_model.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,14 +17,21 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-class CreateOfflineTestScreen extends StatefulWidget {
-  String bClassId = "";
-  CreateOfflineTestScreen({required this.bClassId});
+class EditOfflineTestScreen extends StatefulWidget {
+  final String bClassId;
+  final OfflineTestListData testToEdit;
+  final List<OfflineTestListData> testList;
+
+  EditOfflineTestScreen(
+      {required this.bClassId,
+      required this.testToEdit,
+      required this.testList});
+
   @override
-  _CreateTestScreenState createState() => _CreateTestScreenState();
+  _EditOfflineTestScreenState createState() => _EditOfflineTestScreenState();
 }
 
-class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
+class _EditOfflineTestScreenState extends State<EditOfflineTestScreen> {
   List<LData> lessonList = [];
   List<ClassDetail> classes = [];
   List<Books> booklist = [];
@@ -34,7 +40,6 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
   Books? selectedbook;
   LData? selectedlesson;
   Topics? selectedtopic;
-  int selectedCount = 3;
   DateTime selectedDate = DateTime.now();
   String selectDate = '';
   String sub_id = "";
@@ -46,29 +51,180 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
   List<String> selectedQuestionAR = [];
   List<String> selectedQuestionDS = [];
   DashboardController dashboardController = Get.find();
-  // int selectedCount = 13;
-  int totalCount = 40;
   List<Tests> mcqQuestions = [];
   List<Tests> TFQuestions = [];
   List<Tests> ARQuestions = [];
   List<Tests> DSQuestions = [];
+  Duration testDuration = Duration.zero;
+  bool tfExpanded = false;
+  bool dsExpanded = false;
+  bool ds1Expanded = false;
+  String ids = "";
 
-  List<bool> selectedMcq = [];
-  int mcqCount = 0;
-  int tfCount = 0;
-  int descCount = 0;
-  bool mcqPub = false;
-  bool trPub = false;
-  bool arPub = false;
-  bool dsPub = false;
-  bool isVisible = false;
+  final TextEditingController _durationController = TextEditingController();
+  Duration _duration = const Duration(hours: 0, minutes: 0);
+  TimeOfDay? selectTime;
+  final TextEditingController _timeController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    ids = widget.testToEdit.sId!;
+    _initializeTestData();
+    getdata();
+  }
+
+  void _initializeTestData() {
+    // Initialize form fields with test data
+    sessionController.text = widget.testToEdit.session ?? '';
+
+    // Parse duration from test data
+    if (widget.testToEdit.duration != null) {
+      testDuration = parseDuration(widget.testToEdit.duration ?? "00:00");
+      _durationController.text =
+          "${testDuration.inHours.toString().padLeft(2, '0')}:${(testDuration.inMinutes % 60).toString().padLeft(2, '0')}";
+    }
+
+    // Initialize selected questions from test data
+    if (widget.testToEdit.testIds != null) {
+      selectedQuestionIds = widget.testToEdit.testIds!
+          .where((q) => q.type == "MCQ")
+          .map((q) => q.sId?.trim() ?? '')
+          .toList();
+      selectedQuestionTF = widget.testToEdit.testIds!
+          .where((q) => q.type == "True/False")
+          .map((q) => q.sId?.trim() ?? '')
+          .toList();
+
+      selectedQuestionAR = widget.testToEdit.testIds!
+          .where((q) => q.type == "Assertion-Reason")
+          .map((q) => q.sId?.trim() ?? '')
+          .toList();
+      selectedQuestionDS = widget.testToEdit.testIds!
+          .where((q) => q.type == "Descriptive")
+          .map((q) => q.sId?.trim() ?? '')
+          .toList();
+    }
+
+    // Initialize other fields as needed
+  }
+
+  Duration parseDuration(String duration) {
+    List<String> parts = duration.split(':');
+    int hours = int.parse(parts[0]);
+    int minutes = int.parse(parts[1]);
+    return Duration(hours: hours, minutes: minutes);
+  }
+
+  Future<void> getdata() async {
+    classes = dashboardController.profileModel?.data?.classDetail! ?? [];
+    sub_id =
+        dashboardController.profileModel?.data?.subjectDetail?[0].sId! ?? "";
+    classes.retainWhere((classDetail) => classDetail.sId == widget.bClassId);
+
+    // Set selected class if available
+    selectedClass = classes.firstWhere(
+      (c) => c.sId == widget.bClassId,
+      orElse: () => classes.first,
+    );
+
+    // Load books for selected class
+    if (selectedClass != null) {
+      await dashboardController.getBook(sub_id, selectedClass!.sId!);
+      setState(() {
+        booklist = dashboardController.booklist;
+      });
+
+      // Set selected book if available
+      if (widget.testToEdit.bookId != null) {
+        selectedbook = booklist.firstWhere(
+          (b) => b.sId == widget.testToEdit.bookId,
+          orElse: () => booklist.first,
+        );
+      }
+
+      // Load lessons for selected book
+      if (selectedbook != null) {
+        await dashboardController.getLesson(selectedbook!.sId!, sub_id);
+        setState(() {
+          lessonList = dashboardController.lessonlist;
+        });
+
+        // Set selected lesson if available
+        if (widget.testToEdit.lessonId != null) {
+          selectedlesson = lessonList.firstWhere(
+            (l) => l.sId == widget.testToEdit.lessonId,
+            orElse: () => lessonList.first,
+          );
+        }
+
+        // Load topics for selected lesson
+        if (selectedlesson != null) {
+          setState(() {
+            topics = selectedlesson!.topics!;
+          });
+
+          // Set selected topic if available
+          if (widget.testToEdit.topicId != null) {
+            selectedtopic = topics.firstWhere(
+              (t) => t.sId == widget.testToEdit.topicId,
+              orElse: () => topics.first,
+            );
+          }
+        }
+
+        // Load questions based on selections
+        await _loadQuestions();
+      }
+    }
+  }
+
+  Future<void> _loadQuestions() async {
+    if (selectedClass != null && selectedbook != null) {
+      String lessonId = selectedlesson?.sId ?? "";
+      String topicId = selectedtopic?.sId ?? "";
+
+      await dashboardController.getOfflineQ1(
+        selectedClass!.sId!,
+        sub_id,
+        selectedbook!.sId!,
+        lessonId,
+        topicId,
+      );
+
+      setState(() {
+        questions.clear();
+        ARQuestions.clear();
+        DSQuestions.clear();
+        mcqQuestions.clear();
+        TFQuestions.clear();
+        questions = dashboardController.OffquesList;
+
+        if (questions.isNotEmpty) {
+          for (int i = 0; i < questions.length; i++) {
+            if (questions[i].sId == "Assertion-Reason") {
+              ARQuestions = questions[i].tests!;
+            } else if (questions[i].sId == "Descriptive") {
+              DSQuestions = questions[i].tests!;
+            } else if (questions[i].sId == "MCQ") {
+              mcqQuestions = questions[i].tests!;
+            } else if (questions[i].sId == "True/False") {
+              TFQuestions = questions[i].tests!;
+            }
+          }
+        }
+      });
+    }
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2101));
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
@@ -80,119 +236,12 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
     }
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getdata();
-  }
-
-  Future<void> getdata() async {
-    classes = dashboardController.profileModel?.data?.classDetail! ?? [];
-    sub_id =
-        dashboardController.profileModel?.data?.subjectDetail?[0].sId! ?? "";
-    classes.retainWhere((classDetail) => classDetail.sId == widget.bClassId);
-  }
-
-  void _showPublishDatePopup() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.white,
-        title: const Text(
-          "Test Ready for Launch",
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GestureDetector(
-              onTap: () {
-                _selectDate(context);
-              },
-              child: TextFormField(
-                controller: _dateController, // Bind the controller here
-                readOnly: true,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        const BorderSide(color: Colors.grey, width: 1.0),
-                  ),
-                  hintText: "Pick a Date",
-                  suffixIcon: IconButton(
-                    icon: const Icon(
-                      Icons.calendar_month,
-                      color: Color(0xFF2765CA),
-                    ),
-                    onPressed: () {
-                      _selectDate(context);
-                    },
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () {
-                _selectTime(context);
-              },
-              child: TextFormField(
-                controller: _timeController, // Controller for time
-                readOnly: true,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        const BorderSide(color: Colors.grey, width: 1.0),
-                  ),
-                  hintText: "Pick a Time",
-                  suffixIcon: IconButton(
-                    icon: const Icon(
-                      Icons.access_time,
-                      color: Color(0xFF2765CA),
-                    ),
-                    onPressed: () {
-                      _selectTime(context);
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (selectDate != null && selectTime != null) {
-                // Implement publish logic here
-                Navigator.pop(context);
-                Get.snackbar("Success",
-                    "Publish date set to ${_dateController.text} at ${_timeController.text}");
-              } else {
-                Get.snackbar("Error", "Please select both date and time.");
-              }
-            },
-            child: const Text("Save"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  TimeOfDay? selectTime;
-
-  final TextEditingController _timeController = TextEditingController();
-
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
+
     if (picked != null && picked != selectTime) {
       setState(() {
         selectTime = picked;
@@ -201,10 +250,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
     }
   }
 
-  final TextEditingController _durationController = TextEditingController();
-  Duration _duration = const Duration(hours: 0, minutes: 0);
-
-  void _selectDuration() async {
+  Future<void> _selectDuration() async {
     final Duration? picked = await showTimePicker(
       context: context,
       initialTime:
@@ -230,10 +276,6 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
       });
     }
   }
-
-  bool tfExpanded = false;
-  bool dsExpanded = false;
-  bool ds1Expanded = false;
 
   Widget buildTypeSection({
     required String title,
@@ -320,10 +362,10 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
 
                         // Title
                         const Text(
-                          "Question Paper",
+                          "Edit Paper",
                           style: TextStyle(
                             overflow: TextOverflow.ellipsis,
-                            fontSize: 14,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -338,9 +380,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                             inputType: TextInputType.number,
                           ),
                         ),
-                        SizedBox(
-                          width: 10,
-                        ),
+                        const SizedBox(width: 10),
                         SizedBox(
                           width: 70,
                           child: GestureDetector(
@@ -398,7 +438,6 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                       selectedClass = value;
                                     });
 
-                                    // Fetching books based on selected class
                                     await dashboardController.getBook(
                                         sub_id, value.sId!);
                                     setState(() {
@@ -436,15 +475,14 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                 items: classes.map((ClassDetail cls) {
                                   return DropdownMenuItem<ClassDetail>(
                                     value: cls,
-                                    child: Text(cls.class1 ??
-                                        'Unknown'), // Display class name
+                                    child: Text(cls.class1 ?? 'Unknown'),
                                   );
                                 }).toList(),
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
                           child: InputDecorator(
@@ -473,48 +511,13 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                       selectedbook = value;
                                     });
 
-                                    // Fetching books based on selected class
                                     await dashboardController.getLesson(
                                         value.sId!, sub_id);
                                     setState(() {
                                       lessonList =
                                           dashboardController.lessonlist;
                                     });
-                                    await dashboardController.getOfflineQ1(
-                                        selectedClass!.sId!,
-                                        sub_id,
-                                        selectedbook!.sId!,
-                                        "",
-                                        "");
-                                    // Fetching books based on selected class
-                                    setState(() {
-                                      questions.clear();
-                                      ARQuestions.clear();
-                                      DSQuestions.clear();
-                                      mcqQuestions.clear();
-                                      TFQuestions.clear();
-                                      questions =
-                                          dashboardController.OffquesList;
-                                      if (questions.isNotEmpty) {
-                                        for (int i = 0;
-                                            i < questions.length;
-                                            i++) {
-                                          if (questions[i].sId ==
-                                              "Assertion-Reason") {
-                                            ARQuestions = questions[i].tests!;
-                                          } else if (questions[i].sId ==
-                                              "Descriptive") {
-                                            DSQuestions = questions[i].tests!;
-                                          } else if (questions[i].sId ==
-                                              "MCQ") {
-                                            mcqQuestions = questions[i].tests!;
-                                          } else if (questions[i].sId ==
-                                              "True/False") {
-                                            TFQuestions = questions[i].tests!;
-                                          }
-                                        }
-                                      }
-                                    });
+                                    await _loadQuestions();
 
                                     if (!classes.contains(selectedClass)) {
                                       setState(() {
@@ -584,42 +587,10 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                   selectedlesson = value;
                                 });
 
-                                // Fetching books based on selected class
-
                                 setState(() {
                                   topics = value.topics!;
                                 });
-                                await dashboardController.getOfflineQ1(
-                                    selectedClass!.sId!,
-                                    sub_id,
-                                    selectedbook!.sId!,
-                                    selectedlesson!.sId!,
-                                    "");
-                                // Fetching books based on selected class
-                                setState(() {
-                                  questions.clear();
-                                  ARQuestions.clear();
-                                  DSQuestions.clear();
-                                  mcqQuestions.clear();
-                                  TFQuestions.clear();
-                                  questions = dashboardController.OffquesList;
-                                  if (questions.isNotEmpty) {
-                                    for (int i = 0; i < questions.length; i++) {
-                                      if (questions[i].sId ==
-                                          "Assertion-Reason") {
-                                        ARQuestions = questions[i].tests!;
-                                      } else if (questions[i].sId ==
-                                          "Descriptive") {
-                                        DSQuestions = questions[i].tests!;
-                                      } else if (questions[i].sId == "MCQ") {
-                                        mcqQuestions = questions[i].tests!;
-                                      } else if (questions[i].sId ==
-                                          "True/False") {
-                                        TFQuestions = questions[i].tests!;
-                                      }
-                                    }
-                                  }
-                                });
+                                await _loadQuestions();
 
                                 if (!classes.contains(selectedClass)) {
                                   setState(() {
@@ -685,38 +656,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                 setState(() {
                                   selectedtopic = value;
                                 });
-                                await dashboardController.getOfflineQ1(
-                                    selectedClass!.sId!,
-                                    sub_id,
-                                    selectedbook!.sId!,
-                                    selectedlesson!.sId!,
-                                    selectedtopic!.sId!);
-                                // Fetching books based on selected class
-                                setState(() {
-                                  questions.clear();
-                                  ARQuestions.clear();
-                                  DSQuestions.clear();
-                                  mcqQuestions.clear();
-                                  TFQuestions.clear();
-                                  questions = dashboardController.OffquesList;
-                                  // print(questions.length);
-                                  if (questions.isNotEmpty) {
-                                    for (int i = 0; i < questions.length; i++) {
-                                      if (questions[i].sId ==
-                                          "Assertion-Reason") {
-                                        ARQuestions = questions[i].tests!;
-                                      } else if (questions[i].sId ==
-                                          "Descriptive") {
-                                        DSQuestions = questions[i].tests!;
-                                      } else if (questions[i].sId == "MCQ") {
-                                        mcqQuestions = questions[i].tests!;
-                                      } else if (questions[i].sId ==
-                                          "True/False") {
-                                        TFQuestions = questions[i].tests!;
-                                      }
-                                    }
-                                  }
-                                });
+                                await _loadQuestions();
 
                                 if (!classes.contains(selectedClass)) {
                                   setState(() {
@@ -760,7 +700,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Choose Your Questions",
+                          "Edit Your Questions",
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
@@ -857,7 +797,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Image.asset(
-                                        'assets/no_notification.png', // Change with your icon/image path
+                                        'assets/no_notification.png',
                                         height: 80,
                                       ),
                                       const SizedBox(height: 10),
@@ -874,7 +814,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                         ],
                       ),
                     ),
-                    // buildTypeSection("True/False Questions", tfCount),
+
                     Column(
                       children: [
                         buildTypeSection(
@@ -890,7 +830,6 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                         ),
                         if (tfExpanded)
                           ...TFQuestions.asMap().entries.map((entry) {
-                            // int index = entry.key; // S.No starts from 1
                             var questiondata = entry.value;
                             return CheckboxListTile(
                               checkColor: Colors.white,
@@ -915,6 +854,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                           }),
                       ],
                     ),
+
                     buildTypeSection(
                       title: "AR Questions (${selectedQuestionAR.length})",
                       count: ARQuestions.length,
@@ -927,7 +867,6 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                     ),
                     if (dsExpanded)
                       ...ARQuestions.asMap().entries.map((entry) {
-                        // int index = entry.key; // S.No starts from 1
                         var questiondata = entry.value;
                         return CheckboxListTile(
                           checkColor: Colors.white,
@@ -965,7 +904,6 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                     ),
                     if (ds1Expanded)
                       ...DSQuestions.asMap().entries.map((entry) {
-                        // int index = entry.key; // S.No starts from 1
                         var questiondata = entry.value;
                         return CheckboxListTile(
                           checkColor: Colors.white,
@@ -990,70 +928,74 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                         );
                       }),
 
-                    // Submit Button
+                    // Action Buttons
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SizedBox(
+                          width: 150,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              // Preview button logic
+                              List<String> arr = selectedQuestionIds +
+                                  selectedQuestionAR +
+                                  selectedQuestionTF +
+                                  selectedQuestionDS;
+                              if (arr.isEmpty) {
+                                Get.snackbar(
+                                    "Message", "Please select questions.",
+                                    snackPosition: SnackPosition.BOTTOM);
+                                return;
+                              } else if (sessionController.text.isEmpty) {
+                                Get.snackbar("Message", "Please enter session.",
+                                    snackPosition: SnackPosition.BOTTOM);
+                                return;
+                              } else if (_durationController.text.isEmpty) {
+                                Get.snackbar("Message",
+                                    "Please enter time duration of test.",
+                                    snackPosition: SnackPosition.BOTTOM);
+                                return;
+                              } else {
+                                String tid = "";
+                                String lid = "";
+                                if (selectedtopic != null &&
+                                    selectedtopic!.sId != null) {
+                                  tid = selectedtopic!.sId!;
+                                }
+                                if (selectedlesson != null &&
+                                    selectedlesson!.sId != null) {
+                                  lid = selectedlesson!.sId!;
+                                }
+
+                                await dashboardController.downloadAndOpenPdf(
+                                    sub_id,
+                                    widget.bClassId,
+                                    tid,
+                                    lid,
+                                    arr,
+                                    sessionController.text.toString().trim(),
+                                    _durationController.text.toString().trim(),
+                                    selectedbook!.sId!,
+                                    ids,
+                                    context);
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.theme,
+                            ),
+                            child: const Text("Preview",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
-              SizedBox(
-                width: 200,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    // print("Selected Questions: $selectedQuestionIds");
-                    // Handle submit logic here
-                    List<String> arr = selectedQuestionIds +
-                        selectedQuestionAR +
-                        selectedQuestionTF +
-                        selectedQuestionDS;
-                    if (arr.isEmpty) {
-                      Get.snackbar("Message", "Please select questions.",
-                          snackPosition: SnackPosition.BOTTOM);
-                      return;
-                    } else if (sessionController.text.isEmpty) {
-                      Get.snackbar("Message", "Please enter session.",
-                          snackPosition: SnackPosition.BOTTOM);
-                      return;
-                    } else if (_durationController.text.isEmpty) {
-                      Get.snackbar(
-                          "Message", "Please enter time duration of test.",
-                          snackPosition: SnackPosition.BOTTOM);
-                      return;
-                    } else {
-                      String tid = "";
-                      String lid = "";
-                      if (selectedtopic != null && selectedtopic!.sId != null) {
-                        tid = selectedtopic!.sId!;
-                      }
-                      if (selectedlesson != null &&
-                          selectedlesson!.sId != null) {
-                        lid = selectedlesson!.sId!;
-                      }
-
-                      await dashboardController.downloadAndOpenPdf(
-                          sub_id,
-                          widget.bClassId,
-                          tid,
-                          lid,
-                          arr,
-                          sessionController.text.toString().trim(),
-                          _durationController.text.toString().trim(),
-                          selectedbook!.sId!,
-                          "",
-                          context);
-                      // Navigator.pop(context);
-                      // if (res != false) {
-                      //   Navigator.pop(context);
-                      // }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.theme,
-                  ),
-                  child: const Text("View Preview",
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold)),
-                ),
-              ),
-              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -1062,28 +1004,14 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
             currentIndex: dashboardController.currentIndex.value,
             onTap: (index) {
               if (index == 1) {
-                // Assuming index 1 is for creating batch
                 BatchHelperTeacher.showCreateBatchBottomSheet(context);
-                //_showdoneBatchBottomSheet(context);
               } else if (index == 2) {
-                // Assuming index 1 is for creating batch
                 BatchHelperTeacher.showFollowBatchBottomSheetTeacher(context);
-                //_showdoneBatchBottomSheet(context);
               } else {
                 dashboardController.changeIndex(index);
               }
             },
           )),
     );
-  }
-
-  String formatToISOWithOffset(DateTime parsedDate) {
-    // Add 5 hours and 30 minutes to the parsed date
-    DateTime adjustedDate =
-        parsedDate.add(const Duration(hours: 5, minutes: 30));
-
-    // Convert to UTC and format as ISO 8601 string
-    String isoDate = adjustedDate.toUtc().toIso8601String();
-    return isoDate;
   }
 }

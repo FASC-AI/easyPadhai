@@ -60,32 +60,32 @@ class ClassView extends StatelessWidget {
                                         fontSize:
                                             MediaQuery.of(context).size.width *
                                                 .042)),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * .005,
-                                ),
-                                Row(
-                                  children: [
-                                    SvgPicture.asset(
-                                      'assets/person.svg',
-                                      width: MediaQuery.of(context).size.width *
-                                          .035,
-                                    ),
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          .015,
-                                    ),
-                                    Text("${element.code} Students",
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            color: AppColors.grey6,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                .032)),
-                                  ],
-                                ),
+                                // SizedBox(
+                                //   height:
+                                //       MediaQuery.of(context).size.height * .005,
+                                // ),
+                                // Row(
+                                //   children: [
+                                //     SvgPicture.asset(
+                                //       'assets/person.svg',
+                                //       width: MediaQuery.of(context).size.width *
+                                //           .035,
+                                //     ),
+                                //     SizedBox(
+                                //       width: MediaQuery.of(context).size.width *
+                                //           .015,
+                                //     ),
+                                //     // Text("${element.code} Students",
+                                //     //     overflow: TextOverflow.ellipsis,
+                                //     //     style: TextStyle(
+                                //     //         color: AppColors.grey6,
+                                //     //         fontWeight: FontWeight.w500,
+                                //     //         fontSize: MediaQuery.of(context)
+                                //     //                 .size
+                                //     //                 .width *
+                                //     //             .032)),
+                                //   ],
+                                // ),
                               ],
                             ),
                           ],

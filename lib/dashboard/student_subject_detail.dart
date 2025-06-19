@@ -1,13 +1,18 @@
+import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
+import 'package:easy_padhai/custom_widgets/custum_nav_bar2.dart';
 import 'package:easy_padhai/custom_widgets/sub_appbar.dart';
 import 'package:easy_padhai/dashboard/lesson.dart';
+import 'package:easy_padhai/dashboard/pub_read.dart';
 import 'package:easy_padhai/dashboard/stu_homework.dart';
 import 'package:easy_padhai/dashboard/stu_online_test.dart';
+import 'package:easy_padhai/dashboard/student_bottomsheet.dart';
 import 'package:easy_padhai/model/book_model.dart';
 import 'package:easy_padhai/model/home_noti_model.dart';
 import 'package:easy_padhai/model/homework_model2.dart';
 import 'package:easy_padhai/model/joinedModel.dart';
+import 'package:easy_padhai/model/notes_model.dart';
 import 'package:easy_padhai/model/notification_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -33,6 +38,8 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
   String subId = "";
   DashboardController dashboardController = Get.find();
   List<JoinedData> batData = [];
+  List<NotesData> noteslist = [];
+  String cls_id = "";
 
   @override
   void initState() {
@@ -46,8 +53,7 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
       isload = true;
     });
     subId = widget.id;
-    String cls_id =
-        dashboardController.profileModel?.data?.classDetail?[0].sId! ?? "";
+    cls_id = dashboardController.profileModel?.data?.classDetail?[0].sId! ?? "";
     // String sec_id =
     //     dashboardController.profileModel?.data?.sectionDetail?[0].sId! ?? "";
     await dashboardController.getBook(widget.id, cls_id);
@@ -67,7 +73,9 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
     await dashboardController.getStuNoti();
     List<NData1> filteredList = dashboardController.stuNotilist;
     hlist = filterBySubjectId(filteredList, subId);
-    // await dashboardController.updateNoti(widget.id, cls_id);
+    await dashboardController.updateNoti(widget.id, cls_id);
+    await dashboardController.getNotes(cls_id, subId);
+    noteslist = dashboardController.notelist;
     setState(() {
       isload = false;
     });
@@ -163,7 +171,7 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                       ),
                     ),
 
-                  (teacher.isNotEmpty )
+                  (teacher.isNotEmpty)
                       ? Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16.0, vertical: 16),
@@ -175,140 +183,166 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                               border: Border.all(color: Colors.grey.shade300),
                             ),
                             child: hlist.isNotEmpty
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children:
-                                        groupedByDate.entries.map((entry) {
-                                      String date = entry.key;
-                                      List<NData1> items = entry.value;
+                                ? Container(
+                                    height:
+                                        300, // Set your desired fixed height here
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children:
+                                            groupedByDate.entries.map((entry) {
+                                          String date = entry.key;
+                                          List<NData1> items = entry.value;
 
-                                      return Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 16),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            // Date header with count
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 16),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                Text(
-                                                  date,
-                                                  style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 16),
+                                                // Date header with count
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      date,
+                                                      style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 16),
+                                                    ),
+                                                  ],
                                                 ),
-                                                // Text(
-                                                //   "${items.length} item${items.length > 1 ? 's' : ''}",
-                                                //   style: TextStyle(
-                                                //       color: Colors.grey.shade600,
-                                                //       fontSize: 12),
-                                                // ),
+                                                const SizedBox(height: 5),
+
+                                                // Items under this date
+                                                ...items.expand((item) {
+                                                  String type = item.type ?? "";
+                                                  List<Data1> dataList =
+                                                      item.data ?? [];
+
+                                                  return dataList
+                                                      .map((dataEntry) {
+                                                    String topic =
+                                                        dataEntry.topic ?? "";
+                                                    String entryType =
+                                                        dataEntry.type ?? type;
+                                                    String publishedDate =
+                                                        dataEntry
+                                                                .publishedDate ??
+                                                            date;
+
+                                                    return GestureDetector(
+                                                      onTap: () {
+                                                        if (entryType ==
+                                                            "homework") {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (_) =>
+                                                                    HomeworkScreen()),
+                                                          );
+                                                        } else if (entryType ==
+                                                            "test") {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (_) =>
+                                                                  StuOnlineTest(
+                                                                subId: item
+                                                                        .subjectId
+                                                                        ?.first ??
+                                                                    "",
+                                                                classId: item
+                                                                        .classId
+                                                                        ?.first ??
+                                                                    "",
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }
+                                                      },
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                bottom: 10),
+                                                        child: Row(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            if (entryType ==
+                                                                "homework")
+                                                              SvgPicture.asset(
+                                                                  "assets/hw.svg")
+                                                            else if (entryType ==
+                                                                "test")
+                                                              SizedBox(
+                                                                width: 30,
+                                                                height: 30,
+                                                                child: Image.asset(
+                                                                    "assets/testq.png"),
+                                                              )
+                                                            else
+                                                              SvgPicture.asset(
+                                                                  "assets/notes.svg"),
+                                                            const SizedBox(
+                                                                width: 10),
+                                                            Expanded(
+                                                              child: Text(
+                                                                entryType ==
+                                                                        "homework"
+                                                                    ? "$topic is a homework on ${formatDate(publishedDate)}"
+                                                                    : entryType ==
+                                                                            "test"
+                                                                        ? "$topic test is on ${formatDate(publishedDate)}"
+                                                                        : topic,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    );
+                                                  });
+                                                }).toList(),
                                               ],
                                             ),
-                                            const SizedBox(height: 5),
-
-                                            // Items under this date
-                                            ...items.map((item) {
-                                              String type = item.type ?? "";
-                                              String topic =
-                                                  item.data?.isNotEmpty == true
-                                                      ? item.data![0].topic ??
-                                                          ""
-                                                      : "";
-
-                                              return GestureDetector(
-                                                onTap: () {
-                                                  if (type == "homework") {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (_) =>
-                                                              HomeworkScreen()),
-                                                    );
-                                                  } else if (type == "test") {
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            StuOnlineTest(
-                                                          subId: item.subjectId
-                                                                  ?.first ??
-                                                              "",
-                                                          classId: item.classId
-                                                                  ?.first ??
-                                                              "",
-                                                        ),
-                                                      ),
-                                                    );
-                                                  }
-                                                },
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 10),
-                                                  child: Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      if (type == "homework")
-                                                        SvgPicture.asset(
-                                                            "assets/hw.svg")
-                                                      else if (type == "test")
-                                                        SizedBox(
-                                                          width: 30,
-                                                          height: 30,
-                                                          child: Image.asset(
-                                                              "assets/testq.png"),
-                                                        )
-                                                      else
-                                                        SvgPicture.asset(
-                                                            "assets/notes.svg"),
-                                                      const SizedBox(width: 10),
-                                                      Expanded(
-                                                        child: Text(
-                                                          type == "homework"
-                                                              ? "$topic is a homework on $date"
-                                                              : type == "test"
-                                                                  ? "$topic test is on $date"
-                                                                  : topic,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              );
-                                            }).toList(),
-                                          ],
-                                        ),
-                                      );
-                                    }).toList(),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
                                   )
-                                : const Center(
-                                    child: Text(
-                                    "No Homework/Test/Messages",
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold),
-                                  )),
+                                : const SizedBox(
+                                    height: 160,
+                                    child: Center(
+                                        child: Text(
+                                      "No Homework/Test/Messages",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    )),
+                                  ),
                           ),
                         )
-                      : dashboardController.isJoined.value ? const SizedBox(
-                          width: double.infinity,
-                          height: 160,
-                          child: Center(
-                              child: Text(
-                            "Teacher not joined batch yet",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          )),
-                        ):SizedBox(height: 0,),
+                      : dashboardController.isJoined.value
+                          ? const SizedBox(
+                              width: double.infinity,
+                              height: 160,
+                              child: Center(
+                                  child: Text(
+                                "Teacher not joined batch yet",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              )),
+                            )
+                          : SizedBox(
+                              height: 0,
+                            ),
 
                   const SizedBox(height: 20),
                   // Subject tiles
@@ -356,6 +390,82 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                         }),
                   ),
                   const SizedBox(height: 20),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: SizedBox(
+                      height: 160,
+                      child: Expanded(
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: noteslist.length,
+                          itemBuilder: (context, index) {
+                            final note =
+                                noteslist[index].notes?.isNotEmpty == true
+                                    ? noteslist[index].notes![0]
+                                    : null;
+
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        if (note?.url != null) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => HomePage(
+                                                url: note!.url!,
+                                                title: note.title ?? '',
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      child: Container(
+                                        width: 130,
+                                        height: 160,
+                                        color: const Color(0xffC80A0A),
+                                        child: Center(
+                                          child: Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                            padding:
+                                                const EdgeInsets.only(top: 10),
+                                            child: Text(
+                                              note?.title ?? '',
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                  color: AppColors.white),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    left: 60,
+                                    top: 40,
+                                    child: SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: Image.asset("assets/pdf.png"),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                 ],
               ),
             )
@@ -369,6 +479,18 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                 reverse: false,
               ),
             ),
+      bottomNavigationBar: Obx(() => CustomBottomNavBar2(
+            currentIndex: dashboardController.currentIndex1.value,
+            onTap: (index) {
+              if (index == 1) {
+                // Assuming index 1 is for creating batch
+                BatchHelper.showFollowBatchBottomSheet(context);
+                //_showdoneBatchBottomSheet(context);
+              } else {
+                dashboardController.changeIndex1(index);
+              }
+            },
+          )),
     );
   }
 

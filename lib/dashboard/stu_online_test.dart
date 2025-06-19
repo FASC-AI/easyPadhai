@@ -1,6 +1,8 @@
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
+import 'package:easy_padhai/custom_widgets/custum_nav_bar2.dart';
+import 'package:easy_padhai/dashboard/student_bottomsheet.dart';
 import 'package:easy_padhai/dashboard/test_in_prog.dart';
 import 'package:easy_padhai/model/current_test_model.dart';
 
@@ -171,7 +173,7 @@ class _ProfileEditState extends State<StuOnlineTest> {
                                   if (res.isNotEmpty &&
                                       res[0].attempted == "attempted") {
                                     Get.snackbar(
-                                        "Message", "Test Already Attempted!",
+                                        "Message", "Test already attempted!",
                                         snackPosition: SnackPosition.BOTTOM);
                                   } else {
                                     if (res.isNotEmpty) {
@@ -265,6 +267,18 @@ class _ProfileEditState extends State<StuOnlineTest> {
                 height: height * .2,
               ),
             ),
+      bottomNavigationBar: Obx(() => CustomBottomNavBar2(
+            currentIndex: dashboardController.currentIndex1.value,
+            onTap: (index) {
+              if (index == 1) {
+                // Assuming index 1 is for creating batch
+                BatchHelper.showFollowBatchBottomSheet(context);
+                //_showdoneBatchBottomSheet(context);
+              } else {
+                dashboardController.changeIndex1(index);
+              }
+            },
+          )),
     );
   }
 

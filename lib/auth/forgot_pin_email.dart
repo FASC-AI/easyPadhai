@@ -26,7 +26,7 @@ class _ForgotPinEmailState extends State<ForgotPinEmail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       appBar: PreferredSize(
+      appBar: PreferredSize(
           preferredSize: const Size.fromHeight(0.0),
           child: AppBar(
             backgroundColor: AppColors.theme,
@@ -175,26 +175,30 @@ class _ForgotPinEmailState extends State<ForgotPinEmail> {
                         child: CustomButton(
                           text: 'Continue',
                           onTap: () async {
-                            emailController.text.isNotEmpty
-                                ? {
-                                    dashController.forgetEmail.value =
-                                        emailController.text.toString().trim(),
-                                    Get.toNamed(RouteName.forgotPin),
-                                  }
-                                : Get.snackbar(
-                                    '',
-                                    '',
-                                    snackPosition: SnackPosition.BOTTOM,
-                                    backgroundColor: AppColors.red,
-                                    titleText: const SizedBox.shrink(),
-                                    messageText: const Text(
-                                      'Enter email Id',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
+                            if (formKey.currentState!.validate()) {
+                              emailController.text.isNotEmpty
+                                  ? {
+                                      dashController.forgetEmail.value =
+                                          emailController.text
+                                              .toString()
+                                              .trim(),
+                                      Get.toNamed(RouteName.forgotPin),
+                                    }
+                                  : Get.snackbar(
+                                      '',
+                                      '',
+                                      snackPosition: SnackPosition.BOTTOM,
+                                      backgroundColor: AppColors.red,
+                                      titleText: const SizedBox.shrink(),
+                                      messageText: const Text(
+                                        'Enter email Id',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                            }
                           },
                         ),
                       ),

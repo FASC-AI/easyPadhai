@@ -1,6 +1,8 @@
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
+import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
+import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
 import 'package:easy_padhai/model/homework_model1.dart';
 import 'package:easy_padhai/model/homework_model3.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +46,12 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
 
     // await dashboardController.getHWQbyTopic(widget.tid);
     questions = dashboardController.queslist;
-    await dashboardController.getPHWQbyTopic(widget.tid);
+    if (widget.tid.isNotEmpty) {
+      await dashboardController.getPHWQbyTopic(widget.tid);
+    } else {
+      await dashboardController.getPHWQbyTopic(widget.lessonId);
+    }
+
     prevH = dashboardController.prevHlist;
     setState(() {
       isload = false;
@@ -186,7 +193,7 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
                           const Text(
                             "Choose Your Questions",
                             style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
+                                fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                           OutlinedButton.icon(
                             onPressed: _showPublishDatePopup,
@@ -195,7 +202,7 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
                               "Publish Date",
                               style: TextStyle(
                                   color: Color(0xff2180C3),
-                                  fontWeight: FontWeight.bold),
+                                  fontWeight: FontWeight.bold,fontSize: 12),
                             ),
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: Color(0xff2180C3)),
@@ -362,11 +369,11 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
                               formatDate(homework.publishedDate!);
                           return GestureDetector(
                             onTap: () {
-                              _showBottomSheet(context, prevH);
+                              _showBottomSheet(context, homework.homeworks!);
                             },
                             child: Container(
                               width: double.infinity,
-                              height: 40,
+                              height: 50,
                               margin: const EdgeInsets.only(bottom: 8),
                               decoration: BoxDecoration(
                                 color: Color(0xff4186B6),
@@ -396,10 +403,26 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
                 ),
               ),
       ),
+      bottomNavigationBar: Obx(() => CustomBottomNavBar(
+            currentIndex: dashboardController.currentIndex.value,
+            onTap: (index) {
+              if (index == 1) {
+                // Assuming index 1 is for creating batch
+                BatchHelperTeacher.showCreateBatchBottomSheet(context);
+                //_showdoneBatchBottomSheet(context);
+              } else if (index == 2) {
+                // Assuming index 1 is for creating batch
+                BatchHelperTeacher.showFollowBatchBottomSheetTeacher(context);
+                //_showdoneBatchBottomSheet(context);
+              } else {
+                dashboardController.changeIndex(index);
+              }
+            },
+          )),
     );
   }
 
-  void _showBottomSheet(BuildContext context, List<HomeworkModel3Data> prevH) {
+  void _showBottomSheet(BuildContext context, List<Homeworks> prevH) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, // Added for better scrolling behavior
@@ -410,7 +433,7 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
         return Container(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height *
-                0.3, // Better height calculation
+                0.7, // Better height calculation
           ),
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -463,12 +486,26 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
   }
 
   String formatToISOWithOffset(DateTime parsedDate) {
-    // Add 5 hours and 30 minutes to the parsed date
-    DateTime adjustedDate =
-        parsedDate.add(const Duration(hours: 5, minutes: 30));
+    // Get current time (hours, minutes, seconds, milliseconds)
+    // TimeOfDay now = TimeOfDay.fromDateTime(DateTime.now());
+    DateTime currentTime = DateTime.now();
 
-    // Convert to UTC and format as ISO 8601 string
-    String isoDate = adjustedDate.toUtc().toIso8601String();
-    return isoDate;
+    // Combine parsed date with current time
+    DateTime combined = DateTime(
+      parsedDate.year,
+      parsedDate.month,
+      parsedDate.day,
+      currentTime.hour,
+      currentTime.minute,
+      currentTime.second,
+      currentTime.millisecond,
+      currentTime.microsecond,
+    );
+
+    // Add 5 hours 30 minutes offset (for IST)
+    DateTime adjustedDate = combined.add(const Duration(hours: 5, minutes: 30));
+
+    // Format to ISO 8601 string
+    return adjustedDate.toUtc().toIso8601String();
   }
 }

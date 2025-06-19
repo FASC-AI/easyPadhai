@@ -1,341 +1,29 @@
 import 'dart:async';
 import 'dart:math';
-
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/common/constant.dart';
-import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
-import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
-import 'package:easy_padhai/dashboard/batch_req.dart';
-import 'package:easy_padhai/dashboard/class_teacher_assign.dart';
+import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/model/batch_model.dart';
-import 'package:easy_padhai/model/batchlist_model.dart';
 import 'package:easy_padhai/model/binfo.dart';
 import 'package:easy_padhai/model/profile_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_html/flutter_html.dart';
 
-// ignore: must_be_immutable
-class TeacherHome extends StatefulWidget {
-  const TeacherHome({super.key});
-  @override
-  State<TeacherHome> createState() => _ProfileEditState();
-}
-
-class _ProfileEditState extends State<TeacherHome> {
-  DashboardController dashboardController = Get.find();
-  AuthController authController = Get.find();
-  TextEditingController batchController = TextEditingController();
-  List<SubjectDetail> sublist = [];
-  bool isLoading = false;
-  String type = "";
-  String icode = "";
-  String bclass = "";
-  String bsec = "";
-  late String selectedClass = "";
-  late String sec = "";
-  bool isload = false;
-  List<BbData> batches = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadProfileData();
-  }
-
-  Future<void> _loadProfileData() async {
-    setState(() {
-      isload = true;
-    });
-    ProfileModel data = await dashboardController.getProfile();
-    await dashboardController.getBanners();
-    await dashboardController.getNotification();
-    await dashboardController.getBatch();
-    await dashboardController.getBatchReq();
-    await dashboardController.getProfile();
-    sublist = data.data!.subjectDetail!;
-    batches = dashboardController.batchlist;
-    type = dashboardController.profileModel?.data?.type! ?? "";
-    icode = dashboardController.profileModel?.data?.instituteCode! ?? "";
-    setState(() {
-      isload = false;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.theme,
-        elevation: 0,
-        leading: Padding(
-          padding:
-              EdgeInsets.only(left: MediaQuery.of(context).size.width * .05),
-          child: Image.asset(
-            'assets/logoh.png',
-          ),
-        ),
-        title: const Text(
-          'Easy Padhai',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-        ),
-      ),
-      body: !isload
-          ? SafeArea(
-              child: SingleChildScrollView(
-                // padding: EdgeInsets.symmetric(
-                //     horizontal: MediaQuery.of(context).size.width * .05),
-                child: Column(
-                  children: [
-                    CarouselSlider(
-                      options: CarouselOptions(
-                        height: size.height * 0.28,
-                        autoPlay: true,
-                        enlargeCenterPage: true,
-                        viewportFraction: 0.9,
-                      ),
-                      items: dashboardController.Bannerlist.map((item) {
-                        return GestureDetector(
-                          onTap: () => _launchURL(item.redirectPath!),
-                          child: Container(
-                            padding: const EdgeInsets.only(top: 20, bottom: 20),
-                            width: size.width,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12)),
-                                child: Image.network(
-                                  item.images![0].url!,
-                                  fit: BoxFit.cover,
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return const Center(
-                                        child: CircularProgressIndicator());
-                                  },
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Center(child: Icon(Icons.error)),
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: MediaQuery.of(context).size.width * .05),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // ClipRRect(
-                          //   borderRadius: BorderRadius.circular(20),
-                          //   child: Image.asset(
-                          //     'assets/banner.png',
-                          //     height: size.height * 0.25,
-                          //     width: size.width,
-                          //     fit: BoxFit.cover,
-                          //   ),
-                          // ),
-
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey.shade300),
-                            ),
-                            child: dashboardController.tNoti.isNotEmpty
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: List.generate(
-                                      dashboardController.tNoti.length,
-                                      (index) {
-                                        String formatted = formatDate(
-                                            dashboardController
-                                                .tNoti[index].date!);
-                                        return Padding(
-                                          padding:
-                                              const EdgeInsets.only(bottom: 8),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              if (dashboardController
-                                                      .tNoti[index].message! !=
-                                                  "")
-                                                Text(
-                                                  formatted,
-                                                  style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                              const SizedBox(height: 8),
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  const Icon(
-                                                      Icons.notifications,
-                                                      color: Colors.blue),
-                                                  const SizedBox(width: 10),
-                                                  Expanded(
-                                                    child: Html(
-                                                      data: dashboardController
-                                                          .tNoti[index]
-                                                          .message!,
-                                                      style: {
-                                                        "body": Style(
-                                                          margin: Margins.zero,
-                                                          fontSize:
-                                                              FontSize.medium,
-                                                        ),
-                                                        "p": Style(
-                                                          margin: Margins.zero,
-                                                        ),
-                                                      },
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  )
-                                : Center(
-                                    child: Column(
-                                      children: [
-                                        SizedBox(
-                                            width: 100,
-                                            height: 130,
-                                            child: Image.asset(
-                                                "assets/no_notification.png")),
-                                        Text(
-                                          "No messages yet. Your notifications will appear here.",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: AppColors.black
-                                                .withOpacity(0.5),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                          ),
-
-                          const SizedBox(height: 20),
-                          Container(
-                              color: Colors.white,
-                              width: MediaQuery.of(context).size.width,
-                              height: 250,
-                              child: const RequestsScreen()),
-                          const SizedBox(height: 20),
-                          SizedBox(
-                            height: 120, // Slightly increased height if needed
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: batches.length,
-                              itemBuilder: (context, index) {
-                                String cls =
-                                    "${extractClassNumber(batches[index].class1!).toString()}-${batches[index].section}";
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0), // spacing between items
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => TeacherClassScreen(
-                                                  title: cls,
-                                                  id: batches[index].classId!,
-                                                  sub_id: batches[index]
-                                                      .subject!
-                                                      .sId!,
-                                                  sec_id:
-                                                      batches[index].sectionId!,
-                                                  isClassteacher: batches[index]
-                                                      .classTeacher!,
-                                                )),
-                                      );
-                                    },
-                                    child: buildClassCard(
-                                        cls,
-                                        batches[index].institute!,
-                                        batches[index]
-                                                .subject!
-                                                .images!
-                                                .isNotEmpty
-                                            ? batches[index]
-                                                .subject!
-                                                .images![0]
-                                                .url!
-                                            : ""),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : Center(
-              child: Lottie.asset(
-                'assets/loading.json',
-                width: MediaQuery.of(context).size.width * .2,
-                height: MediaQuery.of(context).size.height * .2,
-                repeat: true,
-                animate: true,
-                reverse: false,
-              ),
-            ),
-      bottomNavigationBar: Obx(() => CustomBottomNavBar(
-            currentIndex: dashboardController.currentIndex.value,
-            onTap: (index) {
-              if (index == 1) {
-                // Assuming index 1 is for creating batch
-                _showCreateBatchBottomSheet(context);
-                //_showdoneBatchBottomSheet(context);
-              } else if (index == 2) {
-                // Assuming index 1 is for creating batch
-                _showFollowBatchBottomSheetTeacher(context);
-                //_showdoneBatchBottomSheet(context);
-              } else {
-                dashboardController.changeIndex(index);
-              }
-            },
-          )),
-    );
-  }
-
-  String formatDate(String isoDate) {
-    final dateTime = DateTime.parse(isoDate).toLocal(); // Convert to local time
-    return DateFormat('EEE, dd MMM').format(dateTime);
-  }
-
-  void _showFollowBatchBottomSheetTeacher(BuildContext context) {
+class BatchHelperTeacher {
+  static showFollowBatchBottomSheetTeacher(BuildContext context)  {
     TextEditingController tb_controller = TextEditingController();
+    DashboardController dashboardController = Get.find();
+    TextEditingController batchController = TextEditingController();
+
     bool isVisible = false;
     String institution = '';
     String className = '';
     String section = '';
+    bool isLoading = false;
     Timer? _debounce;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -462,7 +150,7 @@ class _ProfileEditState extends State<TeacherHome> {
                       if (dta != null && dta.status == true) {
                         isLoading = false;
                         Navigator.pop(context);
-                        _showdoneBatchBottomSheet(context);
+                        showdoneBatchBottomSheet(context);
                         batchController.text = "";
                       } else {
                         isLoading = false;
@@ -491,8 +179,8 @@ class _ProfileEditState extends State<TeacherHome> {
     );
   }
 
-  String generateBatchCode(String sessionYear, String className, String type,
-      String section, String code) {
+  static String generateBatchCode(String sessionYear, String className,
+      String type, String section, String code) {
     final random = Random();
     const letters = 'abcdefghijklmnopqrstuvwxyz';
 
@@ -516,16 +204,27 @@ class _ProfileEditState extends State<TeacherHome> {
     return '$sessionSuffix$ty$code${className}${section.toUpperCase()}';
   }
 
-  Future<void> _showCreateBatchBottomSheet(BuildContext context) async {
+  static showCreateBatchBottomSheet(BuildContext context) {
     // Fetch class and section data if not already loaded
     AuthController authController = Get.find();
+    DashboardController dashboardController = Get.find();
+    TextEditingController batchController = TextEditingController();
+    String type = "";
+    String icode = "";
+    String bclass = "";
+    String bsec = "";
+    late String selectedClass = "";
+    late String sec = "";
+    bool isLoading = false;
     if (authController.classesdataList.isEmpty) {
-      await authController.getClassList('');
+      authController.getClassList('');
     }
     if (authController.sectiondataList.isEmpty) {
-      await authController.getsectionList('');
+      authController.getsectionList('');
     }
 
+    type = dashboardController.profileModel?.data?.type! ?? "";
+    icode = dashboardController.profileModel?.data?.instituteCode! ?? "";
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -738,7 +437,7 @@ class _ProfileEditState extends State<TeacherHome> {
     );
   }
 
-  int? extractClassNumber(String input) {
+  static int? extractClassNumber(String input) {
     // Extract Roman part (e.g. 'IX')
     final match =
         RegExp(r'Class\s+([IVXLCDM]+)', caseSensitive: false).firstMatch(input);
@@ -750,7 +449,7 @@ class _ProfileEditState extends State<TeacherHome> {
     return _romanToInt(roman);
   }
 
-  int _romanToInt(String s) {
+  static int _romanToInt(String s) {
     final Map<String, int> romanMap = {
       'I': 1,
       'V': 5,
@@ -775,7 +474,7 @@ class _ProfileEditState extends State<TeacherHome> {
     return result;
   }
 
-  void _showdoneBatchBottomSheet(BuildContext context) {
+  static showdoneBatchBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -833,60 +532,6 @@ class _ProfileEditState extends State<TeacherHome> {
               ),
             ),
             const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _launchURL(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
-  Widget buildClassCard(String title, String subtitle, String imagePath) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        width: 160,
-        decoration: BoxDecoration(
-          image: imagePath.isNotEmpty
-              ? DecorationImage(
-                  image: NetworkImage(imagePath),
-                  fit: BoxFit.cover,
-                  onError: (error, stackTrace) {
-                    debugPrint('Image load failed: $error'); // Error logging
-                  },
-                )
-              : null,
-          color: Colors.grey[300], // Background color if no image
-        ),
-        padding: const EdgeInsets.all(12),
-        alignment: Alignment.bottomLeft,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            if (subtitle.isNotEmpty)
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 12,
-                ),
-              ),
           ],
         ),
       ),

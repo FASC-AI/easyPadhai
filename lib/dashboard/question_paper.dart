@@ -1,7 +1,9 @@
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_input.dart';
+import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
 import 'package:easy_padhai/custom_widgets/text.dart';
+import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
 import 'package:easy_padhai/model/book_model.dart';
 import 'package:easy_padhai/model/homework_model1.dart';
 import 'package:easy_padhai/model/lesson_model.dart';
@@ -43,6 +45,7 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
+      
         context: context,
         initialDate: selectedDate,
         firstDate: DateTime.now(),
@@ -220,540 +223,583 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
             systemOverlayStyle: SystemUiOverlayStyle.light,
           )),
       body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              decoration: const BoxDecoration(color: AppColors.theme),
-              padding: const EdgeInsets.only(
-                  top: 30, left: 16, right: 16, bottom: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      // Back Button
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Image.asset(
-                          'assets/back.png',
-                          fit: BoxFit.fill,
-                          width: MediaQuery.of(context).size.width * 0.09,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-
-                      // Title
-                      const Text(
-                        "Create Test",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-
-                      const Spacer(),
-                      SizedBox(
-                        width: 100,
-                        child: GestureDetector(
-                          onTap: () {
-                            _selectDuration();
-                          },
-                          child: AbsorbPointer(
-                            child: CustomInput(
-                              readOnly: true,
-                              label: 'Time',
-                              controller: _durationController,
-                            ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                decoration: const BoxDecoration(color: AppColors.theme),
+                padding: const EdgeInsets.only(
+                    top: 30, left: 16, right: 16, bottom: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        // Back Button
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Image.asset(
+                            'assets/back.png',
+                            fit: BoxFit.fill,
+                            width: MediaQuery.of(context).size.width * 0.09,
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 150,
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: AppColors.grey7, width: 1.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(12)),
+                        const SizedBox(width: 12),
+
+                        // Title
+                        const Text(
+                          "Create Test",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+
+                        const Spacer(),
+                        SizedBox(
+                          width: 100,
+                          child: GestureDetector(
+                            onTap: () {
+                              _selectDuration();
+                            },
+                            child: AbsorbPointer(
+                              child: CustomInput(
+                                readOnly: true,
+                                label: 'Time',
+                                controller: _durationController,
+                              ),
                             ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: AppColors.grey7, width: 1.0),
+                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                          ),
+                          contentPadding: EdgeInsets.only(
+                              left: 10, top: 0, bottom: 0, right: 10),
+                          filled: true,
+                          fillColor: Colors.white,
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<ClassDetail>(
+                            hint: const Text('Select class'),
+                          style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                                overflow: TextOverflow.ellipsis),
+                            value: selectedClass,
+                            dropdownColor: Colors.lightBlue.shade50,
+                            onChanged: (ClassDetail? value) async {
+                              if (value != null) {
+                                setState(() {
+                                  selectedClass = value;
+                                });
+
+                                // Fetching books based on selected class
+                                await dashboardController.getBook(
+                                    sub_id, value.sId!);
+                                setState(() {
+                                  booklist = dashboardController.booklist;
+                                });
+
+                                if (!classes.contains(selectedClass)) {
+                                  setState(() {
+                                    selectedClass = null;
+                                    selectedbook = null;
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!booklist.contains(selectedbook)) {
+                                  setState(() {
+                                    selectedbook = null;
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!lessonList.contains(selectedlesson)) {
+                                  setState(() {
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!topics.contains(selectedtopic)) {
+                                  setState(() {
+                                    selectedtopic = null;
+                                  });
+                                }
+                              }
+                            },
+                            items: classes.map((ClassDetail cls) {
+                              return DropdownMenuItem<ClassDetail>(
+                                value: cls,
+                                child: Text(cls.class1 ??
+                                    'Unknown'), // Display class name
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: AppColors.grey7, width: 1.0),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(12))),
                             contentPadding: EdgeInsets.only(
                                 left: 10, top: 0, bottom: 0, right: 10),
                             filled: true,
-                            fillColor: Colors.white,
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<ClassDetail>(
-                              hint: const Text('Select class'),
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.black),
-                              value: selectedClass,
-                              dropdownColor: Colors.lightBlue.shade50,
-                              onChanged: (ClassDetail? value) async {
-                                if (value != null) {
-                                  setState(() {
-                                    selectedClass = value;
-                                  });
-
-                                  // Fetching books based on selected class
-                                  await dashboardController.getBook(
-                                      sub_id, value.sId!);
-                                  setState(() {
-                                    booklist = dashboardController.booklist;
-                                  });
-
-                                  if (!classes.contains(selectedClass)) {
-                                    setState(() {
-                                      selectedClass = null;
-                                      selectedbook = null;
-                                      selectedlesson = null;
-                                      selectedtopic = null;
-                                    });
-                                  }
-                                  if (!booklist.contains(selectedbook)) {
-                                    setState(() {
-                                      selectedbook = null;
-                                      selectedlesson = null;
-                                      selectedtopic = null;
-                                    });
-                                  }
-                                  if (!lessonList.contains(selectedlesson)) {
-                                    setState(() {
-                                      selectedlesson = null;
-                                      selectedtopic = null;
-                                    });
-                                  }
-                                  if (!topics.contains(selectedtopic)) {
-                                    setState(() {
-                                      selectedtopic = null;
-                                    });
-                                  }
-                                }
-                              },
-                              items: classes.map((ClassDetail cls) {
-                                return DropdownMenuItem<ClassDetail>(
-                                  value: cls,
-                                  child: Text(cls.class1 ??
-                                      'Unknown'), // Display class name
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      SizedBox(
-                        width: 190,
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: AppColors.grey7, width: 1.0),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(12))),
-                              contentPadding: EdgeInsets.only(
-                                  left: 10, top: 0, bottom: 0, right: 10),
-                              filled: true,
-                              fillColor: Colors.white),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton(
-                              hint: const Text('Select book'),
-                              style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                  overflow: TextOverflow.ellipsis),
-                              value: selectedbook,
-                              dropdownColor: Colors.lightBlue.shade50,
-                              onChanged: (Books? value) async {
-                                if (value != null) {
-                                  setState(() {
-                                    selectedbook = value;
-                                  });
-
-                                  // Fetching books based on selected class
-                                  await dashboardController.getLesson(
-                                      value.sId!, sub_id);
-                                  setState(() {
-                                    lessonList = dashboardController.lessonlist;
-                                  });
-
-                                  if (!classes.contains(selectedClass)) {
-                                    setState(() {
-                                      selectedClass = null;
-                                      selectedbook = null;
-                                      selectedlesson = null;
-                                      selectedtopic = null;
-                                    });
-                                  }
-                                  if (!booklist.contains(selectedbook)) {
-                                    setState(() {
-                                      selectedbook = null;
-                                      selectedlesson = null;
-                                      selectedtopic = null;
-                                    });
-                                  }
-                                  if (!lessonList.contains(selectedlesson)) {
-                                    setState(() {
-                                      selectedlesson = null;
-                                      selectedtopic = null;
-                                    });
-                                  }
-                                  if (!topics.contains(selectedtopic)) {
-                                    setState(() {
-                                      selectedtopic = null;
-                                    });
-                                  }
-                                }
-                              },
-                              items: booklist
-                                  .map((cls) => DropdownMenuItem(
-                                      value: cls, child: Text(cls.book!)))
-                                  .toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: double.infinity,
-                    child: InputDecorator(
-                      decoration: const InputDecoration(
-                          enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: AppColors.grey7, width: 1.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(12))),
-                          contentPadding: EdgeInsets.only(
-                              left: 10, top: 0, bottom: 0, right: 10),
-                          filled: true,
-                          fillColor: Colors.white),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<LData>(
-                          hint: const Text('Select lesson'),
-                          style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.black,
-                              overflow: TextOverflow.ellipsis),
-                          value: selectedlesson,
-                          dropdownColor: Colors.lightBlue.shade50,
-                          onChanged: (LData? value) async {
-                            if (value != null) {
-                              setState(() {
-                                selectedlesson = value;
-                              });
-
-                              // Fetching books based on selected class
-
-                              setState(() {
-                                topics = value.topics!;
-                              });
-
-                              if (!classes.contains(selectedClass)) {
-                                setState(() {
-                                  selectedClass = null;
-                                  selectedbook = null;
-                                  selectedlesson = null;
-                                  selectedtopic = null;
-                                });
-                              }
-                              if (!booklist.contains(selectedbook)) {
-                                setState(() {
-                                  selectedbook = null;
-                                  selectedlesson = null;
-                                  selectedtopic = null;
-                                });
-                              }
-                              if (!lessonList.contains(selectedlesson)) {
-                                setState(() {
-                                  selectedlesson = null;
-                                  selectedtopic = null;
-                                });
-                              }
-                              if (!topics.contains(selectedtopic)) {
-                                setState(() {
-                                  selectedtopic = null;
-                                });
-                              }
-                            }
-                          },
-                          items: lessonList
-                              .map((cls) => DropdownMenuItem(
-                                  value: cls, child: Text(cls.lesson!)))
-                              .toList(),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: double.infinity,
-                    child: InputDecorator(
-                      decoration: const InputDecoration(
-                          enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: AppColors.grey7, width: 1.0),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(12))),
-                          contentPadding: EdgeInsets.only(
-                              left: 10, top: 0, bottom: 0, right: 10),
-                          filled: true,
-                          fillColor: Colors.white),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<Topics>(
-                          hint: const Text('Select topics'),
-                          style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.black,
-                              overflow: TextOverflow.ellipsis),
-                          value: selectedtopic,
-                          dropdownColor: Colors.lightBlue.shade50,
-                          onChanged: (Topics? value) async {
-                            if (value != null) {
-                              setState(() {
-                                selectedtopic = value;
-                              });
-                              await dashboardController.getOnlineQ1(
-                                  selectedClass!.sId!,
-                                  sub_id,
-                                  selectedbook!.sId!,
-                                  selectedlesson!.sId!,
-                                  selectedtopic!.sId!);
-                              // Fetching books based on selected class
-                              setState(() {
-                                questions = dashboardController.quesList;
-                              });
-
-                              if (!classes.contains(selectedClass)) {
-                                setState(() {
-                                  selectedClass = null;
-                                  selectedbook = null;
-                                  selectedlesson = null;
-                                  selectedtopic = null;
-                                });
-                              }
-                              if (!booklist.contains(selectedbook)) {
-                                setState(() {
-                                  selectedbook = null;
-                                  selectedlesson = null;
-                                  selectedtopic = null;
-                                });
-                              }
-                              if (!lessonList.contains(selectedlesson)) {
-                                setState(() {
-                                  selectedlesson = null;
-                                  selectedtopic = null;
-                                });
-                              }
-                              if (!topics.contains(selectedtopic)) {
-                                setState(() {
-                                  selectedtopic = null;
-                                });
-                              }
-                            }
-                          },
-                          items: topics
-                              .map((cls) => DropdownMenuItem(
-                                  value: cls, child: Text(cls.topic!)))
-                              .toList(),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Choose Your Questions",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      OutlinedButton.icon(
-                        onPressed: _showPublishDatePopup,
-                        icon: SvgPicture.asset('assets/publish.svg'),
-                        label: const Text(
-                          "Publish Date",
-                          style: TextStyle(
-                              color: Color(0xff2180C3),
-                              fontWeight: FontWeight.bold),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xff2180C3)),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Questions List
-                  Container(
-                    height: 300,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(color: AppColors.grey7),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 20),
-                          decoration: const BoxDecoration(
-                            color: Color(0xff4186B6),
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(5),
-                              topRight: Radius.circular(5),
-                            ),
-                          ),
-                          child: Text(
-                            "Questions (${selectedQuestionIds.length})",
+                            fillColor: Colors.white),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                            hint: const Text('Select book'),
                             style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                                fontSize: 12,
+                                color: Colors.black,
+                                overflow: TextOverflow.ellipsis),
+                            value: selectedbook,
+                            dropdownColor: Colors.lightBlue.shade50,
+                            onChanged: (Books? value) async {
+                              if (value != null) {
+                                setState(() {
+                                  selectedbook = value;
+                                });
+
+                                // Fetching books based on selected class
+                                await dashboardController.getLesson(
+                                    value.sId!, sub_id);
+                                setState(() {
+                                  lessonList = dashboardController.lessonlist;
+                                });
+
+                                await dashboardController.getOnlineQ1(
+                                    selectedClass!.sId!,
+                                    sub_id,
+                                    selectedbook!.sId!,
+                                    "",
+                                    "");
+                                // Fetching books based on selected class
+                                setState(() {
+                                  questions = dashboardController.quesList;
+                                });
+
+                                if (!classes.contains(selectedClass)) {
+                                  setState(() {
+                                    selectedClass = null;
+                                    selectedbook = null;
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!booklist.contains(selectedbook)) {
+                                  setState(() {
+                                    selectedbook = null;
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!lessonList.contains(selectedlesson)) {
+                                  setState(() {
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!topics.contains(selectedtopic)) {
+                                  setState(() {
+                                    selectedtopic = null;
+                                  });
+                                }
+                              }
+                            },
+                            items: booklist
+                                .map((cls) => DropdownMenuItem(
+                                    value: cls, child: Text(cls.book!)))
+                                .toList(),
                           ),
                         ),
-                        Expanded(
-                          child: questions.isNotEmpty
-                              ? ListView.separated(
-                                  itemCount: questions.length,
-                                  separatorBuilder: (context, index) {
-                                    return const Divider(
-                                      color: Colors.grey,
-                                      thickness: 0.5,
-                                      height: 10,
-                                    );
-                                  },
-                                  itemBuilder: (context, index) {
-                                    return CheckboxListTile(
-                                      checkColor: Colors.white,
-                                      activeColor: const Color(0xff186BA5),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      title: Html(
-                                          data: questions[index].description ??
-                                              ''),
-                                      value: questions[index].isPublished,
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          questions[index].isPublished =
-                                              value ?? false;
-                                          if (value == true) {
-                                            selectedQuestionIds.add(
-                                                questions[index].sId ?? '');
-                                          } else {
-                                            selectedQuestionIds.remove(
-                                                questions[index].sId ?? '');
-                                          }
-                                        });
-                                      },
-                                    );
-                                  },
-                                )
-                              : Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.asset(
-                                      'assets/no_notification.png', // Change with your icon/image path
-                                      height: 80,
-                                    ),
-                                    const SizedBox(height: 10),
-                                    const Text(
-                                      "No Questions Available",
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: AppColors.grey7, width: 1.0),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(12))),
+                            contentPadding: EdgeInsets.only(
+                                left: 10, top: 0, bottom: 0, right: 10),
+                            filled: true,
+                            fillColor: Colors.white),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<LData>(
+                            hint: const Text('Select lesson'),
+                            style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                                overflow: TextOverflow.ellipsis),
+                            value: selectedlesson,
+                            dropdownColor: Colors.lightBlue.shade50,
+                            onChanged: (LData? value) async {
+                              if (value != null) {
+                                setState(() {
+                                  selectedlesson = value;
+                                });
+
+                                // Fetching books based on selected class
+
+                                setState(() {
+                                  topics = value.topics!;
+                                });
+                                await dashboardController.getOnlineQ1(
+                                    selectedClass!.sId!,
+                                    sub_id,
+                                    selectedbook!.sId!,
+                                    selectedlesson!.sId!,
+                                    "");
+                                // Fetching books based on selected class
+                                setState(() {
+                                  questions = dashboardController.quesList;
+                                });
+
+                                if (!classes.contains(selectedClass)) {
+                                  setState(() {
+                                    selectedClass = null;
+                                    selectedbook = null;
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!booklist.contains(selectedbook)) {
+                                  setState(() {
+                                    selectedbook = null;
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!lessonList.contains(selectedlesson)) {
+                                  setState(() {
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!topics.contains(selectedtopic)) {
+                                  setState(() {
+                                    selectedtopic = null;
+                                  });
+                                }
+                              }
+                            },
+                            items: lessonList
+                                .map((cls) => DropdownMenuItem(
+                                    value: cls, child: Text(cls.lesson!)))
+                                .toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: AppColors.grey7, width: 1.0),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(12))),
+                            contentPadding: EdgeInsets.only(
+                                left: 10, top: 0, bottom: 0, right: 10),
+                            filled: true,
+                            fillColor: Colors.white),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<Topics>(
+                            hint: const Text('Select topics'),
+                            style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                                overflow: TextOverflow.ellipsis),
+                            value: selectedtopic,
+                            dropdownColor: Colors.lightBlue.shade50,
+                            onChanged: (Topics? value) async {
+                              if (value != null) {
+                                setState(() {
+                                  selectedtopic = value;
+                                });
+                                await dashboardController.getOnlineQ1(
+                                    selectedClass!.sId!,
+                                    sub_id,
+                                    selectedbook!.sId!,
+                                    selectedlesson!.sId!,
+                                    selectedtopic!.sId!);
+                                // Fetching books based on selected class
+                                setState(() {
+                                  questions = dashboardController.quesList;
+                                });
+
+                                if (!classes.contains(selectedClass)) {
+                                  setState(() {
+                                    selectedClass = null;
+                                    selectedbook = null;
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!booklist.contains(selectedbook)) {
+                                  setState(() {
+                                    selectedbook = null;
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!lessonList.contains(selectedlesson)) {
+                                  setState(() {
+                                    selectedlesson = null;
+                                    selectedtopic = null;
+                                  });
+                                }
+                                if (!topics.contains(selectedtopic)) {
+                                  setState(() {
+                                    selectedtopic = null;
+                                  });
+                                }
+                              }
+                            },
+                            items: topics
+                                .map((cls) => DropdownMenuItem(
+                                    value: cls, child: Text(cls.topic!)))
+                                .toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Choose Your Questions",
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: _showPublishDatePopup,
+                          icon: SvgPicture.asset('assets/publish.svg'),
+                          label: const Text(
+                            "Publish Date",
+                            style: TextStyle(
+                                color: Color(0xff2180C3),
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Color(0xff2180C3)),
+                          ),
                         ),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 10),
 
-                  const SizedBox(height: 10),
-
-                  // Submit Button
-                  Center(
-                    child: SizedBox(
-                      width: 200,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // print("Selected Questions: $selectedQuestionIds");
-                          // Handle submit logic here
-                          if (selectedQuestionIds.isEmpty) {
-                            Get.snackbar("Message", "Please select questions.",
-                                snackPosition: SnackPosition.BOTTOM);
-                            return;
-                          } else if (selectDate.isEmpty) {
-                            Get.snackbar(
-                                "Message", "Please select publish date.",
-                                snackPosition: SnackPosition.BOTTOM);
-                            return;
-                          } else if (_timeController.text.isEmpty) {
-                            Get.snackbar(
-                                "Message", "Please select publish time.",
-                                snackPosition: SnackPosition.BOTTOM);
-                            return;
-                          } else if (_durationController.text.isEmpty) {
-                            Get.snackbar("Message",
-                                "Please enter time duration of test.",
-                                snackPosition: SnackPosition.BOTTOM);
-                            return;
-                          } else {
-                            DateTime parsedDate =
-                                DateFormat('dd-MM-yyyy').parse(selectDate);
-
-                            // Step 2: Convert to UTC and format to ISO 8601
-                            String isoDate = formatToISOWithOffset(parsedDate);
-
-                            var res = dashboardController.updateQuestion(
-                                selectedQuestionIds,
-                                isoDate,
-                                _timeController.text,
-                                _durationController.text);
-
-                            if (res != null && res != false) {
-                              Navigator.pop(context);
-                            }
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.theme,
-                        ),
-                        child: const Text("Submit",
-                            style: TextStyle(
+                    // Questions List
+                    Container(
+                      height: 300,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: AppColors.grey7),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 20),
+                            decoration: const BoxDecoration(
+                              color: Color(0xff4186B6),
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(5),
+                                topRight: Radius.circular(5),
+                              ),
+                            ),
+                            child: Text(
+                              "Questions (${selectedQuestionIds.length})",
+                              style: const TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.bold)),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: questions.isNotEmpty
+                                ? ListView.separated(
+                                    itemCount: questions.length,
+                                    separatorBuilder: (context, index) {
+                                      return const Divider(
+                                        color: Colors.grey,
+                                        thickness: 0.5,
+                                        height: 10,
+                                      );
+                                    },
+                                    itemBuilder: (context, index) {
+                                      return CheckboxListTile(
+                                        checkColor: Colors.white,
+                                        activeColor: const Color(0xff186BA5),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        title: Html(
+                                            data:
+                                                questions[index].description ??
+                                                    ''),
+                                        value: questions[index].isPublished,
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            questions[index].isPublished =
+                                                value ?? false;
+                                            if (value == true) {
+                                              selectedQuestionIds.add(
+                                                  questions[index].sId ?? '');
+                                            } else {
+                                              selectedQuestionIds.remove(
+                                                  questions[index].sId ?? '');
+                                            }
+                                          });
+                                        },
+                                      );
+                                    },
+                                  )
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        'assets/no_notification.png', // Change with your icon/image path
+                                        height: 80,
+                                      ),
+                                      const SizedBox(height: 10),
+                                      const Text(
+                                        "No Questions Available",
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+
+                    const SizedBox(height: 10),
+
+                    // Submit Button
+                    Center(
+                      child: SizedBox(
+                        width: 200,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            // print("Selected Questions: $selectedQuestionIds");
+                            // Handle submit logic here
+                            if (selectedQuestionIds.isEmpty) {
+                              Get.snackbar(
+                                  "Message", "Please select questions.",
+                                  snackPosition: SnackPosition.BOTTOM);
+                              return;
+                            } else if (selectDate.isEmpty) {
+                              Get.snackbar(
+                                  "Message", "Please select publish date.",
+                                  snackPosition: SnackPosition.BOTTOM);
+                              return;
+                            } else if (_timeController.text.isEmpty) {
+                              Get.snackbar(
+                                  "Message", "Please select publish time.",
+                                  snackPosition: SnackPosition.BOTTOM);
+                              return;
+                            } else if (_durationController.text.isEmpty) {
+                              Get.snackbar("Message",
+                                  "Please enter time duration of test.",
+                                  snackPosition: SnackPosition.BOTTOM);
+                              return;
+                            } else {
+                              DateTime parsedDate =
+                                  DateFormat('dd-MM-yyyy').parse(selectDate);
+
+                              // Step 2: Convert to UTC and format to ISO 8601
+                              String isoDate =
+                                  formatToISOWithOffset(parsedDate);
+
+                              var res =
+                                  await dashboardController.updateQuestion(
+                                      selectedQuestionIds,
+                                      isoDate,
+                                      _timeController.text,
+                                      _durationController.text);
+
+                              if (res != null && res != false) {
+                                await dashboardController.getAllPubTest(
+                                    widget.bClassId, sub_id);
+                                Navigator.pop(context);
+                              }
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.theme,
+                          ),
+                          child: const Text("Submit",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
+      bottomNavigationBar: Obx(() => CustomBottomNavBar(
+            currentIndex: dashboardController.currentIndex.value,
+            onTap: (index) {
+              if (index == 1) {
+                // Assuming index 1 is for creating batch
+                BatchHelperTeacher.showCreateBatchBottomSheet(context);
+                //_showdoneBatchBottomSheet(context);
+              } else if (index == 2) {
+                // Assuming index 1 is for creating batch
+                BatchHelperTeacher.showFollowBatchBottomSheetTeacher(context);
+                //_showdoneBatchBottomSheet(context);
+              } else {
+                dashboardController.changeIndex(index);
+              }
+            },
+          )),
     );
   }
 

@@ -39,7 +39,7 @@ class NData1 {
   List<String>? classId;
   String? createdAt;
   String? updatedAt;
-  List<Data2>? data;
+  List<Data1>? data;
 
   NData1(
       {this.notificationIds,
@@ -62,9 +62,9 @@ class NData1 {
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
     if (json['data'] != null) {
-      data = <Data2>[];
+      data = <Data1>[];
       json['data'].forEach((v) {
-        data!.add(new Data2.fromJson(v));
+        data!.add(new Data1.fromJson(v));
       });
     }
   }
@@ -86,14 +86,14 @@ class NData1 {
   }
 }
 
-class Data2 {
+class Data1 {
   String? type;
   String? publishedDate;
   String? topic;
 
-  Data2({this.type, this.publishedDate, this.topic});
+  Data1({this.type, this.publishedDate, this.topic});
 
-  Data2.fromJson(Map<String, dynamic> json) {
+  Data1.fromJson(Map<String, dynamic> json) {
     type = json['type'];
     publishedDate = json['publishedDate'];
     topic = json['topic'];

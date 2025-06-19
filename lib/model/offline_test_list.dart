@@ -1,19 +1,19 @@
-class OnlineTestModel1 {
+class OfflineTestList {
   int? code;
   bool? status;
   String? message;
-  List<OnlineTestModel1Data>? data;
+  List<OfflineTestListData>? data;
 
-  OnlineTestModel1({this.code, this.status, this.message, this.data});
+  OfflineTestList({this.code, this.status, this.message, this.data});
 
-  OnlineTestModel1.fromJson(Map<String, dynamic> json) {
+  OfflineTestList.fromJson(Map<String, dynamic> json) {
     code = json['code'];
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
-      data = <OnlineTestModel1Data>[];
+      data = <OfflineTestListData>[];
       json['data'].forEach((v) {
-        data!.add(new OnlineTestModel1Data.fromJson(v));
+        data!.add(new OfflineTestListData.fromJson(v));
       });
     }
   }
@@ -30,55 +30,167 @@ class OnlineTestModel1 {
   }
 }
 
-class OnlineTestModel1Data {
-  String? publishedDate;
-  //List<dynamic>? topic1;
-  List<Tests>? tests;
+class OfflineTestListData {
+  Instructions? instructions;
+  QuestionCounts? questionCounts;
+  String? sId;
+  String? subjectId;
+  String? topicId;
+  String? lessonId;
+  String? classId;
+  String? bookId;
+  List<TestIds>? testIds;
+  String? duration;
+  String? session;
+  String? date;
+  int? totalMarks;
+  String? createdBy;
+//  List<Null>? groupedQuestions;
+  String? createdAt;
+  String? updatedAt;
+  int? iV;
 
-  OnlineTestModel1Data({this.publishedDate, this.tests});
+  OfflineTestListData(
+      {this.instructions,
+      this.questionCounts,
+      this.sId,
+      this.subjectId,
+      this.topicId,
+      this.lessonId,
+      this.classId,
+      this.bookId,
+      this.testIds,
+      this.duration,
+      this.session,
+      this.date,
+      this.totalMarks,
+      this.createdBy,
+      //  this.groupedQuestions,
+      this.createdAt,
+      this.updatedAt,
+      this.iV});
 
-  OnlineTestModel1Data.fromJson(Map<String, dynamic> json) {
-    publishedDate = json['publishedDate'];
-
-    if (json['tests'] != null) {
-      tests = <Tests>[];
-      json['tests'].forEach((v) {
-        tests!.add(new Tests.fromJson(v));
+  OfflineTestListData.fromJson(Map<String, dynamic> json) {
+    instructions = json['instructions'] != null
+        ? new Instructions.fromJson(json['instructions'])
+        : null;
+    questionCounts = json['questionCounts'] != null
+        ? new QuestionCounts.fromJson(json['questionCounts'])
+        : null;
+    sId = json['_id'];
+    subjectId = json['subjectId'];
+    topicId = json['topicId'];
+    lessonId = json['lessonId'];
+    classId = json['classId'];
+    bookId = json['bookId'];
+    if (json['testIds'] != null) {
+      testIds = <TestIds>[];
+      json['testIds'].forEach((v) {
+        testIds!.add(new TestIds.fromJson(v));
       });
     }
+    duration = json['duration'];
+    session = json['session'];
+    date = json['date'];
+    totalMarks = json['totalMarks'];
+    createdBy = json['createdBy'];
+    // if (json['groupedQuestions'] != null) {
+    //   groupedQuestions = <Null>[];
+    //   json['groupedQuestions'].forEach((v) {
+    //     groupedQuestions!.add(new Null.fromJson(v));
+    //   });
+    // }
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    iV = json['__v'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['publishedDate'] = this.publishedDate;
-
-    if (this.tests != null) {
-      data['tests'] = this.tests!.map((v) => v.toJson()).toList();
+    if (this.instructions != null) {
+      data['instructions'] = this.instructions!.toJson();
     }
+    if (this.questionCounts != null) {
+      data['questionCounts'] = this.questionCounts!.toJson();
+    }
+    data['_id'] = this.sId;
+    data['subjectId'] = this.subjectId;
+    data['topicId'] = this.topicId;
+    data['lessonId'] = this.lessonId;
+    data['classId'] = this.classId;
+    data['bookId'] = this.bookId;
+    if (this.testIds != null) {
+      data['testIds'] = this.testIds!.map((v) => v.toJson()).toList();
+    }
+    data['duration'] = this.duration;
+    data['session'] = this.session;
+    data['date'] = this.date;
+    data['totalMarks'] = this.totalMarks;
+    data['createdBy'] = this.createdBy;
+    // if (this.groupedQuestions != null) {
+    //   data['groupedQuestions'] =
+    //       this.groupedQuestions!.map((v) => v.toJson()).toList();
+    // }
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
+    data['__v'] = this.iV;
     return data;
   }
 }
 
-class Tests {
+class Instructions {
+  String? description;
+
+  Instructions({this.description});
+
+  Instructions.fromJson(Map<String, dynamic> json) {
+    description = json['description'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['description'] = this.description;
+    return data;
+  }
+}
+
+class QuestionCounts {
+  int? mcq;
+  int? trueFalse;
+  int? descriptive;
+  int? assertionReason;
+
+  QuestionCounts(
+      {this.mcq, this.trueFalse, this.descriptive, this.assertionReason});
+
+  QuestionCounts.fromJson(Map<String, dynamic> json) {
+    mcq = json['mcq'];
+    trueFalse = json['trueFalse'];
+    descriptive = json['descriptive'];
+    assertionReason = json['assertionReason'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['mcq'] = this.mcq;
+    data['trueFalse'] = this.trueFalse;
+    data['descriptive'] = this.descriptive;
+    data['assertionReason'] = this.assertionReason;
+    return data;
+  }
+}
+
+class TestIds {
   String? sId;
-  String? code;
+  String? codee;
+  bool? isActive;
   String? type;
   String? testType;
+  String? questionType;
   String? description;
   String? descriptionSol;
-  List<Subjects>? subject;
-  List<Classes>? class1;
-  String? optionText1;
-  String? mark1;
-  String? duration;
-  String? publishedBy;
-  String? publishedDate;
-  String? publishedTime;
-  String? createdAt;
-  String? updatedAt;
-  bool? isActive;
-  bool? isPublished;
-  String? questionType;
+  List<Classes>? classes;
+  List<Subjects>? subjects;
   List<Book>? book;
   List<Lesson>? lesson;
   List<Topic>? topic;
@@ -86,10 +198,12 @@ class Tests {
   bool? option2;
   bool? option3;
   bool? option4;
+  String? mark1;
   String? mark2;
   String? mark3;
   String? mark4;
   String? totalTrue;
+  String? optionText1;
   String? optionText2;
   String? optionText3;
   String? optionText4;
@@ -109,29 +223,23 @@ class Tests {
   String? markTrue;
   String? optionFalse;
   String? markFalse;
-  int? codeExtra;
+  String? createdAt;
+  String? updatedAt;
+  int? code;
   int? iV;
+  bool? isLast;
 
-  Tests(
+  TestIds(
       {this.sId,
-      this.code,
+      this.codee,
+      this.isActive,
       this.type,
       this.testType,
+      this.questionType,
       this.description,
       this.descriptionSol,
-      this.optionText1,
-      this.mark1,
-      this.duration,
-      this.publishedBy,
-      this.publishedDate,
-      this.publishedTime,
-      this.createdAt,
-      this.updatedAt,
-      this.isActive,
-      this.isPublished,
-      this.questionType,
-      this.class1,
-      this.subject,
+      this.classes,
+      this.subjects,
       this.book,
       this.lesson,
       this.topic,
@@ -139,10 +247,12 @@ class Tests {
       this.option2,
       this.option3,
       this.option4,
+      this.mark1,
       this.mark2,
       this.mark3,
       this.mark4,
       this.totalTrue,
+      this.optionText1,
       this.optionText2,
       this.optionText3,
       this.optionText4,
@@ -162,39 +272,33 @@ class Tests {
       this.markTrue,
       this.optionFalse,
       this.markFalse,
-      this.codeExtra,
-      this.iV});
+      this.createdAt,
+      this.updatedAt,
+      this.code,
+      this.iV,
+      this.isLast});
 
-  Tests.fromJson(Map<String, dynamic> json) {
+  TestIds.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
-    code = json['code'];
+    codee = json['codee'];
+    isActive = json['isActive'];
     type = json['type'];
     testType = json['testType'];
+    questionType = json['questionType'];
     description = json['description'];
     descriptionSol = json['descriptionSol'];
-    if (json['subject'] != null) {
-      subject = <Subjects>[];
-      json['subject'].forEach((v) {
-        subject!.add(new Subjects.fromJson(v));
+    if (json['classes'] != null) {
+      classes = <Classes>[];
+      json['classes'].forEach((v) {
+        classes!.add(new Classes.fromJson(v));
       });
     }
-    if (json['class'] != null) {
-      class1 = <Classes>[];
-      json['class'].forEach((v) {
-        class1!.add(new Classes.fromJson(v));
+    if (json['subjects'] != null) {
+      subjects = <Subjects>[];
+      json['subjects'].forEach((v) {
+        subjects!.add(new Subjects.fromJson(v));
       });
     }
-    optionText1 = json['optionText1'];
-    mark1 = json['mark1'];
-    duration = json['duration'];
-    publishedBy = json['publishedBy'];
-    publishedDate = json['publishedDate'];
-    publishedTime = json['publishedTime'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-    isActive = json['isActive'];
-    isPublished = json['isPublished'];
-    questionType = json['questionType'];
     if (json['book'] != null) {
       book = <Book>[];
       json['book'].forEach((v) {
@@ -217,10 +321,12 @@ class Tests {
     option2 = json['option2'];
     option3 = json['option3'];
     option4 = json['option4'];
+    mark1 = json['mark1'];
     mark2 = json['mark2'];
     mark3 = json['mark3'];
     mark4 = json['mark4'];
     totalTrue = json['totalTrue'];
+    optionText1 = json['optionText1'];
     optionText2 = json['optionText2'];
     optionText3 = json['optionText3'];
     optionText4 = json['optionText4'];
@@ -240,35 +346,29 @@ class Tests {
     markTrue = json['markTrue'];
     optionFalse = json['optionFalse'];
     markFalse = json['markFalse'];
-    codeExtra = json['codeExtra'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    code = json['code'];
     iV = json['__v'];
+    isLast = json['isLast'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['_id'] = this.sId;
-    data['code'] = this.code;
+    data['codee'] = this.codee;
+    data['isActive'] = this.isActive;
     data['type'] = this.type;
     data['testType'] = this.testType;
+    data['questionType'] = this.questionType;
     data['description'] = this.description;
     data['descriptionSol'] = this.descriptionSol;
-    if (this.subject != null) {
-      data['subject'] = this.subject!.map((v) => v.toJson()).toList();
+    if (this.classes != null) {
+      data['classes'] = this.classes!.map((v) => v.toJson()).toList();
     }
-    if (this.class1 != null) {
-      data['class'] = this.class1!.map((v) => v.toJson()).toList();
+    if (this.subjects != null) {
+      data['subjects'] = this.subjects!.map((v) => v.toJson()).toList();
     }
-    data['optionText1'] = this.optionText1;
-    data['mark1'] = this.mark1;
-    data['duration'] = this.duration;
-    data['publishedBy'] = this.publishedBy;
-    data['publishedDate'] = this.publishedDate;
-    data['publishedTime'] = this.publishedTime;
-    data['createdAt'] = this.createdAt;
-    data['updatedAt'] = this.updatedAt;
-    data['isActive'] = this.isActive;
-    data['isPublished'] = this.isPublished;
-    data['questionType'] = this.questionType;
     if (this.book != null) {
       data['book'] = this.book!.map((v) => v.toJson()).toList();
     }
@@ -282,10 +382,12 @@ class Tests {
     data['option2'] = this.option2;
     data['option3'] = this.option3;
     data['option4'] = this.option4;
+    data['mark1'] = this.mark1;
     data['mark2'] = this.mark2;
     data['mark3'] = this.mark3;
     data['mark4'] = this.mark4;
     data['totalTrue'] = this.totalTrue;
+    data['optionText1'] = this.optionText1;
     data['optionText2'] = this.optionText2;
     data['optionText3'] = this.optionText3;
     data['optionText4'] = this.optionText4;
@@ -305,8 +407,11 @@ class Tests {
     data['markTrue'] = this.markTrue;
     data['optionFalse'] = this.optionFalse;
     data['markFalse'] = this.markFalse;
-    data['codeExtra'] = this.codeExtra;
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
+    data['code'] = this.code;
     data['__v'] = this.iV;
+    data['isLast'] = this.isLast;
     return data;
   }
 }

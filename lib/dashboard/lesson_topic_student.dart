@@ -1,9 +1,14 @@
+import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
+import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
+import 'package:easy_padhai/custom_widgets/custum_nav_bar2.dart';
 import 'package:easy_padhai/dashboard/lesson.dart';
 import 'package:easy_padhai/dashboard/lesson_clip.dart';
 import 'package:easy_padhai/dashboard/lesson_content_student.dart';
+import 'package:easy_padhai/dashboard/student_bottomsheet.dart';
+import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
@@ -15,18 +20,22 @@ class LessonTopic1Screen extends StatefulWidget {
   String lessonContent;
   String title;
   String id;
+  String lessonkey;
   String lesson_id;
   String sub_id;
   String vid_link;
+  bool istestreq;
   final List<dynamic> wordMeanings;
   LessonTopic1Screen(
       {super.key,
       required this.lessonContent,
       required this.title,
       required this.id,
+      required this.lessonkey,
       required this.lesson_id,
       required this.sub_id,
       required this.vid_link,
+      required this.istestreq,
       required this.wordMeanings});
 
   @override
@@ -114,11 +123,15 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
                                 topic_id: widget.id,
                                 sub_id: widget.sub_id,
                                 wordMeanings: wordMeanings,
+                                istestreq: widget.istestreq,
                               )
                             : selectedTabIndex == 1
                                 ? LessonClipsScreen(
                                     vid_link: vid_link,
                                     vid_title: vid_name,
+                                    lesson_id: lesson_id,
+                                    topic_id: widget.id,
+                                    lessonkey: widget.lessonkey,
                                   )
                                 : null),
                   ),
@@ -135,6 +148,36 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
                 reverse: false,
               ),
             ),
+      bottomNavigationBar: userRole() == 'student'
+          ? Obx(() => CustomBottomNavBar2(
+                currentIndex: dashboardController.currentIndex1.value,
+                onTap: (index) {
+                  if (index == 1) {
+                    // Assuming index 1 is for creating batch
+                    BatchHelper.showFollowBatchBottomSheet(context);
+                    //_showdoneBatchBottomSheet(context);
+                  } else {
+                    dashboardController.changeIndex1(index);
+                  }
+                },
+              ))
+          : Obx(() => CustomBottomNavBar(
+                currentIndex: dashboardController.currentIndex.value,
+                onTap: (index) {
+                  if (index == 1) {
+                    // Assuming index 1 is for creating batch
+                    BatchHelperTeacher.showCreateBatchBottomSheet(context);
+                    //_showdoneBatchBottomSheet(context);
+                  } else if (index == 2) {
+                    // Assuming index 1 is for creating batch
+                    BatchHelperTeacher.showFollowBatchBottomSheetTeacher(
+                        context);
+                    //_showdoneBatchBottomSheet(context);
+                  } else {
+                    dashboardController.changeIndex(index);
+                  }
+                },
+              )),
     );
   }
 

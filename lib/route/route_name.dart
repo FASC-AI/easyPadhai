@@ -20,6 +20,7 @@ class RouteName {
   static const String joinBatch = 'JoinBatch';
   static const String support = 'Support';
   static const String leaderboard = 'Leaderboard';
+  static const String leaderboardstu = 'Leaderboardstu';
   static const String batchlist = 'batchlist';
   static const String subdet = 'subdetail';
 }

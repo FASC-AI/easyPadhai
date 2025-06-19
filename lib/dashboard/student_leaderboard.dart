@@ -1,8 +1,8 @@
 import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
-import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
-import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
+import 'package:easy_padhai/custom_widgets/custum_nav_bar2.dart';
+import 'package:easy_padhai/dashboard/student_bottomsheet.dart';
 import 'package:easy_padhai/model/leader_model.dart';
 import 'package:easy_padhai/model/profile_model.dart';
 import 'package:easy_padhai/model/test_marks_model.dart';
@@ -11,21 +11,21 @@ import 'package:get/get.dart';
 
 import 'package:lottie/lottie.dart';
 
-class LeaderboardScreen extends StatefulWidget {
-  const LeaderboardScreen({Key? key}) : super(key: key);
+class LeaderboardScreen1 extends StatefulWidget {
+  const LeaderboardScreen1({Key? key}) : super(key: key);
 
   @override
-  State<LeaderboardScreen> createState() => _LeaderboardScreenState();
+  State<LeaderboardScreen1> createState() => _LeaderboardScreenState();
 }
 
-class _LeaderboardScreenState extends State<LeaderboardScreen> {
+class _LeaderboardScreenState extends State<LeaderboardScreen1> {
   int _selectedTabIndex = 0;
-  late List<ClassDetail> _tabs = [];
+  late List<SubjectDetail> _tabs = [];
   List<LeaderModelData> _leaderboard = [];
   List<LeaderModelData1> _leaderboardData = [];
   DashboardController dashboardController = Get.find();
   List<TestMarksModelData> markList = [];
-  String subId = "";
+  String clsId = "";
   bool isload = false;
 
   @override
@@ -38,9 +38,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     setState(() {
       isload = true;
     });
-    _tabs = dashboardController.profileModel?.data?.classDetail! ?? [];
-    subId =
-        dashboardController.profileModel?.data?.subjectDetail![0].sId! ?? "";
+    _tabs = dashboardController.profileModel?.data?.subjectDetail! ?? [];
+    clsId = dashboardController.profileModel?.data?.classDetail![0].sId! ?? "";
     getLeader();
     getAllMarks();
     setState(() {
@@ -49,8 +48,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   Future<void> getLeader() async {
-    String cls_id = _tabs[_selectedTabIndex].sId!;
-    await dashboardController.getleaderBoard(cls_id, subId);
+    String sub_id = _tabs[_selectedTabIndex].sId!;
+    await dashboardController.getleaderBoard(clsId, sub_id);
     setState(() {
       if (dashboardController.leaderList.isNotEmpty) {
         _leaderboard = dashboardController.leaderList;
@@ -65,8 +64,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   Future<void> getAllMarks() async {
-    String cls_id = _tabs[_selectedTabIndex].sId!;
-    await dashboardController.getStuTestMarks(cls_id, subId);
+    String sub_id = _tabs[_selectedTabIndex].sId!;
+    await dashboardController.getStuTestMarks1(clsId, sub_id);
     setState(() {
       if (dashboardController.marksList.isNotEmpty) {
         markList = dashboardController.marksList;
@@ -115,7 +114,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               borderRadius: BorderRadius.circular(25),
                             ),
                             child: Text(
-                              _tabs[index].class1!,
+                              _tabs[index].subject!,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: _selectedTabIndex == index
@@ -243,19 +242,15 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 reverse: false,
               ),
             ),
-      bottomNavigationBar: Obx(() => CustomBottomNavBar(
-            currentIndex: dashboardController.currentIndex.value,
+      bottomNavigationBar: Obx(() => CustomBottomNavBar2(
+            currentIndex: dashboardController.currentIndex1.value,
             onTap: (index) {
               if (index == 1) {
                 // Assuming index 1 is for creating batch
-                BatchHelperTeacher.showCreateBatchBottomSheet(context);
-                //_showdoneBatchBottomSheet(context);
-              } else if (index == 2) {
-                // Assuming index 1 is for creating batch
-                BatchHelperTeacher.showFollowBatchBottomSheetTeacher(context);
+                BatchHelper.showFollowBatchBottomSheet(context);
                 //_showdoneBatchBottomSheet(context);
               } else {
-                dashboardController.changeIndex(index);
+                dashboardController.changeIndex1(index);
               }
             },
           )),

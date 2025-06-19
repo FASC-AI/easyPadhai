@@ -101,18 +101,28 @@ class Profile extends StatelessWidget {
                   iconPath: 'assets/editprofile.svg',
                   title: 'Edit Profile',
                   onTap: () {
-                    Get.toNamed(RouteName.profileEdit);
+                    Get.offNamed(RouteName.profileEdit);
                   },
                 ),
-                profileTile(
-                  context,
-                  iconPath: 'assets/leader.svg',
-                  title: 'Leader Board',
-                  onTap: () {
-                    Get.toNamed(RouteName.leaderboard);
-                    // Get.toNamed(RouteName.registerInstitution);
-                  },
-                ),
+                userRole() == 'teacher'
+                    ? profileTile(
+                        context,
+                        iconPath: 'assets/leader.svg',
+                        title: 'Leader Board',
+                        onTap: () {
+                          Get.toNamed(RouteName.leaderboard);
+                          // Get.toNamed(RouteName.registerInstitution);
+                        },
+                      )
+                    : profileTile(
+                        context,
+                        iconPath: 'assets/leader.svg',
+                        title: 'Leader Board',
+                        onTap: () {
+                          Get.toNamed(RouteName.leaderboardstu);
+                          // Get.toNamed(RouteName.registerInstitution);
+                        },
+                      ),
                 userRole() == 'teacher'
                     ? profileTile(
                         context,

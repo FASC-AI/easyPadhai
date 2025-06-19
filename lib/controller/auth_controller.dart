@@ -43,7 +43,7 @@ class AuthController extends GetxController {
   List<SubjectList> subjectdataList = [];
   List<InstitutesList> institutiondataList = [];
   List<List1> stateList = [];
-  List<List1> districtList = [];
+  List<List2> districtList = [];
 
   var selectedClassIds = <String>[].obs;
   var selectedSectionIds = <String>[].obs;
@@ -466,7 +466,7 @@ class AuthController extends GetxController {
     final countryJson =
         await apiHelper.get(ApiUrls.district, queryParameter, data);
     if (countryJson != null && countryJson != false) {
-      StateModel response = StateModel.fromJson(countryJson);
+      DistrictModel response = DistrictModel.fromJson(countryJson);
       if (response.status == true) {
         districtList = response.data!.list!;
         isLoading5(true);

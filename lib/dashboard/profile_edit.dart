@@ -14,6 +14,7 @@ import 'package:easy_padhai/model/pro_update_model.dart';
 import 'package:easy_padhai/model/profile_model.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -217,8 +218,32 @@ class _ProfileEditState extends State<ProfileEdit> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        text: 'Edit Profile',
+      appBar: AppBar(
+        backgroundColor: AppColors.theme,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        leadingWidth: MediaQuery.of(context).size.width * .13,
+        leading: IconButton(
+          padding: const EdgeInsets.only(
+            left: 20,
+          ),
+          icon: Image.asset(
+            'assets/back.png',
+            fit: BoxFit.fill,
+            width: MediaQuery.of(context).size.width * 0.09,
+          ),
+          onPressed: () {
+            Get.offNamed(RouteName.profile);
+          },
+        ),
+        titleSpacing: 10,
+        title: Text(
+          "Edit Profile",
+          style: TextStyle(
+            color: AppColors.white,
+            fontSize: MediaQuery.of(context).size.width * 0.045,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
       body: Stack(
         children: [
@@ -491,7 +516,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                   _buildLabel('State', width, context: context),
                   GestureDetector(
                     onTap: () async {
-                      await controller.getStateList();
+                      // await controller.getStateList();
                       bool? result = await showDialog<bool>(
                         context: context,
                         barrierDismissible: true,
@@ -526,20 +551,25 @@ class _ProfileEditState extends State<ProfileEdit> {
                   _buildLabel('District', width, context: context),
                   GestureDetector(
                     onTap: () async {
-                      await controller.getdistrictList();
-                      bool? result = await showDialog<bool>(
-                        context: context,
-                        barrierDismissible: true,
-                        builder: (BuildContext context) {
-                          return District1Popup();
-                        },
-                      );
-                      if (result == true) {
-                        setState(() {
-                          controllerDistrict.text =
-                              controller.districtName.value;
-                          distId = controller.districtId.value;
-                        });
+                      if (controllerState.text.isEmpty) {
+                        Get.snackbar("Message", "Please Select State",
+                            snackPosition: SnackPosition.BOTTOM);
+                      } else {
+                        //   await controller.getdistrictList();
+                        bool? result = await showDialog<bool>(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (BuildContext context) {
+                            return District1Popup();
+                          },
+                        );
+                        if (result == true) {
+                          setState(() {
+                            controllerDistrict.text =
+                                controller.districtName.value;
+                            distId = controller.districtId.value;
+                          });
+                        }
                       }
                     },
                     child: CustomInput2(

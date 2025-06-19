@@ -31,7 +31,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
             title,
             style: TextStyle(
               color: isSelected ? Colors.white : Colors.blue,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.bold,fontSize: 12
             ),
           ),
         ),

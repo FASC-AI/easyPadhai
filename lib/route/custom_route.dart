@@ -16,6 +16,7 @@ import 'package:easy_padhai/dashboard/batch_list.dart';
 import 'package:easy_padhai/dashboard/leaderboard_screen.dart';
 import 'package:easy_padhai/dashboard/profile.dart';
 import 'package:easy_padhai/dashboard/profile_edit.dart';
+import 'package:easy_padhai/dashboard/student_leaderboard.dart';
 import 'package:easy_padhai/dashboard/student_subject_detail.dart';
 import 'package:easy_padhai/dashboard/student_home.dart';
 import 'package:easy_padhai/dashboard/teacher_home.dart';
@@ -78,6 +79,8 @@ class CustomRoute {
         return const ProfileEdit();
       case RouteName.leaderboard:
         return const LeaderboardScreen();
+      case RouteName.leaderboardstu:
+        return const LeaderboardScreen1();
       case RouteName.batchlist:
         return const BatchListScreen();
 

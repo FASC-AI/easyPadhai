@@ -98,10 +98,10 @@ class _StateViewState extends State<StateView> {
                 ),
               ],
             ),
-            SearchWidget(
-              text: query,
-              onChanged: searchTitle,
-            ),
+            // SearchWidget(
+            //   text: query,
+            //   onChanged: searchTitle,
+            // ),
             isLoading
                 ? SizedBox(
                     height: dialogHeight,

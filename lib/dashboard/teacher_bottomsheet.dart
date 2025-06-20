@@ -12,7 +12,7 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
 class BatchHelperTeacher {
-  static showFollowBatchBottomSheetTeacher(BuildContext context)  {
+  static showFollowBatchBottomSheetTeacher(BuildContext context) {
     TextEditingController tb_controller = TextEditingController();
     DashboardController dashboardController = Get.find();
     TextEditingController batchController = TextEditingController();
@@ -293,11 +293,20 @@ class BatchHelperTeacher {
 
                     // Set batchController text
                     selectedClass = selectedClass1!.class1!;
-                    if (!selectedClass.isEmpty && !sec.isEmpty) {
-                      int? cls = extractClassNumber(selectedClass);
-                      String bcode = generateBatchCode(
-                          '2025', cls.toString(), type, sec, icode);
-                      batchController.text = bcode;
+                    if (type == 'School') {
+                      if (!selectedClass.isEmpty && !sec.isEmpty) {
+                        int? cls = extractClassNumber(selectedClass);
+                        String bcode = generateBatchCode(
+                            '2025', cls.toString(), type, sec, icode);
+                        batchController.text = bcode;
+                      }
+                    } else {
+                      if (!selectedClass.isEmpty) {
+                        int? cls = extractClassNumber(selectedClass);
+                        String bcode = generateBatchCode(
+                            '2025', cls.toString(), type, sec, icode);
+                        batchController.text = bcode;
+                      }
                     }
                   }
                 },
@@ -390,10 +399,12 @@ class BatchHelperTeacher {
                         snackPosition: SnackPosition.BOTTOM);
                     return;
                   }
-                  if (bsec.isEmpty) {
-                    Get.snackbar("Message", "Section is required!",
-                        snackPosition: SnackPosition.BOTTOM);
-                    return;
+                  if (type == 'School') {
+                    if (bsec.isEmpty) {
+                      Get.snackbar("Message", "Section is required!",
+                          snackPosition: SnackPosition.BOTTOM);
+                      return;
+                    }
                   }
                   isLoading = true;
                   BatchModel dta = await dashboardController.postbatch(

@@ -60,77 +60,93 @@ class PdfDownloader {
 
   static Future<File?> savePdfFile(List<int> pdfBytes,
       {required String fileName, required BuildContext context}) async {
-    try {
-      // 1. Check and request permissions
-      // if (Platform.isAndroid) {
-      //   // For Android 10 (API 29) and above
-      //   if (await Permission.manageExternalStorage.isDenied) {
-      //     final status = await Permission.manageExternalStorage.request();
-      //     if (!status.isGranted) {
-      //       return null;
-      //     }
-      //   }
+    // try {
+    //   // 1. Check and request permissions
+    //   // if (Platform.isAndroid) {
+    //   //   // For Android 10 (API 29) and above
+    //   //   if (await Permission.manageExternalStorage.isDenied) {
+    //   //     final status = await Permission.manageExternalStorage.request();
+    //   //     if (!status.isGranted) {
+    //   //       return null;
+    //   //     }
+    //   //   }
 
-      //   // For older versions
-      //   if (await Permission.storage.isDenied) {
-      //     final status = await Permission.storage.request();
-      //     if (!status.isGranted) {
-      //       return null;
-      //     }
-      //   }
-      // }
-      final granted = await requestStoragePermission();
-      if (granted == true) {
-        // Proceed with file operations
-        Directory? targetDir;
+    //   //   // For older versions
+    //   //   if (await Permission.storage.isDenied) {
+    //   //     final status = await Permission.storage.request();
+    //   //     if (!status.isGranted) {
+    //   //       return null;
+    //   //     }
+    //   //   }
+    //   // }
+    //   final granted = await requestStoragePermission();
+    //   if (granted == true) {
+    //     // Proceed with file operations
+    //     Directory? targetDir;
 
-        if (Platform.isAndroid) {
-          // Try multiple locations with fallbacks
-          try {
-            // First try the standard Downloads directory
-            targetDir = Directory('/storage/emulated/0/Download');
-            if (!await targetDir.exists()) {
-              await targetDir.create(recursive: true);
-            }
-          } catch (e) {
-            // Fallback to external storage directory
-            targetDir = await getApplicationDocumentsDirectory();
-          }
-        } else {
-          // For iOS, use documents directory
-          targetDir = await getApplicationDocumentsDirectory();
-        }
+    //     if (Platform.isAndroid) {
+    //       // Try multiple locations with fallbacks
+    //       try {
+    //         // First try the standard Downloads directory
+    //         targetDir = Directory('/storage/emulated/0/Download');
+    //         if (!await targetDir.exists()) {
+    //           await targetDir.create(recursive: true);
+    //         }
+    //       } catch (e) {
+    //         // Fallback to external storage directory
+    //         targetDir = await getApplicationDocumentsDirectory();
+    //       }
+    //     } else {
+    //       // For iOS, use documents directory
+    //       targetDir = await getApplicationDocumentsDirectory();
+    //     }
 
-        // 3. Create app-specific subdirectory
-        final Directory easyPadhaiDir =
-            Directory('${targetDir!.path}/Easy Padhai');
+    //     // 3. Create app-specific subdirectory
+    //     final Directory easyPadhaiDir =
+    //         Directory('${targetDir!.path}/Easy Padhai');
 
-        try {
-          if (!await easyPadhaiDir.exists()) {
-            await easyPadhaiDir.create(recursive: true);
-          }
-        } catch (e) {
-          // Final fallback to temporary directory
-          print(e);
+    //     try {
+    //       if (!await easyPadhaiDir.exists()) {
+    //         await easyPadhaiDir.create(recursive: true);
+    //       }
+    //     } catch (e) {
+    //       // Final fallback to temporary directory
+    //       print(e);
 
-          targetDir = await getExternalStorageDirectory();
-          final Directory fallbackDir =
-              Directory('${targetDir?.path}/Easy Padhai');
-          if (!await fallbackDir.exists()) {
-            await fallbackDir.create(recursive: true);
-          }
-          return _saveFile(fallbackDir, pdfBytes, fileName);
-        }
+    //       targetDir = await getExternalStorageDirectory();
+    //       final Directory fallbackDir =
+    //           Directory('${targetDir?.path}/Easy Padhai');
+    //       if (!await fallbackDir.exists()) {
+    //         await fallbackDir.create(recursive: true);
+    //       }
+    //       return _saveFile(fallbackDir, pdfBytes, fileName);
+    //     }
 
-        return _saveFile(easyPadhaiDir, pdfBytes, fileName);
-      } else {
-        // Show a warning or fallback
-        _showPermissionWarning(context);
-      }
-      // 2. Get the appropriate directory
-    } catch (e) {
-      return null;
+    //     return _saveFile(easyPadhaiDir, pdfBytes, fileName);
+    //   } else {
+    //     // Show a warning or fallback
+    //     _showPermissionWarning(context);
+    //   }
+    //   // 2. Get the appropriate directory
+    // } catch (e) {
+    //   return null;
+    // }
+    Directory? directory;
+    if (Platform.isAndroid) {
+      // App-specific external files dir: /storage/emulated/0/Android/data/<package>/files
+      directory = await getExternalStorageDirectory();
+    } else {
+      directory = await getApplicationDocumentsDirectory();
     }
+
+    final easyPadhaiDir = Directory('${directory!.path}/Easy Padhai');
+    if (!await easyPadhaiDir.exists()) {
+      await easyPadhaiDir.create(recursive: true);
+    }
+
+    final filePath = '${easyPadhaiDir.path}/$fileName';
+    final file = await File(filePath).writeAsBytes(pdfBytes);
+    return file;
   }
 
   static void _showPermissionWarning(BuildContext context) {

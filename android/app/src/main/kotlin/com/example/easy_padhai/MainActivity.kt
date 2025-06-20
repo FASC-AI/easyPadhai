@@ -16,20 +16,30 @@ class MainActivity: FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
-            when (call.method) {
-                "scanMedia" -> {
-                    val path = call.argument<String>("path")
-                    if (path != null) {
-                        scanMedia(path)
-                        result.success(null)
-                    } else {
-                        result.error("INVALID_PATH", "Path was null", null)
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "scanMedia" -> {
+                        val path = call.argument<String>("path")
+                        if (path != null) {
+                            scanMedia(path)
+                            result.success(null)
+                        } else {
+                            result.error("INVALID_PATH", "Path was null", null)
+                        }
+                    }
+
+                    "getSdkInt" -> {
+                        val sdkInt = android.os.Build.VERSION.SDK_INT
+                        result.success(sdkInt)
+                    }
+
+                    else -> {
+                        result.notImplemented()
                     }
                 }
-                else -> result.notImplemented()
             }
-        }
     }
 
     private fun scanMedia(path: String) {

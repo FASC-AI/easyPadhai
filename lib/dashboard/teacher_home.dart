@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:carousel_slider/carousel_slider.dart';
@@ -13,9 +14,11 @@ import 'package:easy_padhai/model/batchlist_model.dart';
 import 'package:easy_padhai/model/binfo.dart';
 import 'package:easy_padhai/model/profile_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_html/flutter_html.dart';
 
@@ -64,6 +67,36 @@ class _ProfileEditState extends State<TeacherHome> {
     setState(() {
       isload = false;
     });
+    await requestStoragePermission();
+  }
+
+  static Future<bool> requestStoragePermission() async {
+    if (Platform.isAndroid) {
+      final sdkInt = await _getAndroidSdkInt();
+
+      if (sdkInt >= 33) {
+        // Android 13+ — no permission needed for app-specific
+        return true;
+      } else if (sdkInt >= 30) {
+        final status = await Permission.manageExternalStorage.request();
+        return status.isGranted;
+      } else {
+        final status = await Permission.storage.request();
+        return status.isGranted;
+      }
+    }
+
+    return true; // iOS or other
+  }
+
+  static Future<int> _getAndroidSdkInt() async {
+    final MethodChannel platform = MethodChannel('com.example/pdf_downloader');
+    try {
+      final int sdk = await platform.invokeMethod('getSdkInt');
+      return sdk;
+    } catch (e) {
+      return 0;
+    }
   }
 
   @override
@@ -594,11 +627,20 @@ class _ProfileEditState extends State<TeacherHome> {
 
                     // Set batchController text
                     selectedClass = selectedClass1!.class1!;
-                    if (!selectedClass.isEmpty && !sec.isEmpty) {
-                      int? cls = extractClassNumber(selectedClass);
-                      String bcode = generateBatchCode(
-                          '2025', cls.toString(), type, sec, icode);
-                      batchController.text = bcode;
+                    if (type == 'School') {
+                      if (!selectedClass.isEmpty && !sec.isEmpty) {
+                        int? cls = extractClassNumber(selectedClass);
+                        String bcode = generateBatchCode(
+                            '2025', cls.toString(), type, sec, icode);
+                        batchController.text = bcode;
+                      }
+                    } else {
+                      if (!selectedClass.isEmpty) {
+                        int? cls = extractClassNumber(selectedClass);
+                        String bcode = generateBatchCode(
+                            '2025', cls.toString(), type, sec, icode);
+                        batchController.text = bcode;
+                      }
                     }
                   }
                 },
@@ -691,11 +733,14 @@ class _ProfileEditState extends State<TeacherHome> {
                         snackPosition: SnackPosition.BOTTOM);
                     return;
                   }
-                  if (bsec.isEmpty) {
-                    Get.snackbar("Message", "Section is required!",
-                        snackPosition: SnackPosition.BOTTOM);
-                    return;
+                  if (type == 'School') {
+                    if (bsec.isEmpty) {
+                      Get.snackbar("Message", "Section is required!",
+                          snackPosition: SnackPosition.BOTTOM);
+                      return;
+                    }
                   }
+
                   isLoading = true;
                   BatchModel dta = await dashboardController.postbatch(
                       bclass, bsec, batchController.text);

@@ -259,22 +259,26 @@ class _LeaderboardScreenState extends State<LeaderboardScreen1> {
 
   Widget studentScoreRow(String name, String score) {
     final isAbsent = score.toLowerCase() == "ab";
-    return ListTile(
-      contentPadding: EdgeInsets.symmetric(vertical: 0),
-      title: Text(
-        overflow: TextOverflow.ellipsis,
-        name,
-        style: TextStyle(fontSize: 14),
-      ),
-      trailing: Container(
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: isAbsent ? Colors.red : Color(0xFF186BA5),
-          borderRadius: BorderRadius.circular(6),
+
+    return Visibility(
+      visible: !isAbsent,
+      child: ListTile(
+        contentPadding: EdgeInsets.symmetric(vertical: 0),
+        title: Text(
+          overflow: TextOverflow.ellipsis,
+          name,
+          style: TextStyle(fontSize: 14),
         ),
-        child: Text(
-          score,
-          style: TextStyle(color: Colors.white, fontSize: 12),
+        trailing: Container(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: Color(0xFF186BA5),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Text(
+            score,
+            style: TextStyle(color: Colors.white, fontSize: 12),
+          ),
         ),
       ),
     );

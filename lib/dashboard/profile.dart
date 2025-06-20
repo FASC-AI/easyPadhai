@@ -458,11 +458,20 @@ class Profile extends StatelessWidget {
 
                     // Set batchController text
                     selectedClass = selectedClass1!.class1!;
-                    if (!selectedClass.isEmpty && !sec.isEmpty) {
-                      int? cls = extractClassNumber(selectedClass);
-                      String bcode = generateBatchCode(
-                          '2025', cls.toString(), type, sec, icode);
-                      batchController.text = bcode;
+                    if (type == 'School') {
+                      if (!selectedClass.isEmpty && !sec.isEmpty) {
+                        int? cls = extractClassNumber(selectedClass);
+                        String bcode = generateBatchCode(
+                            '2025', cls.toString(), type, sec, icode);
+                        batchController.text = bcode;
+                      }
+                    } else {
+                      if (!selectedClass.isEmpty) {
+                        int? cls = extractClassNumber(selectedClass);
+                        String bcode = generateBatchCode(
+                            '2025', cls.toString(), type, sec, icode);
+                        batchController.text = bcode;
+                      }
                     }
                   }
                 },
@@ -555,10 +564,12 @@ class Profile extends StatelessWidget {
                         snackPosition: SnackPosition.BOTTOM);
                     return;
                   }
-                  if (bsec.isEmpty) {
-                    Get.snackbar("Message", "Section is required!",
-                        snackPosition: SnackPosition.BOTTOM);
-                    return;
+                  if (type == 'School') {
+                    if (bsec.isEmpty) {
+                      Get.snackbar("Message", "Section is required!",
+                          snackPosition: SnackPosition.BOTTOM);
+                      return;
+                    }
                   }
                   isLoading = true;
                   BatchModel dta = await dashboardController.postbatch(

@@ -1399,7 +1399,7 @@ class DashboardController extends GetxController {
             snackPosition: SnackPosition.BOTTOM);
         // Update box storage with profile data
         Navigator.pop(context);
-        Navigator.pop(context);
+        //  Navigator.pop(context);
         isLoading(false);
         return response;
       } else {

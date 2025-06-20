@@ -399,21 +399,21 @@ class _ProfileEditState extends State<ProfileEdit> {
                         isPrefix: false,
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(top: width * .02),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          'Change Your Institution',
-                          style: TextStyle(
-                            color: AppColors.theme,
-                            fontWeight: FontWeight.w600,
-                            fontSize: width * 0.032,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: height * 0.015),
+                    // Padding(
+                    //   padding: EdgeInsets.only(top: width * .02),
+                    //   child: Align(
+                    //     alignment: Alignment.centerRight,
+                    //     child: Text(
+                    //       'Change Your Institution',
+                    //       style: TextStyle(
+                    //         color: AppColors.theme,
+                    //         fontWeight: FontWeight.w600,
+                    //         fontSize: width * 0.032,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                     SizedBox(height: height * 0.015),
                   ],
                   _buildLabel(
                     'Phone',

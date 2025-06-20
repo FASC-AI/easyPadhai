@@ -395,73 +395,71 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: SizedBox(
                       height: 160,
-                      child: Expanded(
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: noteslist.length,
-                          itemBuilder: (context, index) {
-                            final note =
-                                noteslist[index].notes?.isNotEmpty == true
-                                    ? noteslist[index].notes![0]
-                                    : null;
-
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        if (note?.url != null) {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => HomePage(
-                                                url: note!.url!,
-                                                title: note.title ?? '',
-                                              ),
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: noteslist.length,
+                        itemBuilder: (context, index) {
+                          final note =
+                              noteslist[index].notes?.isNotEmpty == true
+                                  ? noteslist[index].notes![0]
+                                  : null;
+                      
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      if (note?.url != null) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => HomePage(
+                                              url: note!.url!,
+                                              title: note.title ?? '',
                                             ),
-                                          );
-                                        }
-                                      },
-                                      child: Container(
-                                        width: 130,
-                                        height: 160,
-                                        color: const Color(0xffC80A0A),
-                                        child: Center(
-                                          child: Container(
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: 10),
-                                            padding:
-                                                const EdgeInsets.only(top: 10),
-                                            child: Text(
-                                              note?.title ?? '',
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                  color: AppColors.white),
-                                              textAlign: TextAlign.center,
-                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: Container(
+                                      width: 130,
+                                      height: 160,
+                                      color: const Color(0xffC80A0A),
+                                      child: Center(
+                                        child: Container(
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          padding:
+                                              const EdgeInsets.only(top: 10),
+                                          child: Text(
+                                            note?.title ?? '',
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                                color: AppColors.white),
+                                            textAlign: TextAlign.center,
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                  Positioned(
-                                    left: 60,
-                                    top: 40,
-                                    child: SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: Image.asset("assets/pdf.png"),
-                                    ),
+                                ),
+                                Positioned(
+                                  left: 60,
+                                  top: 40,
+                                  child: SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: Image.asset("assets/pdf.png"),
                                   ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),

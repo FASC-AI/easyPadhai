@@ -348,11 +348,20 @@ class DashboardController extends GetxController {
     isLoading(true);
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {
-      "classId": cls,
-      "sectionId": sec,
-      "code": code,
-    };
+    Map<String, dynamic>? queryParameter;
+    if (sec.isEmpty) {
+      queryParameter = {
+        "classId": cls,
+        "code": code,
+      };
+    } else {
+      queryParameter = {
+        "classId": cls,
+        "sectionId": sec,
+        "code": code,
+      };
+    }
+
     print(queryParameter);
     final profileJson =
         await apiHelper.post(ApiUrls.crbatch, queryParameter, data);

@@ -60,119 +60,90 @@ class PdfDownloader {
 
   static Future<File?> savePdfFile(List<int> pdfBytes,
       {required String fileName, required BuildContext context}) async {
-    // try {
-    //   // 1. Check and request permissions
-    //   // if (Platform.isAndroid) {
-    //   //   // For Android 10 (API 29) and above
-    //   //   if (await Permission.manageExternalStorage.isDenied) {
-    //   //     final status = await Permission.manageExternalStorage.request();
-    //   //     if (!status.isGranted) {
-    //   //       return null;
-    //   //     }
-    //   //   }
+    try {
+      // 1. Check and request permissions
+      // if (Platform.isAndroid) {
+      //   // For Android 10 (API 29) and above
+      //   if (await Permission.manageExternalStorage.isDenied) {
+      //     final status = await Permission.manageExternalStorage.request();
+      //     if (!status.isGranted) {
+      //       return null;
+      //     }
+      //   }
 
-    //   //   // For older versions
-    //   //   if (await Permission.storage.isDenied) {
-    //   //     final status = await Permission.storage.request();
-    //   //     if (!status.isGranted) {
-    //   //       return null;
-    //   //     }
-    //   //   }
-    //   // }
-    //   final granted = await requestStoragePermission();
-    //   if (granted == true) {
-    //     // Proceed with file operations
-    //     Directory? targetDir;
+      //   // For older versions
+      //   if (await Permission.storage.isDenied) {
+      //     final status = await Permission.storage.request();
+      //     if (!status.isGranted) {
+      //       return null;
+      //     }
+      //   }
+      // }
+      // final granted = await requestStoragePermission();
 
-    //     if (Platform.isAndroid) {
-    //       // Try multiple locations with fallbacks
-    //       try {
-    //         // First try the standard Downloads directory
-    //         targetDir = Directory('/storage/emulated/0/Download');
-    //         if (!await targetDir.exists()) {
-    //           await targetDir.create(recursive: true);
-    //         }
-    //       } catch (e) {
-    //         // Fallback to external storage directory
-    //         targetDir = await getApplicationDocumentsDirectory();
-    //       }
-    //     } else {
-    //       // For iOS, use documents directory
-    //       targetDir = await getApplicationDocumentsDirectory();
-    //     }
+      // Proceed with file operations
+      Directory? targetDir;
 
-    //     // 3. Create app-specific subdirectory
-    //     final Directory easyPadhaiDir =
-    //         Directory('${targetDir!.path}/Easy Padhai');
+      if (Platform.isAndroid) {
+        // Try multiple locations with fallbacks
+        try {
+          // First try the standard Downloads directory
+          targetDir = Directory('/storage/emulated/0/Download');
+          if (!await targetDir.exists()) {
+            await targetDir.create(recursive: true);
+          }
+        } catch (e) {
+          // Fallback to external storage directory
+          targetDir = await getApplicationDocumentsDirectory();
+        }
+      } else {
+        // For iOS, use documents directory
+        targetDir = await getApplicationDocumentsDirectory();
+      }
 
-    //     try {
-    //       if (!await easyPadhaiDir.exists()) {
-    //         await easyPadhaiDir.create(recursive: true);
-    //       }
-    //     } catch (e) {
-    //       // Final fallback to temporary directory
-    //       print(e);
+      // 3. Create app-specific subdirectory
+      final Directory easyPadhaiDir =
+          Directory('${targetDir!.path}/Easy Padhai');
 
-    //       targetDir = await getExternalStorageDirectory();
-    //       final Directory fallbackDir =
-    //           Directory('${targetDir?.path}/Easy Padhai');
-    //       if (!await fallbackDir.exists()) {
-    //         await fallbackDir.create(recursive: true);
-    //       }
-    //       return _saveFile(fallbackDir, pdfBytes, fileName);
-    //     }
+      try {
+        if (!await easyPadhaiDir.exists()) {
+          await easyPadhaiDir.create(recursive: true);
+        }
+      } catch (e) {
+        // Final fallback to temporary directory
+        print(e);
 
-    //     return _saveFile(easyPadhaiDir, pdfBytes, fileName);
-    //   } else {
-    //     // Show a warning or fallback
-    //     _showPermissionWarning(context);
-    //   }
-    //   // 2. Get the appropriate directory
-    // } catch (e) {
-    //   return null;
+        targetDir = await getExternalStorageDirectory();
+        final Directory fallbackDir =
+            Directory('${targetDir?.path}/Easy Padhai');
+        if (!await fallbackDir.exists()) {
+          await fallbackDir.create(recursive: true);
+        }
+        return _saveFile(fallbackDir, pdfBytes, fileName);
+      }
+
+      return _saveFile(easyPadhaiDir, pdfBytes, fileName);
+
+      // 2. Get the appropriate directory
+    } catch (e) {
+      return null;
+    }
+    // Directory? directory;
+    // if (Platform.isAndroid) {
+    //   // App-specific external files dir: /storage/emulated/0/Android/data/<package>/files
+    //   directory = await getExternalStorageDirectory();
+    // } else {
+    //   directory = await getApplicationDocumentsDirectory();
     // }
-    Directory? directory;
-    if (Platform.isAndroid) {
-      // App-specific external files dir: /storage/emulated/0/Android/data/<package>/files
-      directory = await getExternalStorageDirectory();
-    } else {
-      directory = await getApplicationDocumentsDirectory();
-    }
 
-    final easyPadhaiDir = Directory('${directory!.path}/Easy Padhai');
-    if (!await easyPadhaiDir.exists()) {
-      await easyPadhaiDir.create(recursive: true);
-    }
+    // final easyPadhaiDir = Directory('${directory!.path}/Easy Padhai');
+    // if (!await easyPadhaiDir.exists()) {
+    //   await easyPadhaiDir.create(recursive: true);
+    // }
 
-    final filePath = '${easyPadhaiDir.path}/$fileName';
-    final file = await File(filePath).writeAsBytes(pdfBytes);
-    return file;
-  }
-
-  static void _showPermissionWarning(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text("Permission Required"),
-        content: const Text(
-            "Storage access is required to proceed. Please allow it in settings."),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-            },
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              openAppSettings(); // Opens the app settings screen
-              Navigator.of(ctx).pop();
-            },
-            child: const Text("Open Settings"),
-          ),
-        ],
-      ),
-    );
+    // final filePath = '${easyPadhaiDir.path}/$fileName';
+    // final file = await File(filePath).writeAsBytes(pdfBytes);
+    // return file;
   }
 
   static Future<bool?> requestStoragePermission() async {

@@ -280,8 +280,9 @@ class _ProfileEditState extends State<TeacherHome> {
                               scrollDirection: Axis.horizontal,
                               itemCount: batches.length,
                               itemBuilder: (context, index) {
-                                String cls =
-                                    "${extractClassNumber(batches[index].class1!).toString()}-${batches[index].section}";
+                                String cls = batches[index].section!.isNotEmpty
+                                    ? "${extractClassNumber(batches[index].class1!).toString()}-${batches[index].section}"
+                                    : "${extractClassNumber(batches[index].class1!).toString()}";
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8.0), // spacing between items

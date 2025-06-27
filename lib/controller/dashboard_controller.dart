@@ -22,6 +22,8 @@ import 'package:easy_padhai/model/homework_model2.dart';
 import 'package:easy_padhai/model/homework_model3.dart';
 import 'package:easy_padhai/model/image_model.dart';
 import 'package:easy_padhai/model/institution_list_model.dart';
+import 'package:easy_padhai/model/instruc_model.dart';
+import 'package:easy_padhai/model/instruction_model.dart';
 import 'package:easy_padhai/model/joinedModel.dart';
 import 'package:easy_padhai/model/latest_assgn_model.dart';
 import 'package:easy_padhai/model/leader_model.dart';
@@ -45,6 +47,7 @@ import 'package:easy_padhai/model/time_model.dart';
 import 'package:easy_padhai/model/topic_model.dart';
 import 'package:easy_padhai/model/tpupdate_model.dart';
 import 'package:easy_padhai/model/video_clip_model.dart';
+import 'package:easy_padhai/model/watsapp_model.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -100,16 +103,19 @@ class DashboardController extends GetxController {
   List<NotiCountData> countNotilist = [];
   List<NotesData> notelist = [];
   List<OfflineTestListData> offlinetestList = [];
-
+  IData? instruction;
   VideoClipModelData? vidList;
   LatestAssgnModelData? assignData;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  RxString whatsappTeacher = ''.obs;
+  RxString whatsappStudent = ''.obs;
 
   @override
   void onInit() {
     // TODO: implement onInit
     super.onInit();
+    getWhatsapp();
     // getBanners();
     // getNotification();
     // getBatch();
@@ -137,6 +143,7 @@ class DashboardController extends GetxController {
     }
   }
 
+//watsapp teacher : +919810168391, watsapp student : +918882130397
   Future<void> changeIndex(int index) async {
     if (currentIndex.value == index) return;
     currentIndex.value = index;
@@ -152,7 +159,7 @@ class DashboardController extends GetxController {
         break;
       case 3:
         await openWhatsAppChat(
-          phoneNumber: '+919810168391',
+          phoneNumber: "+91${whatsappTeacher.value}",
           message: '',
         );
         // Get.offAllNamed(RouteName.teacherHome);
@@ -176,7 +183,7 @@ class DashboardController extends GetxController {
       case 2:
         //Get.offAllNamed(RouteName.support);
         await openWhatsAppChat(
-          phoneNumber: '+918882130397',
+          phoneNumber: "+91${whatsappStudent.value}",
           message: '',
         );
         break;
@@ -199,7 +206,7 @@ class DashboardController extends GetxController {
       case 2:
         // Get.offAllNamed(RouteName.teacherHome);
         await openWhatsAppChat(
-          phoneNumber: '+919810168391',
+          phoneNumber: "+91${whatsappTeacher.value}",
           message: '',
         );
         break;
@@ -228,6 +235,26 @@ class DashboardController extends GetxController {
     }
   }
 
+  getWhatsapp() async {
+    isLoading4(false);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {};
+    final countryJson =
+        await apiHelper.get(ApiUrls.getWhatsapp, queryParameter, data);
+    if (countryJson != null && countryJson != false) {
+      WhatsAppModel response = WhatsAppModel.fromJson(countryJson);
+      if (response.status == true) {
+        whatsappTeacher.value = response.data!.teacherWhatsapp!;
+        whatsappStudent.value = response.data!.studentWhatsapp!;
+        isLoading4(true);
+        return response;
+      } else {
+        isLoading4(true);
+      }
+    }
+  }
+
   getInstitutes() async {
     isLoading4(false);
     dynamic data;
@@ -251,7 +278,7 @@ class DashboardController extends GetxController {
   searchInstitutes(String query) async {
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {};
+    Map<String, dynamic>? queryParameter = {"search": query};
     String titleLower = '';
     final categoryDataJson =
         await apiHelper.get(ApiUrls.institutionList, queryParameter, data);
@@ -328,10 +355,15 @@ class DashboardController extends GetxController {
         uNoti.clear();
         List<Notifications> list = response.data!.notifications!;
         for (int i = 0; i < list.length; i++) {
-          if (list[i].type![0].nameEn == "Teacher") {
-            tNoti.add(list[i]);
-          } else {
-            uNoti.add(list[i]);
+          // Safely check the first type
+          if (list[i].type != null && list[i].type!.isNotEmpty) {
+            for (int j = 0; j < list[i].type!.length; j++) {
+              if (list[i].type![j].nameEn == "Teacher") {
+                tNoti.add(list[i]);
+              } else {
+                uNoti.add(list[i]);
+              }
+            }
           }
         }
 
@@ -797,8 +829,8 @@ class DashboardController extends GetxController {
     isLoading(false);
   }
 
-  updateQuestion(
-      List<String> ids, String date, String time, String duration) async {
+  updateQuestion(List<String> ids, String date, String time, String duration,
+      List<String>? selectedInstructions) async {
     isLoading(true);
     dynamic data;
     data = await token();
@@ -806,7 +838,8 @@ class DashboardController extends GetxController {
       "ids": ids,
       "publishedDate": date,
       "publishedTime": time,
-      "duration": duration
+      "duration": duration,
+      "instructionId": selectedInstructions
     };
     final profileJson =
         await apiHelper.patch(ApiUrls.updateq1, queryParameter, data);
@@ -827,8 +860,8 @@ class DashboardController extends GetxController {
     isLoading(false);
   }
 
-  updateTest(
-      List<String> ids, String date, String time, String duration) async {
+  updateTest(List<String> ids, String date, String time, String duration,
+      List<String> selectedInstructions) async {
     isLoading(true);
     dynamic data;
     data = await token();
@@ -836,10 +869,13 @@ class DashboardController extends GetxController {
       "ids": ids,
       "publishedDate": date,
       "publishedTime": time,
-      "duration": duration
+      "duration": duration,
+      "instructionId": selectedInstructions
     };
+    print(queryParameter);
     final profileJson =
         await apiHelper.patch(ApiUrls.updateq2, queryParameter, data);
+    print(profileJson);
     if (profileJson != null && profileJson != false) {
       TpupdateModel response = TpupdateModel.fromJson(profileJson);
       if (response.status == true) {
@@ -1139,7 +1175,8 @@ class DashboardController extends GetxController {
       String dur,
       String book,
       String ids,
-      BuildContext context) async {
+      BuildContext context,
+      List<String> selectedInstructions) async {
     final url =
         Uri.parse('https://codesuperb.com/api/v1/offlinetest/previewtest');
 
@@ -1152,8 +1189,9 @@ class DashboardController extends GetxController {
       "session": sess,
       "duration": dur,
       "bookId": book,
+      "instructionId": selectedInstructions
     };
-
+    print(body);
     final tokenValue = await token();
 
     try {
@@ -1209,6 +1247,7 @@ class DashboardController extends GetxController {
                     dur: dur,
                     book: book,
                     ids: ids,
+                    selectedInstructions: selectedInstructions,
                   )),
         );
       } else {
@@ -1237,7 +1276,8 @@ class DashboardController extends GetxController {
       String dur,
       String book,
       String id,
-      BuildContext context) async {
+      BuildContext context,
+      List<String> selectedInstructions) async {
     isLoading(true);
     dynamic data;
     data = await token();
@@ -1251,7 +1291,8 @@ class DashboardController extends GetxController {
       "session": sess,
       "duration": dur,
       "bookId": book,
-      "id": id
+      "id": id,
+      "instructionId": selectedInstructions
     };
     print(queryParams);
     final countryJson =
@@ -1507,6 +1548,7 @@ class DashboardController extends GetxController {
     dynamic data;
     data = await token();
     Map<String, dynamic>? queryParameter = {};
+    print("topic id: " + topic_id);
     final profileJson =
         await apiHelper.get(ApiUrls.vid + topic_id, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -1776,6 +1818,27 @@ class DashboardController extends GetxController {
 
   Future<void> uploadPdfFile(
       File file, String title, String subid, String clsid) async {
+    final fileSize = await file.length();
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+
+    if (fileSize > maxSize) {
+      Get.snackbar(
+        "Error",
+        "File size exceeds 10MB limit (${(fileSize / (1024 * 1024)).toStringAsFixed(2)}MB)",
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 3),
+      );
+      return;
+    }
+    if (!file.path.toLowerCase().endsWith('.pdf')) {
+      Get.snackbar(
+        "Error",
+        "Only PDF files are allowed",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
     final uri = Uri.parse(
         "https://codesuperb.com/api/v1/image/upload"); // Replace with your API
     final request = http.MultipartRequest('POST', uri);
@@ -1989,6 +2052,37 @@ class DashboardController extends GetxController {
 
         isLoading(false);
         return response;
+      } else {
+        isLoading(false);
+      }
+    } else {}
+    isLoading(false);
+  }
+
+  getInstruction(String batchClassId, String id, String type) async {
+    isLoading(true);
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {
+      "classId": batchClassId,
+      "subjectId": id,
+      "type": type
+    };
+    final profileJson =
+        await apiHelper.get(ApiUrls.getIns, queryParameter, data);
+
+    if (profileJson != null && profileJson != false) {
+      InstrucModel response = InstrucModel.fromJson(profileJson);
+      print(response.message);
+      if (response.status == true) {
+        instruction = response.data;
+
+        // print(instructionList);
+        // Update box storage with profile data
+        // print(response.message);
+
+        isLoading(false);
+        return instruction;
       } else {
         isLoading(false);
       }

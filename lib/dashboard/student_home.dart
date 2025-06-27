@@ -71,6 +71,12 @@ class _ProfileEditState extends State<StudentHome> {
     _loadProfileData();
   }
 
+  Future<void> _onRefresh() async {
+    // Your refresh logic
+    await _loadProfileData();
+    //_refreshController.refreshCompleted();
+  }
+
   void homeNoti() {
     for (int i = 0; i < sublist.length; i++) {
       for (int j = 0; j < clist.length; j++) {
@@ -151,84 +157,91 @@ class _ProfileEditState extends State<StudentHome> {
         // ),
         title: Text(
           'Hi, $name  $class1',
-          style: TextStyle(
+          style: const TextStyle(
               color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20),
         ),
       ),
-      body: !isload
-          ? SafeArea(
-              child: SingleChildScrollView(
-                // padding: EdgeInsets.symmetric(
-                //     horizontal: MediaQuery.of(context).size.width * .05),
-                child: Column(
-                  children: [
-                    CarouselSlider(
-                      options: CarouselOptions(
-                        height: size.height * 0.28,
-                        autoPlay: true,
-                        enlargeCenterPage: true,
-                        viewportFraction: 0.9,
-                      ),
-                      items: dashboardController.Bannerlist.map((item) {
-                        return GestureDetector(
-                          onTap: () => _launchURL(item.redirectPath!),
-                          child: Container(
-                            padding: const EdgeInsets.only(top: 20, bottom: 20),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Container(
-                                child: Image.network(
-                                  item.images![0].url!,
-                                  fit: BoxFit.cover,
-                                  width: size.width,
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return const Center(
-                                        child: CircularProgressIndicator());
-                                  },
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Center(child: Icon(Icons.error)),
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: !isload
+            ? SafeArea(
+                child: SingleChildScrollView(
+                  // padding: EdgeInsets.symmetric(
+                  //     horizontal: MediaQuery.of(context).size.width * .05),
+                  child: Column(
+                    children: [
+                      CarouselSlider(
+                        options: CarouselOptions(
+                          height: size.height * 0.28,
+                          autoPlay: true,
+                          enlargeCenterPage: true,
+                          viewportFraction: 0.9,
+                        ),
+                        items: dashboardController.Bannerlist.map((item) {
+                          return GestureDetector(
+                            onTap: () => _launchURL(item.redirectPath!),
+                            child: Container(
+                              padding:
+                                  const EdgeInsets.only(top: 20, bottom: 20),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Container(
+                                  child: Image.network(
+                                    item.images![0].url!,
+                                    fit: BoxFit.cover,
+                                    width: size.width,
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return const Center(
+                                          child: CircularProgressIndicator());
+                                    },
+                                    errorBuilder: (context, error,
+                                            stackTrace) =>
+                                        const Center(child: Icon(Icons.error)),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: MediaQuery.of(context).size.width * .05),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // ClipRRect(
-                          //   borderRadius: BorderRadius.circular(20),
-                          //   child: Image.asset(
-                          //     'assets/banner.png',
-                          //     height: size.height * 0.25,
-                          //     width: size.width,
-                          //     fit: BoxFit.cover,
-                          //   ),
-                          // ),
+                          );
+                        }).toList(),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal:
+                                MediaQuery.of(context).size.width * .05),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // ClipRRect(
+                            //   borderRadius: BorderRadius.circular(20),
+                            //   child: Image.asset(
+                            //     'assets/banner.png',
+                            //     height: size.height * 0.25,
+                            //     width: size.width,
+                            //     fit: BoxFit.cover,
+                            //   ),
+                            // ),
 
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey.shade300),
-                            ),
-                            child: dashboardController.uNoti.isNotEmpty
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: List.generate(
-                                      dashboardController.uNoti.length,
-                                      (index) {
+                            Container(
+                              width: double.infinity,
+                              height: 220,
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: dashboardController.uNoti.isNotEmpty
+                                  ? ListView.builder(
+                                      // padding:
+                                      //     const EdgeInsets.all(16),
+                                      itemCount:
+                                          dashboardController.uNoti.length,
+                                      itemBuilder: (context, index) {
                                         String formatted = formatDate(
                                             dashboardController
                                                 .uNoti[index].date!);
+
                                         return Padding(
                                           padding:
                                               const EdgeInsets.only(bottom: 8),
@@ -277,89 +290,89 @@ class _ProfileEditState extends State<StudentHome> {
                                           ),
                                         );
                                       },
+                                    )
+                                  : Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                              width: 100,
+                                              height: 130,
+                                              child: Image.asset(
+                                                  "assets/no_notification.png")),
+                                          Text(
+                                            "No messages yet. Your notifications will appear here.",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: AppColors.black
+                                                  .withOpacity(0.5),
+                                            ),
+                                          )
+                                        ],
+                                      ),
                                     ),
-                                  )
-                                : Center(
-                                    child: Column(
-                                      children: [
-                                        SizedBox(
-                                            width: 100,
-                                            height: 130,
-                                            child: Image.asset(
-                                                "assets/no_notification.png")),
-                                        Text(
-                                          "No messages yet. Your notifications will appear here.",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: AppColors.black
-                                                .withOpacity(0.5),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                          ),
-                          const SizedBox(height: 20),
-                          SizedBox(
-                            height: 500, // Adjust height as needed
-                            child: GridView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              padding: const EdgeInsets.all(8.0),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2, // 2 items per row
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                childAspectRatio:
-                                    1.2, // Wider cards (adjust as needed)
-                              ),
-                              itemCount: sublist.length,
-                              itemBuilder: (context, index) {
-                                int notificationCount =
-                                    getNotificationCount(sublist[index].sId!);
-
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      RouteName.subdet,
-                                      arguments: {
-                                        'title': sublist[index].subject!,
-                                        'id': sublist[index].sId!,
-                                      },
-                                    );
-                                  },
-                                  child: buildClassCard11(
-                                    subject: sublist[index].subject!,
-                                    imageAsset:
-                                        sublist[index].images!.isNotEmpty
-                                            ? sublist[index].images![0].url!
-                                            : "",
-                                    isSelected: false,
-                                    notificationCount: notificationCount,
-                                    color: Colors.black87,
-                                  ),
-                                );
-                              },
                             ),
-                          )
-                        ],
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 200, // Adjust height based on card size
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 0, vertical: 8),
+                                itemCount: sublist.length,
+                                itemBuilder: (context, index) {
+                                  int notificationCount =
+                                      getNotificationCount(sublist[index].sId!);
+
+                                  return Padding(
+                                    padding: const EdgeInsets.only(
+                                        right: 12), // spacing between cards
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                          context,
+                                          RouteName.subdet,
+                                          arguments: {
+                                            'title': sublist[index].subject!,
+                                            'id': sublist[index].sId!,
+                                          },
+                                        );
+                                      },
+                                      child: buildClassCard11(
+                                        subject: sublist[index].subject!,
+                                        imageAsset:
+                                            sublist[index].images!.isNotEmpty
+                                                ? sublist[index].images![0].url!
+                                                : "",
+                                        isSelected: false,
+                                        notificationCount: notificationCount,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            )
-          : Center(
-              child: Lottie.asset(
-              'assets/loading.json',
-              width: MediaQuery.of(context).size.width * .2,
-              height: MediaQuery.of(context).size.height * .2,
-              repeat: true,
-              animate: true,
-              reverse: false,
-            )),
+              )
+            : Center(
+                child: Lottie.asset(
+                'assets/loading.json',
+                width: MediaQuery.of(context).size.width * .2,
+                height: MediaQuery.of(context).size.height * .2,
+                repeat: true,
+                animate: true,
+                reverse: false,
+              )),
+      ),
       bottomNavigationBar: Obx(() => CustomBottomNavBar2(
             currentIndex: dashboardController.currentIndex1.value,
             onTap: (index) {
@@ -744,7 +757,7 @@ class _ProfileEditState extends State<StudentHome> {
                       ),
                     ],
                   ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -810,6 +823,7 @@ class _ProfileEditState extends State<StudentHome> {
     return Stack(
       children: [
         Container(
+          width: 160,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: isSelected

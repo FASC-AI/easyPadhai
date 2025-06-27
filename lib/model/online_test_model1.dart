@@ -111,6 +111,7 @@ class Tests {
   String? markFalse;
   int? codeExtra;
   int? iV;
+  List<InstructionId>? instructionId;
 
   Tests(
       {this.sId,
@@ -163,6 +164,7 @@ class Tests {
       this.optionFalse,
       this.markFalse,
       this.codeExtra,
+      this.instructionId,
       this.iV});
 
   Tests.fromJson(Map<String, dynamic> json) {
@@ -211,6 +213,12 @@ class Tests {
       topic = <Topic>[];
       json['topic'].forEach((v) {
         topic!.add(new Topic.fromJson(v));
+      });
+    }
+    if (json['instructionId'] != null) {
+      instructionId = <InstructionId>[];
+      json['instructionId'].forEach((v) {
+        instructionId!.add(new InstructionId.fromJson(v));
       });
     }
     option1 = json['option1'];
@@ -278,6 +286,10 @@ class Tests {
     if (this.topic != null) {
       data['topic'] = this.topic!.map((v) => v.toJson()).toList();
     }
+    if (this.instructionId != null) {
+      data['instructionId'] =
+          this.instructionId!.map((v) => v.toJson()).toList();
+    }
     data['option1'] = this.option1;
     data['option2'] = this.option2;
     data['option3'] = this.option3;
@@ -307,6 +319,81 @@ class Tests {
     data['markFalse'] = this.markFalse;
     data['codeExtra'] = this.codeExtra;
     data['__v'] = this.iV;
+    return data;
+  }
+}
+
+class InstructionId {
+  String? sId;
+  bool? isActive;
+  String? type;
+  String? description;
+  String? instructionsName;
+  List<Classes>? classes;
+  List<Subjects>? subjects;
+  String? createdAt;
+  String? updatedAt;
+  int? code;
+  int? iV;
+  String? hindi;
+
+  InstructionId(
+      {this.sId,
+      this.isActive,
+      this.type,
+      this.description,
+      this.instructionsName,
+      this.classes,
+      this.subjects,
+      this.createdAt,
+      this.updatedAt,
+      this.code,
+      this.iV,
+      this.hindi});
+
+  InstructionId.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    isActive = json['isActive'];
+    type = json['type'];
+    description = json['description'];
+    instructionsName = json['InstructionsName'];
+    if (json['classes'] != null) {
+      classes = <Classes>[];
+      json['classes'].forEach((v) {
+        classes!.add(new Classes.fromJson(v));
+      });
+    }
+    if (json['subjects'] != null) {
+      subjects = <Subjects>[];
+      json['subjects'].forEach((v) {
+        subjects!.add(new Subjects.fromJson(v));
+      });
+    }
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    code = json['code'];
+    iV = json['__v'];
+    hindi = json['hindi'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['isActive'] = this.isActive;
+    data['type'] = this.type;
+    data['description'] = this.description;
+    data['InstructionsName'] = this.instructionsName;
+    if (this.classes != null) {
+      data['classes'] = this.classes!.map((v) => v.toJson()).toList();
+    }
+    if (this.subjects != null) {
+      data['subjects'] = this.subjects!.map((v) => v.toJson()).toList();
+    }
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
+    data['code'] = this.code;
+    data['__v'] = this.iV;
+    data['hindi'] = this.hindi;
     return data;
   }
 }

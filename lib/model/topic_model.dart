@@ -31,12 +31,14 @@ class Data {
   List<WordMeanings>? wordMeanings;
   String? lessonDescription;
   String? lessonTextContent;
+  bool? isTestRequired;
 
   Data(
       {this.sId,
       this.topic,
       this.wordMeanings,
       this.lessonDescription,
+      this.isTestRequired,
       this.lessonTextContent});
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -50,6 +52,7 @@ class Data {
     }
     lessonDescription = json['lessonDescription'];
     lessonTextContent = json['lessonTextContent'];
+    isTestRequired = json['isTestRequired'];
   }
 
   Map<String, dynamic> toJson() {
@@ -61,6 +64,7 @@ class Data {
     }
     data['lessonDescription'] = this.lessonDescription;
     data['lessonTextContent'] = this.lessonTextContent;
+    data['isTestRequired'] = this.isTestRequired;
     return data;
   }
 }

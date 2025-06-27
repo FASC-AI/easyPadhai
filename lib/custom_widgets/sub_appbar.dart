@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 
 class SubjectAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final String teacherName;
+  final List<String> teacherName;
 
   SubjectAppBar({
     super.key,
@@ -20,12 +20,11 @@ class SubjectAppBar extends StatelessWidget implements PreferredSizeWidget {
       decoration: const BoxDecoration(color: AppColors.theme),
       padding: const EdgeInsets.only(top: 50, left: 16, right: 16, bottom: 16),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Top Row with Back Button and Title
           Row(
             children: [
-              // Back Button
               GestureDetector(
                 onTap: () => Get.offAllNamed(RouteName.studentHome),
                 child: Image.asset(
@@ -35,37 +34,46 @@ class SubjectAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
               const SizedBox(width: 12),
-
-              // Title
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-
-              //  const Spacer(),
             ],
           ),
+
+          if (teacherName.isNotEmpty) const SizedBox(height: 20),
+
+          // Horizontal teacher badges
           if (teacherName.isNotEmpty)
-            const SizedBox(
-              height: 20,
-            ),
-          // Pill-shaped teacher badge
-          if (teacherName.isNotEmpty)
-            Container(
-              margin: EdgeInsets.only(left: 20),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Text(
-                teacherName,
-                style: const TextStyle(
-                    color: Colors.blue, fontWeight: FontWeight.w600),
+            SizedBox(
+              height: 40,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: teacherName.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    margin: const EdgeInsets.only(left: 12),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Text(
+                      teacherName[index],
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
         ],
@@ -74,5 +82,5 @@ class SubjectAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(teacherName.isNotEmpty ? 140 : 80);
+  Size get preferredSize => Size.fromHeight(teacherName.isNotEmpty ? 140 : 100);
 }

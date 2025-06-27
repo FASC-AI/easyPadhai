@@ -35,13 +35,23 @@ class PrevTestModelData {
   String? publishedDate;
   String? publishedTime;
   List<Tests>? tests;
+  List<String>? hindi;
+  List<String>? description;
 
-  PrevTestModelData({this.duration, this.publishedDate, this.publishedTime, this.tests});
+  PrevTestModelData(
+      {this.duration,
+      this.publishedDate,
+      this.publishedTime,
+      this.hindi,
+      this.description,
+      this.tests});
 
   PrevTestModelData.fromJson(Map<String, dynamic> json) {
     duration = json['duration'];
     publishedDate = json['publishedDate'];
     publishedTime = json['publishedTime'];
+    hindi = json['hindi'].cast<String>();
+    description = json['description'].cast<String>();
     if (json['tests'] != null) {
       tests = <Tests>[];
       json['tests'].forEach((v) {
@@ -55,6 +65,8 @@ class PrevTestModelData {
     data['duration'] = this.duration;
     data['publishedDate'] = this.publishedDate;
     data['publishedTime'] = this.publishedTime;
+    data['hindi'] = this.hindi;
+    data['description'] = this.description;
     if (this.tests != null) {
       data['tests'] = this.tests!.map((v) => v.toJson()).toList();
     }
@@ -72,6 +84,7 @@ class Tests {
   String? publishedTime;
   String? publishedDate;
   String? publishedBy;
+  List<InstructionId>? instructionId;
   TestId? testId;
   bool? isReaded;
   int? iV;
@@ -91,6 +104,7 @@ class Tests {
       this.publishedTime,
       this.publishedDate,
       this.publishedBy,
+      this.instructionId,
       this.testId,
       this.isReaded,
       this.iV,
@@ -110,6 +124,12 @@ class Tests {
     publishedTime = json['publishedTime'];
     publishedDate = json['publishedDate'];
     publishedBy = json['publishedBy'];
+    if (json['instructionId'] != null) {
+      instructionId = <InstructionId>[];
+      json['instructionId'].forEach((v) {
+        instructionId!.add(new InstructionId.fromJson(v));
+      });
+    }
     testId =
         json['testId'] != null ? new TestId.fromJson(json['testId']) : null;
     isReaded = json['isReaded'];
@@ -134,6 +154,10 @@ class Tests {
     data['publishedTime'] = this.publishedTime;
     data['publishedDate'] = this.publishedDate;
     data['publishedBy'] = this.publishedBy;
+    if (this.instructionId != null) {
+      data['instructionId'] =
+          this.instructionId!.map((v) => v.toJson()).toList();
+    }
     if (this.testId != null) {
       data['testId'] = this.testId!.toJson();
     }
@@ -146,6 +170,81 @@ class Tests {
       data['submitTestData'] = this.submitTestData!.toJson();
     }
     data['questionType'] = this.questionType;
+    return data;
+  }
+}
+
+class InstructionId {
+  String? sId;
+  bool? isActive;
+  String? type;
+  String? description;
+  String? instructionsName;
+  List<Classes>? classes;
+  List<Subjects>? subjects;
+  String? createdAt;
+  String? updatedAt;
+  int? code;
+  int? iV;
+  String? hindi;
+
+  InstructionId(
+      {this.sId,
+      this.isActive,
+      this.type,
+      this.description,
+      this.instructionsName,
+      this.classes,
+      this.subjects,
+      this.createdAt,
+      this.updatedAt,
+      this.code,
+      this.iV,
+      this.hindi});
+
+  InstructionId.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    isActive = json['isActive'];
+    type = json['type'];
+    description = json['description'];
+    instructionsName = json['InstructionsName'];
+    if (json['classes'] != null) {
+      classes = <Classes>[];
+      json['classes'].forEach((v) {
+        classes!.add(new Classes.fromJson(v));
+      });
+    }
+    if (json['subjects'] != null) {
+      subjects = <Subjects>[];
+      json['subjects'].forEach((v) {
+        subjects!.add(new Subjects.fromJson(v));
+      });
+    }
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    code = json['code'];
+    iV = json['__v'];
+    hindi = json['hindi'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['isActive'] = this.isActive;
+    data['type'] = this.type;
+    data['description'] = this.description;
+    data['InstructionsName'] = this.instructionsName;
+    if (this.classes != null) {
+      data['classes'] = this.classes!.map((v) => v.toJson()).toList();
+    }
+    if (this.subjects != null) {
+      data['subjects'] = this.subjects!.map((v) => v.toJson()).toList();
+    }
+    data['createdAt'] = this.createdAt;
+    data['updatedAt'] = this.updatedAt;
+    data['code'] = this.code;
+    data['__v'] = this.iV;
+    data['hindi'] = this.hindi;
     return data;
   }
 }
@@ -389,6 +488,25 @@ class Classes {
   Classes({this.sId, this.nameEn});
 
   Classes.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    nameEn = json['nameEn'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['_id'] = this.sId;
+    data['nameEn'] = this.nameEn;
+    return data;
+  }
+}
+
+class Subjects {
+  String? sId;
+  String? nameEn;
+
+  Subjects({this.sId, this.nameEn});
+
+  Subjects.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     nameEn = json['nameEn'];
   }

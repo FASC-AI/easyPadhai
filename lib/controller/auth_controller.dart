@@ -419,13 +419,15 @@ class AuthController extends GetxController {
   searchInstitutes(String query) async {
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {};
+    Map<String, dynamic>? queryParameter = {"search": query};
     String titleLower = '';
     final categoryDataJson =
         await apiHelper.get(ApiUrls.institutionList, queryParameter, data);
+    // print(queryParameter);
     if (categoryDataJson != null) {
       if (categoryDataJson['status'] == true) {
         var response = InstitutionListModel.fromJson(categoryDataJson);
+        // print(response);
         if (response.status == true) {
           return response.data!.institutes!.map((e) => e).where((e) {
             if (response.data != null) {

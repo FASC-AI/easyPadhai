@@ -22,6 +22,7 @@ import 'package:easy_padhai/model/offline_test_list.dart';
 import 'package:easy_padhai/model/online_test_model1.dart';
 import 'package:easy_padhai/model/test_marks_model.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -95,82 +96,91 @@ class _ProfileEditState extends State<TeacherClassScreen> {
     });
   }
 
+  Future<void> _onRefresh() async {
+    // Your refresh logic
+    await _loadProfileData();
+    //_refreshController.refreshCompleted();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
         text: widget.title,
       ),
-      body: !isload
-          ? SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                      height: 90,
-                      decoration: const BoxDecoration(color: AppColors.theme),
-                      child: Container(
-                        margin: const EdgeInsets.fromLTRB(20, 30, 20, 20),
-                        decoration: BoxDecoration(
-                          color: AppColors.theme,
-                          border: Border.all(
-                              color: Colors.white), // Theme background
-                          borderRadius:
-                              BorderRadius.circular(30), // Full pill shape
-                        ),
-                        child: Row(
-                          children: [
-                            buildTab("Assignments", 0),
-                            buildTab("Tests", 1),
-                            buildTab("Students", 2),
-                          ],
-                        ),
-                      )),
-                  const SizedBox(height: 16),
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: !isload
+            ? SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                        height: 70,
+                        decoration: const BoxDecoration(color: AppColors.theme),
+                        child: Container(
+                          margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                          decoration: BoxDecoration(
+                            color: AppColors.theme,
+                            border: Border.all(
+                                color: Colors.white), // Theme background
+                            borderRadius:
+                                BorderRadius.circular(30), // Full pill shape
+                          ),
+                          child: Row(
+                            children: [
+                              buildTab("Assignments", 0),
+                              buildTab("Tests", 1),
+                              buildTab("Students", 2),
+                            ],
+                          ),
+                        )),
+                    const SizedBox(height: 16),
 
-                  // Tab Content
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      child: selectedTabIndex == 0
-                          ? AssignmentsTab(
-                              booklist,
-                              id,
-                              latestAssgnModelData,
-                              batchClassId,
-                              noteslist,
-                              () => setState(() {
-                                noteslist = dashboardController.notelist;
-                              }),
-                              () => setState(() {
-                                noteslist = dashboardController.notelist;
-                              }),
-                            )
-                          : selectedTabIndex == 1
-                              ? TestsTab(markList: markList)
-                              : selectedTabIndex == 2
-                                  ? StudentSelectionScreen(
-                                      students: students,
-                                      isClassteacher: widget.isClassteacher,
-                                      class_id: batchClassId,
-                                      sub_id: id,
-                                    )
-                                  : null,
+                    // Tab Content
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        child: selectedTabIndex == 0
+                            ? AssignmentsTab(
+                                booklist,
+                                id,
+                                latestAssgnModelData,
+                                batchClassId,
+                                noteslist,
+                                () => setState(() {
+                                  noteslist = dashboardController.notelist;
+                                }),
+                                () => setState(() {
+                                  noteslist = dashboardController.notelist;
+                                }),
+                              )
+                            : selectedTabIndex == 1
+                                ? TestsTab(markList: markList)
+                                : selectedTabIndex == 2
+                                    ? StudentSelectionScreen(
+                                        students: students,
+                                        isClassteacher: widget.isClassteacher,
+                                        class_id: batchClassId,
+                                        sub_id: id,
+                                      )
+                                    : null,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            )
-          : Center(
-              child: Lottie.asset(
-              'assets/loading.json',
-              width: MediaQuery.of(context).size.width * .2,
-              height: MediaQuery.of(context).size.height * .2,
-              repeat: true,
-              animate: true,
-              reverse: false,
-            )),
+                  ],
+                ),
+              )
+            : Center(
+                child: Lottie.asset(
+                'assets/loading.json',
+                width: MediaQuery.of(context).size.width * .2,
+                height: MediaQuery.of(context).size.height * .2,
+                repeat: true,
+                animate: true,
+                reverse: false,
+              )),
+      ),
       bottomNavigationBar: Obx(() => CustomBottomNavBar3(
             currentIndex: dashboardController.currentIndex2.value,
             onTap: (index) {
@@ -492,65 +502,84 @@ class _ProfileEditState1 extends State<AssignmentsTab> {
             ),
 
           // Always show books
-          GridView.builder(
-            itemCount: widget.booklist.length,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1,
-            ),
-            itemBuilder: (context, index) {
-              final book = widget.booklist[index];
-              final imageUrl = book.images != null && book.images!.isNotEmpty
-                  ? book.images!.first.url ?? ""
-                  : "";
+          SizedBox(
+            width: double.infinity,
+            height: 160,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: widget.booklist.length,
+              shrinkWrap: true,
+              // physics: const NeverScrollableScrollPhysics(),
+              // gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              //   crossAxisCount: 2,
+              //   crossAxisSpacing: 12,
+              //   mainAxisSpacing: 12,
+              //   childAspectRatio: 1,
+              // ),
+              itemBuilder: (context, index) {
+                final book = widget.booklist[index];
+                final imageUrl = book.images != null && book.images!.isNotEmpty
+                    ? book.images!.first.url ?? ""
+                    : "";
 
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => LessonScreen(
-                        title: book.book ?? "",
-                        subId: widget.id,
-                        bookId: book.sId ?? "",
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => LessonScreen(
+                          title: book.book ?? "",
+                          subId: widget.id,
+                          bookId: book.sId ?? "",
+                        ),
                       ),
+                    );
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 10),
+                    child: buildTile(
+                      label: book.book ?? "",
+                      imageAsset: imageUrl,
+                      color: Colors.black87,
                     ),
-                  );
-                },
-                child: buildTile(
-                  label: book.book ?? "",
-                  imageAsset: imageUrl,
-                  color: Colors.black87,
-                ),
-              );
-            },
+                  ),
+                );
+              },
+            ),
           ),
           const SizedBox(height: 20),
           SizedBox(
-            height: 160,
+            height: 210,
             child: Row(
               children: [
-                GestureDetector(
-                  onTap: () {
-                    showAddNoteDialog(
-                      context,
-                      widget.batchClassId,
-                      widget.id,
-                    );
-                  },
-                  child: SizedBox(
-                    width: 130,
-                    height: 160,
-                    child: Image.asset(
-                      "assets/notes.png",
-                      fit: BoxFit.fill,
-                    ),
+                if (widget.noteslist.isEmpty)
+                  Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          showAddNoteDialog(
+                            context,
+                            widget.batchClassId,
+                            widget.id,
+                          );
+                        },
+                        child: SizedBox(
+                          width: 130,
+                          height: 160,
+                          child: Image.asset(
+                            "assets/notes.png",
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      const Text(
+                        "Up to 10 mb file size\nare allowed",
+                        style: TextStyle(color: AppColors.red, fontSize: 10),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
-                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: ListView.builder(
@@ -624,7 +653,11 @@ class _ProfileEditState1 extends State<AssignmentsTab> {
                                     widget.noteslist,
                                   );
                                 },
-                                child: SvgPicture.asset("assets/delete.svg"),
+                                child: SvgPicture.asset(
+                                  "assets/delete.svg",
+                                  width: 20,
+                                  height: 20,
+                                ),
                               ),
                             ),
                           ],
@@ -837,6 +870,7 @@ class _ProfileEditState1 extends State<AssignmentsTab> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Container(
+        width: 130,
         decoration: BoxDecoration(
           color: color,
           image: imageAsset.isNotEmpty
@@ -1109,7 +1143,7 @@ class _StudentSelectionScreenState extends State<StudentSelectionScreen> {
                             if (selectedStudentIds.isEmpty) {
                               Get.snackbar("Message", "Please select students",
                                   snackPosition: SnackPosition.BOTTOM);
-                             // Navigator.of(context).pop();
+                              // Navigator.of(context).pop();
                               return;
                             } else {
                               showRemoveStudentDialog(context);

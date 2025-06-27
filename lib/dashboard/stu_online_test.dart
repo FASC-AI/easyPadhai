@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
@@ -6,6 +8,7 @@ import 'package:easy_padhai/dashboard/HtmlLatexViewer.dart';
 import 'package:easy_padhai/dashboard/student_bottomsheet.dart';
 import 'package:easy_padhai/dashboard/test_in_prog.dart';
 import 'package:easy_padhai/model/current_test_model.dart';
+import 'package:easy_padhai/model/instruction_model.dart';
 
 import 'package:easy_padhai/model/prev_test_model.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +29,9 @@ class StuOnlineTest extends StatefulWidget {
 class _ProfileEditState extends State<StuOnlineTest> {
   DashboardController dashboardController = DashboardController();
   List<PrevTestModelData> testList = [];
+  List<InstructionId> insList = [];
+  List<String> hindi = [];
+  List<String> english = [];
   bool isload = false;
   bool isAttempted = false;
   int _currIndex = 0;
@@ -42,11 +48,16 @@ class _ProfileEditState extends State<StuOnlineTest> {
     });
     await dashboardController.getPrevTest(widget.classId, widget.subId);
     testList = dashboardController.prevTest;
+    // await dashboardController.getInstruction(widget.classId, widget.subId);
+
     setState(() {
       isload = false;
       if (testList.isNotEmpty) {
         isAttempted = testList[0].tests![0].attempted != "to be attempt";
       }
+      insList = testList[_currIndex].tests!.first.instructionId!;
+      hindi = testList[_currIndex].hindi!;
+      english = testList[_currIndex].description!;
     });
   }
 
@@ -80,6 +91,8 @@ class _ProfileEditState extends State<StuOnlineTest> {
                             onTap: () {
                               setState(() {
                                 _currIndex = index;
+                                hindi = testList[_currIndex].hindi!;
+                                english = testList[_currIndex].description!;
                                 isAttempted =
                                     testList[index].tests![0].attempted !=
                                         "to be attempt";
@@ -145,28 +158,103 @@ class _ProfileEditState extends State<StuOnlineTest> {
                         ? Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                "Instructions for the Online Test",
-                                style: TextStyle(
-                                  color: AppColors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              for (var i = 0; i < instructions.length; i++)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 10),
+                              if (english.isNotEmpty)
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 10),
                                   child: Text(
-                                    '${i + 1}. ${instructions[i]}',
+                                    "Instructions for the Online Test",
                                     style: TextStyle(
-                                      color: AppColors.black.withOpacity(0.6),
-                                      fontSize: 15,
+                                      color: AppColors.black,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
-                              const SizedBox(height: 30),
+
+                              if (english.isNotEmpty)
+                                SizedBox(
+                                  height: 200,
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: english.length,
+                                    itemBuilder: (context, index) {
+                                      return Column(
+                                        children: [
+                                          Html(
+                                            data: english[index],
+                                            style: {
+                                              "body": Style(
+                                                // margin: Margins.zero,
+                                                //padding: EdgeInsets.zero,
+                                                fontSize: FontSize.medium,
+                                              ),
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ),
+                              const SizedBox(height: 10),
+                              if (hindi.isNotEmpty)
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    "ऑनलाइन टेस्ट के लिए निर्देश:",
+                                    style: TextStyle(
+                                      color: AppColors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+
+                              if (hindi.isNotEmpty)
+                                SizedBox(
+                                  height: 200,
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.vertical,
+                                    itemCount: hindi.length,
+                                    itemBuilder: (context, index) {
+                                      return Column(
+                                        children: [
+                                          Html(
+                                            data: hindi[index],
+                                            style: {
+                                              "body": Style(
+                                                // margin: Margins.zero,
+                                                //padding: EdgeInsets.zero,
+                                                fontSize: FontSize.medium,
+                                              ),
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                ),
+                              // const Text(
+                              //   "Instructions for the Online Test",
+                              //   style: TextStyle(
+                              //     color: AppColors.black,
+                              //     fontSize: 20,
+                              //     fontWeight: FontWeight.bold,
+                              //   ),
+                              // ),
+                              // const SizedBox(height: 20),
+                              // for (var i = 0; i < instructions.length; i++)
+                              //   Padding(
+                              //     padding: const EdgeInsets.only(bottom: 10),
+                              //     child: Text(
+                              //       '${i + 1}. ${instructions[i]}',
+                              //       style: TextStyle(
+                              //         color: AppColors.black.withOpacity(0.6),
+                              //         fontSize: 15,
+                              //         fontWeight: FontWeight.bold,
+                              //       ),
+                              //     ),
+                              //   ),
+                              const SizedBox(height: 10),
                               GestureDetector(
                                 onTap: () async {
                                   List<CurrentTestModelData> res =
@@ -371,14 +459,18 @@ class _ProfileEditState extends State<StuOnlineTest> {
                   child: CheckboxListTile(
                     value: isSubmitted,
                     onChanged: null,
-                    title: Text(
-                      optionText,
-                      style: TextStyle(
-                        color: isCorrect ? Colors.green : Colors.black,
-                        fontWeight:
-                            isSubmitted ? FontWeight.bold : FontWeight.normal,
-                      ),
+                    title: HtmlLatexViewer(
+                      htmlContent: optionText,
+                      minHeight: 24,
                     ),
+                    // title: Text(
+                    //   optionText,
+                    //   style: TextStyle(
+                    //     color: isCorrect ? Colors.green : Colors.black,
+                    //     fontWeight:
+                    //         isSubmitted ? FontWeight.bold : FontWeight.normal,
+                    //   ),
+                    // ),
                     controlAffinity: ListTileControlAffinity.leading,
                   ),
                 );

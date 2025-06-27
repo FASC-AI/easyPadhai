@@ -4,9 +4,11 @@ import 'package:easy_padhai/custom_widgets/custom_input.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
 import 'package:easy_padhai/custom_widgets/text.dart';
 import 'package:easy_padhai/dashboard/HtmlLatexViewer.dart';
+import 'package:easy_padhai/dashboard/instruction_popup.dart';
 import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
 import 'package:easy_padhai/model/book_model.dart';
 import 'package:easy_padhai/model/homework_model1.dart';
+import 'package:easy_padhai/model/instruc_model.dart';
 import 'package:easy_padhai/model/lesson_model.dart';
 import 'package:easy_padhai/model/offline_test_model.dart';
 import 'package:easy_padhai/model/profile_model.dart';
@@ -63,6 +65,9 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
   bool arPub = false;
   bool dsPub = false;
   bool isVisible = false;
+  List<String> selectedInstructions = [];
+  List<English> engIns = [];
+  List<Hindi> hindiIns = [];
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -93,6 +98,29 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
     sub_id =
         dashboardController.profileModel?.data?.subjectDetail?[0].sId! ?? "";
     classes.retainWhere((classDetail) => classDetail.sId == widget.bClassId);
+    await dashboardController.getInstruction(
+        widget.bClassId, sub_id, "Offline Test");
+    setState(() {
+      engIns = dashboardController.instruction!.english!;
+      hindiIns = dashboardController.instruction!.hindi!;
+    });
+  }
+
+  void showInstructionPopup(BuildContext context) async {
+    selectedInstructions = await showDialog(
+      context: context,
+      builder: (context) => InstructionPopup(
+        englishInstructions: engIns,
+        hindiInstructions: hindiIns,
+        preSelectedIds: selectedInstructions,
+      ),
+    );
+
+    if (selectedInstructions != null) {
+      // Use the selected instructions here
+
+      print("Selected: $selectedInstructions");
+    }
   }
 
   void _showPublishDatePopup() {
@@ -757,6 +785,19 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                     ),
 
                     const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () {
+                        showInstructionPopup(context);
+                      },
+                      child: const Text(
+                        "Select Instruction",
+                        style: TextStyle(
+                            color: Color(0xff2180C3),
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -899,7 +940,8 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              title: HtmlLatexViewer(htmlContent: questiondata.description ?? ''),
+                              title: HtmlLatexViewer(
+                                  htmlContent: questiondata.description ?? ''),
                               value:
                                   selectedQuestionTF.contains(questiondata.sId),
                               onChanged: (bool? value) {
@@ -936,7 +978,8 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          title: HtmlLatexViewer(htmlContent: questiondata.description ?? ''),
+                          title: HtmlLatexViewer(
+                              htmlContent: questiondata.description ?? ''),
                           value: selectedQuestionAR.contains(questiondata.sId),
                           onChanged: (bool? value) {
                             setState(() {
@@ -974,7 +1017,8 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          title: HtmlLatexViewer(htmlContent: questiondata.description ?? ''),
+                          title: HtmlLatexViewer(
+                              htmlContent: questiondata.description ?? ''),
                           value: selectedQuestionDS.contains(questiondata.sId),
                           onChanged: (bool? value) {
                             setState(() {
@@ -1001,6 +1045,11 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                   onPressed: () async {
                     // print("Selected Questions: $selectedQuestionIds");
                     // Handle submit logic here
+                    if (selectedQuestionIds.isEmpty) {
+                      Get.snackbar("Message", "Please select questions.",
+                          snackPosition: SnackPosition.BOTTOM);
+                      return;
+                    }
                     List<String> arr = selectedQuestionIds +
                         selectedQuestionAR +
                         selectedQuestionTF +
@@ -1039,7 +1088,8 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                           _durationController.text.toString().trim(),
                           selectedbook!.sId!,
                           "",
-                          context);
+                          context,
+                          selectedInstructions);
                       // Navigator.pop(context);
                       // if (res != false) {
                       //   Navigator.pop(context);

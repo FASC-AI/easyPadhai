@@ -99,6 +99,12 @@ class _ProfileEditState extends State<TeacherHome> {
     }
   }
 
+  Future<void> _onRefresh() async {
+    // Your refresh logic
+    await _loadProfileData();
+    //_refreshController.refreshCompleted();
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -119,82 +125,89 @@ class _ProfileEditState extends State<TeacherHome> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
       ),
-      body: !isload
-          ? SafeArea(
-              child: SingleChildScrollView(
-                // padding: EdgeInsets.symmetric(
-                //     horizontal: MediaQuery.of(context).size.width * .05),
-                child: Column(
-                  children: [
-                    CarouselSlider(
-                      options: CarouselOptions(
-                        height: size.height * 0.28,
-                        autoPlay: true,
-                        enlargeCenterPage: true,
-                        viewportFraction: 0.9,
-                      ),
-                      items: dashboardController.Bannerlist.map((item) {
-                        return GestureDetector(
-                          onTap: () => _launchURL(item.redirectPath!),
-                          child: Container(
-                            padding: const EdgeInsets.only(top: 20, bottom: 20),
-                            width: size.width,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12)),
-                                child: Image.network(
-                                  item.images![0].url!,
-                                  fit: BoxFit.cover,
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return const Center(
-                                        child: CircularProgressIndicator());
-                                  },
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Center(child: Icon(Icons.error)),
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: !isload
+            ? SafeArea(
+                child: SingleChildScrollView(
+                  // padding: EdgeInsets.symmetric(
+                  //     horizontal: MediaQuery.of(context).size.width * .05),
+                  child: Column(
+                    children: [
+                      CarouselSlider(
+                        options: CarouselOptions(
+                          height: size.height * 0.28,
+                          autoPlay: true,
+                          enlargeCenterPage: true,
+                          viewportFraction: 0.9,
+                        ),
+                        items: dashboardController.Bannerlist.map((item) {
+                          return GestureDetector(
+                            onTap: () => _launchURL(item.redirectPath!),
+                            child: Container(
+                              padding:
+                                  const EdgeInsets.only(top: 20, bottom: 20),
+                              width: size.width,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: Image.network(
+                                    item.images![0].url!,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return const Center(
+                                          child: CircularProgressIndicator());
+                                    },
+                                    errorBuilder: (context, error,
+                                            stackTrace) =>
+                                        const Center(child: Icon(Icons.error)),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: MediaQuery.of(context).size.width * .05),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // ClipRRect(
-                          //   borderRadius: BorderRadius.circular(20),
-                          //   child: Image.asset(
-                          //     'assets/banner.png',
-                          //     height: size.height * 0.25,
-                          //     width: size.width,
-                          //     fit: BoxFit.cover,
-                          //   ),
-                          // ),
+                          );
+                        }).toList(),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal:
+                                MediaQuery.of(context).size.width * .05),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // ClipRRect(
+                            //   borderRadius: BorderRadius.circular(20),
+                            //   child: Image.asset(
+                            //     'assets/banner.png',
+                            //     height: size.height * 0.25,
+                            //     width: size.width,
+                            //     fit: BoxFit.cover,
+                            //   ),
+                            // ),
 
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey.shade300),
-                            ),
-                            child: dashboardController.tNoti.isNotEmpty
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: List.generate(
-                                      dashboardController.tNoti.length,
-                                      (index) {
+                            Container(
+                              width: double.infinity,
+                              height: 220,
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: dashboardController.tNoti.isNotEmpty
+                                  ? ListView.builder(
+                                      // padding:
+                                      //     const EdgeInsets.all(16), // optional
+                                      itemCount:
+                                          dashboardController.tNoti.length,
+                                      itemBuilder: (context, index) {
                                         String formatted = formatDate(
                                             dashboardController
                                                 .tNoti[index].date!);
+
                                         return Padding(
                                           padding:
                                               const EdgeInsets.only(bottom: 8),
@@ -243,102 +256,110 @@ class _ProfileEditState extends State<TeacherHome> {
                                           ),
                                         );
                                       },
+                                    )
+                                  : Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SizedBox(
+                                              width: 100,
+                                              height: 130,
+                                              child: Image.asset(
+                                                  "assets/no_notification.png")),
+                                          Text(
+                                            "No messages yet. Your notifications will appear here.",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: AppColors.black
+                                                  .withOpacity(0.5),
+                                            ),
+                                          )
+                                        ],
+                                      ),
                                     ),
-                                  )
-                                : Center(
-                                    child: Column(
-                                      children: [
-                                        SizedBox(
-                                            width: 100,
-                                            height: 130,
-                                            child: Image.asset(
-                                                "assets/no_notification.png")),
-                                        Text(
-                                          "No messages yet. Your notifications will appear here.",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: AppColors.black
-                                                .withOpacity(0.5),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                          ),
-
-                          const SizedBox(height: 20),
-                          Container(
-                              color: Colors.white,
-                              width: MediaQuery.of(context).size.width,
-                              height: 250,
-                              child: const RequestsScreen()),
-                          const SizedBox(height: 20),
-                          SizedBox(
-                            height: 120, // Slightly increased height if needed
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: batches.length,
-                              itemBuilder: (context, index) {
-                                String cls = batches[index].section!.isNotEmpty
-                                    ? "${extractClassNumber(batches[index].class1!).toString()}-${batches[index].section}"
-                                    : "${extractClassNumber(batches[index].class1!).toString()}";
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0), // spacing between items
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => TeacherClassScreen(
-                                                  title: cls,
-                                                  id: batches[index].classId!,
-                                                  sub_id: batches[index]
-                                                      .subject!
-                                                      .sId!,
-                                                  sec_id:
-                                                      batches[index].sectionId!,
-                                                  isClassteacher: batches[index]
-                                                      .classTeacher!,
-                                                )),
-                                      );
-                                    },
-                                    child: buildClassCard(
-                                        cls,
-                                        batches[index].institute!,
-                                        batches[index]
-                                                .subject!
-                                                .images!
-                                                .isNotEmpty
-                                            ? batches[index]
-                                                .subject!
-                                                .images![0]
-                                                .url!
-                                            : ""),
-                                  ),
-                                );
-                              },
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                        ],
+
+                            const SizedBox(height: 20),
+                            Container(
+                                color: Colors.white,
+                                width: MediaQuery.of(context).size.width,
+                                height: 250,
+                                child: const RequestsScreen()),
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              height:
+                                  200, // Slightly increased height if needed
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: batches.length,
+                                itemBuilder: (context, index) {
+                                  String cls = batches[index]
+                                          .section!
+                                          .isNotEmpty
+                                      ? "${extractClassNumber(batches[index].class1!).toString()}-${batches[index].section}"
+                                      : "${extractClassNumber(batches[index].class1!).toString()}";
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal:
+                                            0.0), // spacing between items
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  TeacherClassScreen(
+                                                    title: cls,
+                                                    id: batches[index].classId!,
+                                                    sub_id: batches[index]
+                                                        .subject!
+                                                        .sId!,
+                                                    sec_id: batches[index]
+                                                        .sectionId!,
+                                                    isClassteacher:
+                                                        batches[index]
+                                                            .classTeacher!,
+                                                  )),
+                                        );
+                                      },
+                                      child: buildClassCard(
+                                          cls,
+                                          batches[index].institute!,
+                                          batches[index]
+                                                  .subject!
+                                                  .images!
+                                                  .isNotEmpty
+                                              ? batches[index]
+                                                  .subject!
+                                                  .images![0]
+                                                  .url!
+                                              : ""),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                ),
+              )
+            : Center(
+                child: Lottie.asset(
+                  'assets/loading.json',
+                  width: MediaQuery.of(context).size.width * .2,
+                  height: MediaQuery.of(context).size.height * .2,
+                  repeat: true,
+                  animate: true,
+                  reverse: false,
                 ),
               ),
-            )
-          : Center(
-              child: Lottie.asset(
-                'assets/loading.json',
-                width: MediaQuery.of(context).size.width * .2,
-                height: MediaQuery.of(context).size.height * .2,
-                repeat: true,
-                animate: true,
-                reverse: false,
-              ),
-            ),
+      ),
       bottomNavigationBar: Obx(() => CustomBottomNavBar(
             currentIndex: dashboardController.currentIndex.value,
             onTap: (index) {
@@ -474,7 +495,7 @@ class _ProfileEditState extends State<TeacherHome> {
                       ),
                     ],
                   ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

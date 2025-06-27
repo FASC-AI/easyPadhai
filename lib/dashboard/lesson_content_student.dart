@@ -18,6 +18,7 @@ class LessonTopics extends StatefulWidget {
   String lesson_id;
   String sub_id;
   bool istestreq;
+  bool istestreq_topic;
   final List<dynamic> wordMeanings;
   LessonTopics(
       {super.key,
@@ -26,6 +27,7 @@ class LessonTopics extends StatefulWidget {
       required this.lesson_id,
       required this.sub_id,
       required this.istestreq,
+      required this.istestreq_topic,
       required this.wordMeanings});
   @override
   _LessonScreenState createState() => _LessonScreenState();
@@ -42,11 +44,17 @@ class _LessonScreenState extends State<LessonTopics> {
   DashboardController dashboardController = Get.find();
   late final WebViewController _webViewController;
   late List<String> pages;
+  late bool testreq;
 
   @override
   void initState() {
     super.initState();
     print(widget.topic_id);
+    if (widget.topic_id.isEmpty) {
+      testreq = widget.istestreq;
+    } else {
+      testreq = widget.istestreq_topic;
+    }
 
     wordMeaningList = widget.wordMeanings.map((item) {
       if (item is WordMeanings) {
@@ -275,121 +283,135 @@ class _LessonScreenState extends State<LessonTopics> {
   }
 
   void nextPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (_) => LessonTestScreen(
-                lesson_id: widget.lesson_id,
-                topic_id: widget.topic_id,
-                sub_id: widget.sub_id,
-              )),
-    );
+    if (testreq) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => LessonTestScreen(
+                  lesson_id: widget.lesson_id,
+                  topic_id: widget.topic_id,
+                  sub_id: widget.sub_id,
+                )),
+      );
+    } else {
+      Navigator.pop(context);
+    }
   }
 
-  void previousPage() {}
+  void previousPage() {
+    Navigator.pop(context);
+  }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: const Color(0xffF6F9FF),
-    resizeToAvoidBottomInset: true, // To avoid keyboard pushing UI off
-    body: SafeArea(
-      child: Column(
-        children: [
-          // WebView Area with Loader
-          Expanded(
-            child: Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: WebViewWidget(controller: _webViewController),
-                ),
-                if (_isLoading)
-                  Center(
-                    child: Lottie.asset(
-                      'assets/loading.json',
-                      width: MediaQuery.of(context).size.width * 0.2,
-                      height: MediaQuery.of(context).size.height * 0.2,
-                      repeat: true,
-                      animate: true,
-                      reverse: false,
-                    ),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xffF6F9FF),
+      resizeToAvoidBottomInset: true, // To avoid keyboard pushing UI off
+      body: SafeArea(
+        child: Column(
+          children: [
+            // WebView Area with Loader
+            Expanded(
+              child: Stack(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: WebViewWidget(controller: _webViewController),
                   ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 10),
-
-          // Teacher Button
-          if (userRole() == "teacher")
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: ElevatedButton(
-                onPressed: () async {
-                  update();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AssignHomeworkScreen(
-                        lessonId: widget.lesson_id,
-                        tid: widget.topic_id,
+                  if (_isLoading)
+                    Center(
+                      child: Lottie.asset(
+                        'assets/loading.json',
+                        width: MediaQuery.of(context).size.width * 0.2,
+                        height: MediaQuery.of(context).size.height * 0.2,
+                        repeat: true,
+                        animate: true,
+                        reverse: false,
                       ),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  maximumSize: const Size.fromWidth(300),
-                  backgroundColor: AppColors.theme,
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-                ),
-                child: const Text(
-                  'Assign Homework & Continue',
-                  style: TextStyle(color: Colors.white),
-                ),
+                ],
               ),
             ),
 
-          // Student Navigation (Next + Skip)
-          if (userRole() == "student")
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-               // Spacer for alignment
-                if (widget.istestreq)
+            const SizedBox(height: 10),
+
+            // Teacher Button
+            if (userRole() == "teacher")
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    update();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AssignHomeworkScreen(
+                          lessonId: widget.lesson_id,
+                          tid: widget.topic_id,
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    maximumSize: const Size.fromWidth(300),
+                    backgroundColor: AppColors.theme,
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                  ),
+                  child: const Text(
+                    'Assign Homework & Continue',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+
+            // Student Navigation (Next + Skip)
+            if (userRole() == "student")
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Spacer for alignment
+                  IconButton(
+                    onPressed: previousPage,
+                    icon: SvgPicture.asset('assets/prev.svg',
+                        width: 70, height: 70),
+                  ),
                   IconButton(
                     onPressed: nextPage,
-                    icon: SvgPicture.asset('assets/next.svg', width: 70, height: 70),
+                    icon: SvgPicture.asset('assets/next.svg',
+                        width: 70, height: 70),
                   ),
-              ],
-            ),
-
-          if (userRole() == "student")
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16, right: 16),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: GestureDetector(
-                  onTap: () {
-                    update();
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    width: 60,
-                    height: 30,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: AppColors.theme,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: const Text('Skip', style: TextStyle(color: Colors.white)),
-                  ),
-                ),
+                ],
               ),
-            ),
-        ],
+
+            // if (userRole() == "student")
+            // Padding(
+            //   padding: const EdgeInsets.only(bottom: 16, right: 16),
+            //   child: Align(
+            //     alignment: Alignment.centerRight,
+            //     child: GestureDetector(
+            //       onTap: () {
+            //         update();
+            //         Navigator.pop(context);
+            //       },
+            //       child: Container(
+            //         width: 60,
+            //         height: 30,
+            //         alignment: Alignment.center,
+            //         decoration: BoxDecoration(
+            //           color: AppColors.theme,
+            //           borderRadius: BorderRadius.circular(30),
+            //         ),
+            //         child: const Text('Skip',
+            //             style: TextStyle(color: Colors.white)),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

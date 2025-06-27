@@ -45,6 +45,12 @@ class _LessonScreenState extends State<LessonScreen> {
     _loadData();
   }
 
+  Future<void> _onRefresh() async {
+    // Your refresh logic
+    await _loadData();
+    //_refreshController.refreshCompleted();
+  }
+
   Future<void> _loadData() async {
     setState(() {
       isload = true;
@@ -63,155 +69,160 @@ class _LessonScreenState extends State<LessonScreen> {
       appBar: CustomAppBar(
         text: titile,
       ),
-      body: !isload
-          ? ListView.builder(
-              itemCount: lessonList.length,
-              padding: const EdgeInsets.all(12),
-              itemBuilder: (context, index) {
-                final isExpanded = expandedIndex == index;
-                isCompleted = lessonList[index].status!;
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: !isload
+            ? ListView.builder(
+                itemCount: lessonList.length,
+                padding: const EdgeInsets.all(12),
+                itemBuilder: (context, index) {
+                  final isExpanded = expandedIndex == index;
+                  isCompleted = lessonList[index].status!;
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () async {
-                        setState(() {
-                          expandedIndex = isExpanded ? -1 : index;
-                        });
-                        if (lessonList[index].topics!.isEmpty) {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => LessonTopic1Screen(
-                                      title: lessonList[index].lesson!,
-                                      lessonContent:
-                                          lessonList[index].lessonDescription!,
-                                      id: "",
-                                      lesson_id: lessonList[index].sId!,
-                                      sub_id: widget.subId,
-                                      vid_link:
-                                          lessonList[index].videoTutorialLink!,
-                                      wordMeanings:
-                                          lessonList[index].wordMeanings!,
-                                      lessonkey: lessonList[index].lessonKey!,
-                                      istestreq:
-                                          lessonList[index].isTestRequired!,
-                                    )),
-                          );
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
                           setState(() {
-                            _loadData();
+                            expandedIndex = isExpanded ? -1 : index;
                           });
-                        }
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 6),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 16),
-                        decoration: BoxDecoration(
-                          color: isCompleted
-                              ? Colors.green
-                              : const Color(0x0D186BA5),
-                          border: Border.all(
-                              color: isCompleted
-                                  ? Colors.green
-                                  : AppColors.lesson),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                lessonList[index].lesson!,
-                                style: TextStyle(
-                                  color: isCompleted
-                                      ? Colors.white
-                                      : AppColors.lesson,
-                                  fontWeight: FontWeight.w600,
+                          if (lessonList[index].topics!.isEmpty) {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => LessonTopic1Screen(
+                                        title: lessonList[index].lesson!,
+                                        lessonContent: lessonList[index]
+                                            .lessonDescription!,
+                                        id: "",
+                                        lesson_id: lessonList[index].sId!,
+                                        sub_id: widget.subId,
+                                        vid_link: lessonList[index]
+                                            .videoTutorialLink!,
+                                        wordMeanings:
+                                            lessonList[index].wordMeanings!,
+                                        lessonkey: lessonList[index].lessonKey!,
+                                        istestreq:
+                                            lessonList[index].isTestRequired!,
+                                      )),
+                            );
+                            setState(() {
+                              _loadData();
+                            });
+                          }
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 16),
+                          decoration: BoxDecoration(
+                            color: isCompleted
+                                ? Colors.green
+                                : const Color(0x0D186BA5),
+                            border: Border.all(
+                                color: isCompleted
+                                    ? Colors.green
+                                    : AppColors.lesson),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  lessonList[index].lesson!,
+                                  style: TextStyle(
+                                    color: isCompleted
+                                        ? Colors.white
+                                        : AppColors.lesson,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Icon(
-                              isExpanded
-                                  ? Icons.expand_less
-                                  : Icons.expand_more,
-                              color:
-                                  isCompleted ? Colors.white : AppColors.lesson,
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    if (isExpanded && lessonList[index].topics!.isNotEmpty)
-                      Container(
-                        padding: const EdgeInsets.only(left: 16),
-                        child: Column(
-                          children: List.generate(
-                            lessonList[index].topics!.length,
-                            (subIndex) {
-                              isCompleted =
-                                  lessonList[index].topics![subIndex].status!;
-                              return ListTile(
-                                // value: subtopicStatus[index][subIndex],
-                                // onChanged: (value) {
-                                //   setState(() {
-                                //     subtopicStatus[index][subIndex] = value ?? false;
-                                //   });
-                                // },
-                                onTap: () async {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => LessonTopic1Screen(
-                                              lessonContent: lessonList[index]
-                                                  .lessonDescription!,
-                                              title: lessonList[index]
-                                                  .topics![subIndex]
-                                                  .topic!,
-                                              id: lessonList[index]
-                                                  .topics![subIndex]
-                                                  .sId!,
-                                              lesson_id: lessonList[index].sId!,
-                                              sub_id: widget.subId,
-                                              vid_link: lessonList[index]
-                                                  .videoTutorialLink!,
-                                              wordMeanings: lessonList[index]
-                                                  .wordMeanings!,
-                                              lessonkey:
-                                                  lessonList[index].lessonKey!,
-                                              istestreq: lessonList[index]
-                                                  .isTestRequired!,
-                                            )),
-                                  );
-                                  setState(() {
-                                    _loadData();
-                                  });
-                                },
-                                leading: isCompleted
-                                    ? SvgPicture.asset('assets/chk1.svg')
-                                    : SvgPicture.asset('assets/chk2.svg'),
-                                title: Text(
-                                    lessonList[index].topics![subIndex].topic!),
-                                // controlAffinity: ListTileControlAffinity.leading,
-                              );
-                            },
+                              Icon(
+                                isExpanded
+                                    ? Icons.expand_less
+                                    : Icons.expand_more,
+                                color: isCompleted
+                                    ? Colors.white
+                                    : AppColors.lesson,
+                              )
+                            ],
                           ),
                         ),
                       ),
-                  ],
-                );
-              },
-            )
-          : Center(
-              child: Lottie.asset(
-                'assets/loading.json',
-                width: MediaQuery.of(context).size.width * .2,
-                height: MediaQuery.of(context).size.height * .2,
-                repeat: true,
-                animate: true,
-                reverse: false,
+                      if (isExpanded && lessonList[index].topics!.isNotEmpty)
+                        Container(
+                          padding: const EdgeInsets.only(left: 16),
+                          child: Column(
+                            children: List.generate(
+                              lessonList[index].topics!.length,
+                              (subIndex) {
+                                isCompleted =
+                                    lessonList[index].topics![subIndex].status!;
+                                return ListTile(
+                                  // value: subtopicStatus[index][subIndex],
+                                  // onChanged: (value) {
+                                  //   setState(() {
+                                  //     subtopicStatus[index][subIndex] = value ?? false;
+                                  //   });
+                                  // },
+                                  onTap: () async {
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => LessonTopic1Screen(
+                                                lessonContent: lessonList[index]
+                                                    .lessonDescription!,
+                                                title:
+                                                    lessonList[index].lesson!,
+                                                id: lessonList[index]
+                                                    .topics![subIndex]
+                                                    .sId!,
+                                                lesson_id:
+                                                    lessonList[index].sId!,
+                                                sub_id: widget.subId,
+                                                vid_link: lessonList[index]
+                                                    .videoTutorialLink!,
+                                                wordMeanings: lessonList[index]
+                                                    .wordMeanings!,
+                                                lessonkey: lessonList[index]
+                                                    .lessonKey!,
+                                                istestreq: lessonList[index]
+                                                    .isTestRequired!,
+                                              )),
+                                    );
+                                    setState(() {
+                                      _loadData();
+                                    });
+                                  },
+                                  leading: isCompleted
+                                      ? SvgPicture.asset('assets/chk1.svg')
+                                      : SvgPicture.asset('assets/chk2.svg'),
+                                  title: Text(lessonList[index]
+                                      .topics![subIndex]
+                                      .topic!),
+                                  // controlAffinity: ListTileControlAffinity.leading,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              )
+            : Center(
+                child: Lottie.asset(
+                  'assets/loading.json',
+                  width: MediaQuery.of(context).size.width * .2,
+                  height: MediaQuery.of(context).size.height * .2,
+                  repeat: true,
+                  animate: true,
+                  reverse: false,
+                ),
               ),
-            ),
+      ),
       bottomNavigationBar: userRole() == 'student'
           ? Obx(() => CustomBottomNavBar2(
                 currentIndex: dashboardController.currentIndex1.value,

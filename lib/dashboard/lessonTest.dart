@@ -53,6 +53,10 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
     setState(() {
       isload = true;
     });
+    print(
+      widget.lesson_id,
+    );
+    print(widget.topic_id);
     await dashboardController.getLessonQues(widget.lesson_id, widget.topic_id);
 
     // testList = dashboardController.testList;
@@ -267,154 +271,191 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
       ),
       body: !isload
           ? SingleChildScrollView(
-              child: Container(
-                width: double.infinity,
-                margin: const EdgeInsets.all(30.0),
-                padding: const EdgeInsets.all(30.0),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  shape: BoxShape.rectangle,
-                  border: Border.all(color: AppColors.grey7),
-                ),
-                child: tests.isNotEmpty
-                    ? ListView(
-                        shrinkWrap: true,
-                        physics:
-                            const NeverScrollableScrollPhysics(), // Prevent nested scroll
-                        children: [
-                          Text(
-                            "QUESTION ${_currentIndex + 1} / ${tests.length}",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.black.withOpacity(0.5),
-                            ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16, right: 16),
+                    child: Align(
+                      alignment: Alignment.topRight,
+                      child: GestureDetector(
+                        onTap: () {
+                          update();
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          width: 60,
+                          height: 30,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: AppColors.theme,
+                            borderRadius: BorderRadius.circular(30),
                           ),
-                          const SizedBox(height: 8),
-                          HtmlLatexViewer(htmlContent: currentTest!.description ?? ''),
-                          const SizedBox(height: 16),
-                          if (testType == "True/False")
-                            ...options.map((option) {
-                              return Container(
-                                margin: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: _selectedAnswer == option
-                                      ? Colors.blue.shade50
-                                      : Colors.white,
-                                  shape: BoxShape.rectangle,
-                                  border: Border.all(color: AppColors.grey7),
-                                ),
-                                child: RadioListTile(
-                                  title: Text(option),
-                                  value: option,
-                                  groupValue: _selectedAnswer,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedAnswer = value.toString();
-                                    });
-                                  },
-                                ),
-                              );
-                            }).toList()
-                          else
-                            ...options.map((option) {
-                              return Container(
-                                margin: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: _selectedAnswers.contains(option)
-                                      ? Colors.blue.shade50
-                                      : Colors.white,
-                                  shape: BoxShape.rectangle,
-                                  border: Border.all(color: AppColors.grey7),
-                                ),
-                                child: CheckboxListTile(
-                                  checkColor: Colors.white,
-                                  activeColor: const Color(0xff186BA5),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  title: Text(option),
-                                  value: _selectedAnswers.contains(option),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      value == true
-                                          ? _selectedAnswers.add(option)
-                                          : _selectedAnswers.remove(option);
-                                    });
-                                  },
-                                ),
-                              );
-                            }).toList(),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          child: const Text('Skip',
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.all(30.0),
+                    padding: const EdgeInsets.all(30.0),
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      shape: BoxShape.rectangle,
+                      border: Border.all(color: AppColors.grey7),
+                    ),
+                    child: tests.isNotEmpty
+                        ? ListView(
+                            shrinkWrap: true,
+                            physics:
+                                const NeverScrollableScrollPhysics(), // Prevent nested scroll
                             children: [
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.white,
-                                  shape: RoundedRectangleBorder(
-                                    side: BorderSide(
-                                        color: _currentIndex > 0
-                                            ? AppColors.theme
-                                            : AppColors.grey),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
+                              Text(
+                                "QUESTION ${_currentIndex + 1} / ${tests.length}",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.black.withOpacity(0.5),
                                 ),
-                                onPressed:
-                                    _currentIndex > 0 ? _handlePrev : null,
-                                child: const Text("Prev"),
                               ),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.theme,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                ),
-                                onPressed: _currentIndex < tests.length - 1
-                                    ? _handleNext
-                                    : submit,
-                                child: !isvisible
-                                    ? Text(
-                                        _currentIndex < tests.length - 1
-                                            ? "Next"
-                                            : "Submit",
-                                        style: const TextStyle(
-                                            color: Colors.white),
-                                      )
-                                    : SizedBox(
-                                        width: 30,
-                                        height: 30,
-                                        child: Lottie.asset(
-                                          'assets/loading.json',
-                                          width: 30,
-                                          height: 30,
-                                          repeat: true,
-                                          animate: true,
-                                          reverse: false,
-                                        ),
+                              const SizedBox(height: 8),
+                              HtmlLatexViewer(
+                                  htmlContent: currentTest!.description ?? ''),
+                              const SizedBox(height: 16),
+                              if (testType == "True/False")
+                                ...options.map((option) {
+                                  return Container(
+                                    margin: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: _selectedAnswer == option
+                                          ? Colors.blue.shade50
+                                          : Colors.white,
+                                      shape: BoxShape.rectangle,
+                                      border:
+                                          Border.all(color: AppColors.grey7),
+                                    ),
+                                    child: RadioListTile(
+                                      title: HtmlLatexViewer(
+                                        htmlContent: option,
+                                        minHeight: 24,
                                       ),
+                                      value: option,
+                                      groupValue: _selectedAnswer,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _selectedAnswer = value.toString();
+                                        });
+                                      },
+                                    ),
+                                  );
+                                }).toList()
+                              else
+                                ...options.map((option) {
+                                  return Container(
+                                    margin: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: _selectedAnswers.contains(option)
+                                          ? Colors.blue.shade50
+                                          : Colors.white,
+                                      shape: BoxShape.rectangle,
+                                      border:
+                                          Border.all(color: AppColors.grey7),
+                                    ),
+                                    child: CheckboxListTile(
+                                      checkColor: Colors.white,
+                                      activeColor: const Color(0xff186BA5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      title: HtmlLatexViewer(
+                                        htmlContent: option,
+                                        minHeight: 24,
+                                      ),
+                                      value: _selectedAnswers.contains(option),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          value == true
+                                              ? _selectedAnswers.add(option)
+                                              : _selectedAnswers.remove(option);
+                                        });
+                                      },
+                                    ),
+                                  );
+                                }).toList(),
+                              const SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.white,
+                                      shape: RoundedRectangleBorder(
+                                        side: BorderSide(
+                                            color: _currentIndex > 0
+                                                ? AppColors.theme
+                                                : AppColors.grey),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    ),
+                                    onPressed:
+                                        _currentIndex > 0 ? _handlePrev : null,
+                                    child: const Text("Prev"),
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.theme,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    ),
+                                    onPressed: _currentIndex < tests.length - 1
+                                        ? _handleNext
+                                        : submit,
+                                    child: !isvisible
+                                        ? Text(
+                                            _currentIndex < tests.length - 1
+                                                ? "Next"
+                                                : "Submit",
+                                            style: const TextStyle(
+                                                color: Colors.white),
+                                          )
+                                        : SizedBox(
+                                            width: 30,
+                                            height: 30,
+                                            child: Lottie.asset(
+                                              'assets/loading.json',
+                                              width: 30,
+                                              height: 30,
+                                              repeat: true,
+                                              animate: true,
+                                              reverse: false,
+                                            ),
+                                          ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/no_notification.png',
+                                height: 80,
+                              ),
+                              const SizedBox(height: 10),
+                              const Text(
+                                "No Questions Available",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 16,
+                                ),
                               ),
                             ],
                           ),
-                        ],
-                      )
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/no_notification.png',
-                            height: 80,
-                          ),
-                          const SizedBox(height: 10),
-                          const Text(
-                            "No Questions Available",
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
+                  ),
+                ],
               ),
             )
           : Center(
@@ -426,7 +467,7 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                 animate: true,
               ),
             ),
-             bottomNavigationBar: Obx(() => CustomBottomNavBar2(
+      bottomNavigationBar: Obx(() => CustomBottomNavBar2(
             currentIndex: dashboardController.currentIndex1.value,
             onTap: (index) {
               if (index == 1) {

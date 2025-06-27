@@ -327,7 +327,8 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
                               fontWeight: FontWeight.bold,
                               color: AppColors.black.withOpacity(0.5))),
                       const SizedBox(height: 8),
-                      HtmlLatexViewer(htmlContent: currentTest!.description ?? ''),
+                      HtmlLatexViewer(
+                          htmlContent: currentTest!.description ?? ''),
                       const SizedBox(height: 16),
                       if (testType == "True/False")
                         ...options.map((option) {
@@ -340,7 +341,10 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
                                 shape: BoxShape.rectangle,
                                 border: Border.all(color: AppColors.grey7)),
                             child: RadioListTile(
-                              title: Text(option),
+                              title: HtmlLatexViewer(
+                                htmlContent: option,
+                                minHeight: 24,
+                              ),
                               value: option,
                               groupValue: _selectedAnswer,
                               onChanged: (value) {
@@ -367,7 +371,10 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              title: Text(option),
+                              title: HtmlLatexViewer(
+                                htmlContent: option,
+                                minHeight: 24,
+                              ),
                               value: _selectedAnswers.contains(option),
                               onChanged: (value) {
                                 setState(() {

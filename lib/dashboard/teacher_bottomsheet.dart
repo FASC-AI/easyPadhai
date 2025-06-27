@@ -128,7 +128,7 @@ class BatchHelperTeacher {
                       ),
                     ],
                   ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

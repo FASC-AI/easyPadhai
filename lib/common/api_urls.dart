@@ -92,4 +92,6 @@ class ApiUrls {
   static const String getofflineTest = 'api/v1/offlinetest/paper';
   static const String deleteOffine = 'api/v1/offlinetest/';
   static const String postvid = 'api/v1/lesson/videolink/';
+  static const String getIns = 'api/v1/instruction/instructionbysubclass';
+  static const String getWhatsapp = 'api/v1/whatsapp';
 }

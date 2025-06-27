@@ -35,7 +35,10 @@ class _LessonClipsScreenState extends State<LessonClipsScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    videoLinks = parseVideoLinks(widget.vid_link);
+    if (widget.vid_link.isNotEmpty) {
+      videoLinks = parseVideoLinks(widget.vid_link);
+    }
+
     print(videoLinks);
   }
 
@@ -185,8 +188,11 @@ class _LessonClipsScreenState extends State<LessonClipsScreen> {
               // ),
               title: Text(
                 title,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                maxLines: 2,
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    overflow: TextOverflow.ellipsis),
               ),
             ),
           ],

@@ -22,7 +22,7 @@ class PdfViewerScreen extends StatelessWidget {
   String dur;
   String book;
   String ids;
-
+  List<String> selectedInstructions;
   PdfViewerScreen(
       {Key? key,
       required this.pdfBytes,
@@ -34,7 +34,8 @@ class PdfViewerScreen extends StatelessWidget {
       required this.sess,
       required this.dur,
       required this.book,
-      required this.ids})
+      required this.ids,
+      required this.selectedInstructions})
       : super(key: key);
 
   DashboardController dashboardController = Get.find();
@@ -108,17 +109,17 @@ class PdfViewerScreen extends StatelessWidget {
               // String isoTimestamp = DateTime.now().toIso8601String();
               if (!isSave) {
                 await dashboardController.saveOffline(
-                  sub,
-                  classid,
-                  top,
-                  lesson,
-                  quesId,
-                  sess,
-                  dur,
-                  book,
-                  ids,
-                  context,
-                );
+                    sub,
+                    classid,
+                    top,
+                    lesson,
+                    quesId,
+                    sess,
+                    dur,
+                    book,
+                    ids,
+                    context,
+                    selectedInstructions);
                 isSave = true;
               }
             },

@@ -4,8 +4,10 @@ import 'package:easy_padhai/custom_widgets/custom_input.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
 import 'package:easy_padhai/custom_widgets/text.dart';
 import 'package:easy_padhai/dashboard/HtmlLatexViewer.dart';
+import 'package:easy_padhai/dashboard/instruction_popup.dart';
 import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
 import 'package:easy_padhai/model/book_model.dart';
+import 'package:easy_padhai/model/instruc_model.dart';
 import 'package:easy_padhai/model/lesson_model.dart';
 import 'package:easy_padhai/model/offline_test_list.dart';
 import 'package:easy_padhai/model/offline_test_model.dart';
@@ -61,6 +63,9 @@ class _EditOfflineTestScreenState extends State<EditOfflineTestScreen> {
   bool dsExpanded = false;
   bool ds1Expanded = false;
   String ids = "";
+  List<String> selectedInstructions = [];
+  List<English> engIns = [];
+  List<Hindi> hindiIns = [];
 
   final TextEditingController _durationController = TextEditingController();
   Duration _duration = const Duration(hours: 0, minutes: 0);
@@ -180,6 +185,23 @@ class _EditOfflineTestScreenState extends State<EditOfflineTestScreen> {
     }
   }
 
+  void showInstructionPopup(BuildContext context) async {
+    selectedInstructions = await showDialog(
+      context: context,
+      builder: (context) => InstructionPopup(
+        englishInstructions: engIns,
+        hindiInstructions: hindiIns,
+        preSelectedIds: selectedInstructions,
+      ),
+    );
+
+    if (selectedInstructions != null) {
+      // Use the selected instructions here
+
+      print("Selected: $selectedInstructions");
+    }
+  }
+
   Future<void> _loadQuestions() async {
     if (selectedClass != null && selectedbook != null) {
       String lessonId = selectedlesson?.sId ?? "";
@@ -192,8 +214,14 @@ class _EditOfflineTestScreenState extends State<EditOfflineTestScreen> {
         lessonId,
         topicId,
       );
-
+      await dashboardController.getInstruction(
+          selectedClass!.sId!, sub_id, "Offline Test");
       setState(() {
+        engIns = dashboardController.instruction!.english!;
+        hindiIns = dashboardController.instruction!.hindi!;
+        // selectedInstructions = widget.testList.first.instructionId!
+        //     .map((q) => q.sId?.trim() ?? '')
+        //     .toList();
         questions.clear();
         ARQuestions.clear();
         DSQuestions.clear();
@@ -697,6 +725,19 @@ class _EditOfflineTestScreenState extends State<EditOfflineTestScreen> {
                     ),
 
                     const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () {
+                        showInstructionPopup(context);
+                      },
+                      child: const Text(
+                        "Select Instruction",
+                        style: TextStyle(
+                            color: Color(0xff2180C3),
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -838,7 +879,8 @@ class _EditOfflineTestScreenState extends State<EditOfflineTestScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              title: HtmlLatexViewer(htmlContent: questiondata.description ?? ''),
+                              title: HtmlLatexViewer(
+                                  htmlContent: questiondata.description ?? ''),
                               value:
                                   selectedQuestionTF.contains(questiondata.sId),
                               onChanged: (bool? value) {
@@ -875,7 +917,8 @@ class _EditOfflineTestScreenState extends State<EditOfflineTestScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          title: HtmlLatexViewer(htmlContent: questiondata.description ?? ''),
+                          title: HtmlLatexViewer(
+                              htmlContent: questiondata.description ?? ''),
                           value: selectedQuestionAR.contains(questiondata.sId),
                           onChanged: (bool? value) {
                             setState(() {
@@ -912,7 +955,8 @@ class _EditOfflineTestScreenState extends State<EditOfflineTestScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          title: HtmlLatexViewer(htmlContent: questiondata.description ?? ''),
+                          title: HtmlLatexViewer(
+                              htmlContent: questiondata.description ?? ''),
                           value: selectedQuestionDS.contains(questiondata.sId),
                           onChanged: (bool? value) {
                             setState(() {
@@ -979,7 +1023,8 @@ class _EditOfflineTestScreenState extends State<EditOfflineTestScreen> {
                                     _durationController.text.toString().trim(),
                                     selectedbook!.sId!,
                                     ids,
-                                    context);
+                                    context,
+                                    selectedInstructions);
                               }
                             },
                             style: ElevatedButton.styleFrom(

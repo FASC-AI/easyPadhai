@@ -4,9 +4,11 @@ import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
 import 'package:easy_padhai/custom_widgets/custom_input.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
 import 'package:easy_padhai/dashboard/HtmlLatexViewer.dart';
+import 'package:easy_padhai/dashboard/instruction_popup.dart';
 import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
 import 'package:easy_padhai/model/book_model.dart';
 import 'package:easy_padhai/model/editTestModel.dart';
+import 'package:easy_padhai/model/instruc_model.dart';
 import 'package:easy_padhai/model/lesson_model.dart';
 import 'package:easy_padhai/model/online_test_model1.dart';
 import 'package:easy_padhai/model/profile_model.dart';
@@ -117,6 +119,9 @@ class _EditTestScreenState extends State<EditTestScreen> {
   String lessonId = "";
   String topicId = "";
   DashboardController dashboardController = Get.find();
+  List<String> selectedInstructions = [];
+  List<English> engIns = [];
+  List<Hindi> hindiIns = [];
 
   Duration parseDuration(String duration) {
     List<String> parts = duration.split(':');
@@ -136,6 +141,23 @@ class _EditTestScreenState extends State<EditTestScreen> {
     if (period == 'am' && hour == 12) hour = 0;
 
     return DateTime(now.year, now.month, now.day, hour, minute);
+  }
+
+  void showInstructionPopup(BuildContext context) async {
+    selectedInstructions = await showDialog(
+      context: context,
+      builder: (context) => InstructionPopup(
+        englishInstructions: engIns,
+        hindiInstructions: hindiIns,
+        preSelectedIds: selectedInstructions,
+      ),
+    );
+
+    if (selectedInstructions != null) {
+      // Use the selected instructions here
+
+      print("Selected: $selectedInstructions");
+    }
   }
 
   void _initializeWithTestData() {
@@ -215,6 +237,14 @@ class _EditTestScreenState extends State<EditTestScreen> {
     } else {
       topicId = "";
     }
+    await dashboardController.getInstruction(classId, subId, "Online Test");
+    setState(() {
+      engIns = dashboardController.instruction!.english!;
+      hindiIns = dashboardController.instruction!.hindi!;
+      selectedInstructions = widget.tests!.first.instructionId!
+          .map((q) => q.sId?.trim() ?? '')
+          .toList();
+    });
 
     // await dashboardController.getOnTest(
     //   widget.bClassId,
@@ -367,7 +397,19 @@ class _EditTestScreenState extends State<EditTestScreen> {
                     // Class, Book, Lesson, Topic Dropdowns
                     _buildDropdownSelectors(),
                     const SizedBox(height: 20),
-
+                    GestureDetector(
+                      onTap: () {
+                        showInstructionPopup(context);
+                      },
+                      child: const Text(
+                        "Select Instruction",
+                        style: TextStyle(
+                            color: Color(0xff2180C3),
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     // Questions Section
                     _buildQuestionsSection(),
                     const SizedBox(height: 20),
@@ -635,7 +677,8 @@ class _EditTestScreenState extends State<EditTestScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            title: HtmlLatexViewer(htmlContent: question.description ?? ''),
+                            title: HtmlLatexViewer(
+                                htmlContent: question.description ?? ''),
                             value: question.isPublished,
                             onChanged: (bool? value) {
                               setState(() {
@@ -819,7 +862,11 @@ class _EditTestScreenState extends State<EditTestScreen> {
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
-
+    if (selectedInstructions.isEmpty) {
+      Get.snackbar("Message", "Please select instruction.",
+          snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
     if (_dateController.text.isEmpty) {
       Get.snackbar("Message", "Please select publish date.",
           snackPosition: SnackPosition.BOTTOM);
@@ -850,6 +897,7 @@ class _EditTestScreenState extends State<EditTestScreen> {
       isoDate,
       _timeController.text,
       _durationController.text,
+      selectedInstructions
     );
 
     if (success != null && success != false) {

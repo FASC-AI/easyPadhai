@@ -33,7 +33,7 @@ class SubjectDetailScreen extends StatefulWidget {
 class _ProfileEditState extends State<SubjectDetailScreen> {
   List<Books> booklist = [];
   bool isload = false;
-  String teacher = "";
+  List<String> teacher = [];
   List<NData1> hlist = [];
   String subId = "";
   DashboardController dashboardController = Get.find();
@@ -46,6 +46,12 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
     // TODO: implement initState
     super.initState();
     _loadProfileData();
+  }
+
+  Future<void> _onRefresh() async {
+    // Your refresh logic
+    await _loadProfileData();
+    //_refreshController.refreshCompleted();
   }
 
   Future<void> _loadProfileData() async {
@@ -62,9 +68,10 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
       batData = dashboardController.batchData;
       if (batData.isNotEmpty) {
         List<String> teacherNames = getTeacherNamesForSubject(batData, subId);
+
         if (teacherNames.isNotEmpty) {
           setState(() {
-            teacher = teacherNames[0];
+            teacher = teacherNames;
           });
         }
       }
@@ -125,358 +132,369 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
         title: widget.title,
         teacherName: teacher,
       ),
-      body: !isload
-          ? SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Attention card
-                  if (!dashboardController.isJoined.value)
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Container(
-                        // height: 200,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            GestureDetector(
-                              onTap: () {},
-                              child: Image.asset(
-                                'assets/join.png', // Your attention image asset
-                                height: 160,
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: !isload
+            ? SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Attention card
+                    if (!dashboardController.isJoined.value)
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Container(
+                          // height: 200,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {},
+                                child: Image.asset(
+                                  'assets/join.png', // Your attention image asset
+                                  height: 160,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                            const Text(
-                              "Attention!",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blueAccent,
+                              const SizedBox(height: 10),
+                              const Text(
+                                "Attention!",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blueAccent,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              "Join a batch to receive updates, homeworks, and take tests.",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.black87),
-                            ),
-                          ],
+                              const SizedBox(height: 4),
+                              const Text(
+                                "Join a batch to receive updates, homeworks, and take tests.",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.black87),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-
-                  (teacher.isNotEmpty)
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 16),
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey.shade300),
-                            ),
-                            child: hlist.isNotEmpty
-                                ? Container(
-                                    height:
-                                        300, // Set your desired fixed height here
-                                    child: SingleChildScrollView(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children:
-                                            groupedByDate.entries.map((entry) {
-                                          String date = entry.key;
-                                          List<NData1> items = entry.value;
-
-                                          return Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 16),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                // Date header with count
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      date,
-                                                      style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 16),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 5),
-
-                                                // Items under this date
-                                                ...items.expand((item) {
-                                                  String type = item.type ?? "";
-                                                  List<Data1> dataList =
-                                                      item.data ?? [];
-
-                                                  return dataList
-                                                      .map((dataEntry) {
-                                                    String topic =
-                                                        dataEntry.topic ?? "";
-                                                    String entryType =
-                                                        dataEntry.type ?? type;
-                                                    String publishedDate =
-                                                        dataEntry
-                                                                .publishedDate ??
-                                                            date;
-
-                                                    return GestureDetector(
-                                                      onTap: () {
-                                                        if (entryType ==
-                                                            "homework") {
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (_) =>
-                                                                    HomeworkScreen()),
-                                                          );
-                                                        } else if (entryType ==
-                                                            "test") {
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (_) =>
-                                                                  StuOnlineTest(
-                                                                subId: item
-                                                                        .subjectId
-                                                                        ?.first ??
-                                                                    "",
-                                                                classId: item
-                                                                        .classId
-                                                                        ?.first ??
-                                                                    "",
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }
-                                                      },
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                bottom: 10),
-                                                        child: Row(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            if (entryType ==
-                                                                "homework")
-                                                              SvgPicture.asset(
-                                                                  "assets/hw.svg")
-                                                            else if (entryType ==
-                                                                "test")
-                                                              SizedBox(
-                                                                width: 30,
-                                                                height: 30,
-                                                                child: Image.asset(
-                                                                    "assets/testq.png"),
-                                                              )
-                                                            else
-                                                              SvgPicture.asset(
-                                                                  "assets/notes.svg"),
-                                                            const SizedBox(
-                                                                width: 10),
-                                                            Expanded(
-                                                              child: Text(
-                                                                entryType ==
-                                                                        "homework"
-                                                                    ? "$topic is a homework on ${formatDate(publishedDate)}"
-                                                                    : entryType ==
-                                                                            "test"
-                                                                        ? "$topic test is on ${formatDate(publishedDate)}"
-                                                                        : topic,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
+        
+                    (teacher.isNotEmpty)
+                        ? Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 16),
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: hlist.isNotEmpty
+                                  ? Container(
+                                      height:
+                                          300, // Set your desired fixed height here
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children:
+                                              groupedByDate.entries.map((entry) {
+                                            String date = entry.key;
+                                            List<NData1> items = entry.value;
+        
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 16),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  // Date header with count
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        date,
+                                                        style: const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 16),
                                                       ),
-                                                    );
-                                                  });
-                                                }).toList(),
-                                              ],
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 5),
+        
+                                                  // Items under this date
+                                                  ...items.expand((item) {
+                                                    String type = item.type ?? "";
+                                                    List<Data1> dataList =
+                                                        item.data ?? [];
+        
+                                                    return dataList
+                                                        .map((dataEntry) {
+                                                      String topic =
+                                                          dataEntry.topic ?? "";
+                                                      String entryType =
+                                                          dataEntry.type ?? type;
+                                                      String publishedDate =
+                                                          dataEntry
+                                                                  .publishedDate ??
+                                                              date;
+        
+                                                      return GestureDetector(
+                                                        onTap: () {
+                                                          if (entryType ==
+                                                              "homework") {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder: (_) =>
+                                                                      HomeworkScreen()),
+                                                            );
+                                                          } else if (entryType ==
+                                                              "test") {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (_) =>
+                                                                    StuOnlineTest(
+                                                                  subId: item
+                                                                          .subjectId
+                                                                          ?.first ??
+                                                                      "",
+                                                                  classId: item
+                                                                          .classId
+                                                                          ?.first ??
+                                                                      "",
+                                                                ),
+                                                              ),
+                                                            );
+                                                          }
+                                                        },
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  bottom: 10),
+                                                          child: Row(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              if (entryType ==
+                                                                  "homework")
+                                                                SvgPicture.asset(
+                                                                    "assets/hw.svg")
+                                                              else if (entryType ==
+                                                                  "test")
+                                                                SizedBox(
+                                                                  width: 30,
+                                                                  height: 30,
+                                                                  child: Image.asset(
+                                                                      "assets/testq.png"),
+                                                                )
+                                                              else
+                                                                SvgPicture.asset(
+                                                                    "assets/notes.svg"),
+                                                              const SizedBox(
+                                                                  width: 10),
+                                                              Expanded(
+                                                                child: Text(
+                                                                  entryType ==
+                                                                          "homework"
+                                                                      ? "$topic is a homework on ${formatDate(publishedDate)}"
+                                                                      : entryType ==
+                                                                              "test"
+                                                                          ? "$topic test is on ${formatDate(publishedDate)}"
+                                                                          : topic,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    });
+                                                  }).toList(),
+                                                ],
+                                              ),
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox(
+                                      height: 160,
+                                      child: Center(
+                                          child: Text(
+                                        "No Homework/Test/Messages",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      )),
+                                    ),
+                            ),
+                          )
+                        : dashboardController.isJoined.value
+                            ? const SizedBox(
+                                width: double.infinity,
+                                height: 0,
+                                // child: Center(
+                                //     child: Text(
+                                //   "Teacher not joined batch yet",
+                                //   style: TextStyle(
+                                //       fontSize: 16, fontWeight: FontWeight.bold),
+                                // )),
+                              )
+                            : const SizedBox(
+                                height: 0,
+                              ),
+        
+                    const SizedBox(height: 20),
+                    // Subject tiles
+                    SizedBox(
+                      width: double.infinity,
+                      height: 160,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            // gridDelegate:
+                            //     const SliverGridDelegateWithFixedCrossAxisCount(
+                            //         crossAxisCount: 2, // 2 items per row
+                            //         crossAxisSpacing: 12,
+                            //         mainAxisSpacing: 12,
+                            //         childAspectRatio:
+                            //             1 // Wider cards (adjust as needed)
+                            //         ),
+                            shrinkWrap: true,
+                            // physics: const NeverScrollableScrollPhysics(),
+                            itemCount: booklist.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => LessonScreen(
+                                              title: booklist[index].book!,
+                                              subId: widget.id,
+                                              bookId: booklist[index].sId!,
+                                            )),
+                                  );
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: 10),
+                                  child: buildTile(
+                                    label: booklist[index].book!,
+                                    imageAsset: booklist[index].images!.isNotEmpty
+                                        ? booklist[index].images![0].url!
+                                        : "", // Replace with your image
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              );
+                              // buildTile(
+                              //   label: "Notes of\nComplete Physics",
+                              //   imageAsset: "",
+                              //   color: Colors.red,
+                              //   icon: Icons.picture_as_pdf,
+                              // ),
+                            }),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+        
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: SizedBox(
+                        height: 160,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: noteslist.length,
+                          itemBuilder: (context, index) {
+                            final note =
+                                noteslist[index].notes?.isNotEmpty == true
+                                    ? noteslist[index].notes![0]
+                                    : null;
+        
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 10),
+                              child: Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        if (note?.url != null) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => HomePage(
+                                                url: note!.url!,
+                                                title: note.title ?? '',
+                                              ),
                                             ),
                                           );
-                                        }).toList(),
-                                      ),
-                                    ),
-                                  )
-                                : const SizedBox(
-                                    height: 160,
-                                    child: Center(
-                                        child: Text(
-                                      "No Homework/Test/Messages",
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    )),
-                                  ),
-                          ),
-                        )
-                      : dashboardController.isJoined.value
-                          ? const SizedBox(
-                              width: double.infinity,
-                              height: 160,
-                              child: Center(
-                                  child: Text(
-                                "Teacher not joined batch yet",
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              )),
-                            )
-                          : SizedBox(
-                              height: 0,
-                            ),
-
-                  const SizedBox(height: 20),
-                  // Subject tiles
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2, // 2 items per row
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
-                                childAspectRatio:
-                                    1 // Wider cards (adjust as needed)
-                                ),
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: booklist.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => LessonScreen(
-                                          title: booklist[index].book!,
-                                          subId: widget.id,
-                                          bookId: booklist[index].sId!,
-                                        )),
-                              );
-                            },
-                            child: buildTile(
-                              label: booklist[index].book!,
-                              imageAsset: booklist[index].images!.isNotEmpty
-                                  ? booklist[index].images![0].url!
-                                  : "", // Replace with your image
-                              color: Colors.black87,
-                            ),
-                          );
-                          // buildTile(
-                          //   label: "Notes of\nComplete Physics",
-                          //   imageAsset: "",
-                          //   color: Colors.red,
-                          //   icon: Icons.picture_as_pdf,
-                          // ),
-                        }),
-                  ),
-                  const SizedBox(height: 20),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: SizedBox(
-                      height: 160,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: noteslist.length,
-                        itemBuilder: (context, index) {
-                          final note =
-                              noteslist[index].notes?.isNotEmpty == true
-                                  ? noteslist[index].notes![0]
-                                  : null;
-                      
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      if (note?.url != null) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => HomePage(
-                                              url: note!.url!,
-                                              title: note.title ?? '',
+                                        }
+                                      },
+                                      child: Container(
+                                        width: 130,
+                                        height: 160,
+                                        color: const Color(0xffC80A0A),
+                                        child: Center(
+                                          child: Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 10),
+                                            padding:
+                                                const EdgeInsets.only(top: 10),
+                                            child: Text(
+                                              note?.title ?? '',
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                  color: AppColors.white),
+                                              textAlign: TextAlign.center,
                                             ),
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    child: Container(
-                                      width: 130,
-                                      height: 160,
-                                      color: const Color(0xffC80A0A),
-                                      child: Center(
-                                        child: Container(
-                                          margin: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          padding:
-                                              const EdgeInsets.only(top: 10),
-                                          child: Text(
-                                            note?.title ?? '',
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                                color: AppColors.white),
-                                            textAlign: TextAlign.center,
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                Positioned(
-                                  left: 60,
-                                  top: 40,
-                                  child: SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: Image.asset("assets/pdf.png"),
+                                  Positioned(
+                                    left: 60,
+                                    top: 40,
+                                    child: SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: Image.asset("assets/pdf.png"),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              )
+            : Center(
+                child: Lottie.asset(
+                  'assets/loading.json',
+                  width: MediaQuery.of(context).size.width * .2,
+                  height: MediaQuery.of(context).size.height * .2,
+                  repeat: true,
+                  animate: true,
+                  reverse: false,
+                ),
               ),
-            )
-          : Center(
-              child: Lottie.asset(
-                'assets/loading.json',
-                width: MediaQuery.of(context).size.width * .2,
-                height: MediaQuery.of(context).size.height * .2,
-                repeat: true,
-                animate: true,
-                reverse: false,
-              ),
-            ),
+      ),
       bottomNavigationBar: Obx(() => CustomBottomNavBar2(
             currentIndex: dashboardController.currentIndex1.value,
             onTap: (index) {
@@ -501,6 +519,7 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Container(
+        width: 130,
         decoration: BoxDecoration(
           color: Colors.grey[200], // Fallback color for better UX
         ),

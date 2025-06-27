@@ -212,6 +212,7 @@ class _InstituteViewState extends State<InstituteView> {
   }
 
   void searchTitle(String query) async => debounce(() async {
+        print(query);
         filteredData = await authController.searchInstitutes(query) ?? [];
         // ignore: unnecessary_null_comparison
         if (filteredData != null) {

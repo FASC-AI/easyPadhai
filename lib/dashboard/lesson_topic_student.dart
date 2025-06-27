@@ -51,6 +51,7 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
   String vid_link = "";
   String vid_name = "";
   List<dynamic> wordMeanings = [];
+  bool istestreq_topic = false;
 
   @override
   void initState() {
@@ -72,6 +73,7 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
     } else {
       await dashboardController.getTopic(widget.id);
       topic = dashboardController.topic!.lessonTextContent!;
+      istestreq_topic = dashboardController.topic!.isTestRequired!;
       wordMeanings = dashboardController.topic!.wordMeanings!;
       await dashboardController.getVideo(widget.id);
       vid_link = dashboardController.vidList!.videoTutorialLink!;
@@ -96,10 +98,10 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                      height: 100,
+                      height: 80,
                       decoration: const BoxDecoration(color: AppColors.theme),
                       child: Container(
-                        margin: const EdgeInsets.fromLTRB(20, 30, 20, 20),
+                        margin: const EdgeInsets.fromLTRB(20, 10, 20, 20),
                         decoration: BoxDecoration(
                           color: AppColors.theme,
                           border: Border.all(
@@ -124,6 +126,7 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
                                 sub_id: widget.sub_id,
                                 wordMeanings: wordMeanings,
                                 istestreq: widget.istestreq,
+                                istestreq_topic: istestreq_topic,
                               )
                             : selectedTabIndex == 1
                                 ? LessonClipsScreen(

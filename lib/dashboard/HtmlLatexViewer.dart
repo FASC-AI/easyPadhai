@@ -5,8 +5,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class HtmlLatexViewer extends StatefulWidget {
   final String htmlContent;
-  final double? maxHeight; // Optional maximum height
-  final double? minHeight; // Optional minimum height
+  final double? maxHeight;
+  final double? minHeight;
 
   const HtmlLatexViewer({
     Key? key,
@@ -21,7 +21,7 @@ class HtmlLatexViewer extends StatefulWidget {
 
 class _HtmlLatexViewerState extends State<HtmlLatexViewer> {
   late final WebViewController _controller;
-  final _webViewHeight = ValueNotifier<double>(100); // Initial minimum height
+  final _webViewHeight = ValueNotifier<double>(100);
   bool _isLoading = true;
 
   @override
@@ -30,29 +30,76 @@ class _HtmlLatexViewerState extends State<HtmlLatexViewer> {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(NavigationDelegate(
-        onPageFinished: (_) async {
-          // Get the actual content height after rendering
-          final height = await _controller.runJavaScriptReturningResult(
-            'document.documentElement.scrollHeight;',
-          ) as double;
-
-          if (mounted) {
-            setState(() {
-              _webViewHeight.value = height;
-              _isLoading = false;
-            });
-          }
-        },
-      ))
-      ..loadHtmlString(_buildHtml(widget.htmlContent));
+        onPageFinished: (_) => _updateHeight(),
+      ));
+    _loadContent();
   }
 
+  @override
+  void didUpdateWidget(HtmlLatexViewer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.htmlContent != widget.htmlContent) {
+      _loadContent();
+    }
+  }
+
+  Future<void> _loadContent() async {
+    setState(() => _isLoading = true);
+    await _controller.loadHtmlString(_buildHtml(widget.htmlContent));
+  }
+
+  Future<void> _updateHeight() async {
+    try {
+      final result = await _controller.runJavaScriptReturningResult(
+        'document.documentElement.scrollHeight;',
+      );
+
+      double height = 100;
+      if (result is int) {
+        height = result.toDouble();
+      } else if (result is double) {
+        height = result;
+      } else if (result is String) {
+        height = double.tryParse(result) ?? 100;
+      }
+
+      if (mounted) {
+        setState(() {
+          _webViewHeight.value = height.clamp(
+            widget.minHeight ?? 0,
+            widget.maxHeight ?? double.infinity,
+          );
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+      debugPrint('Error updating height: $e');
+    }
+  }
+
+  final _htmlCache = <String, String>{};
+
   String _buildHtml(String content) {
-    return '''
+    return _htmlCache[content] ??= '''
 <!DOCTYPE html>
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+      MathJax = {
+        options: {
+          enableLocalStorage: false,
+          ignoreHtmlClass: 'tex2jax_ignore',
+          processHtmlClass: 'mathjax_process'
+        },
+        tex: {
+          inlineMath: [['\$', '\$'], ['\\(', '\\)']]
+        }
+      };
+    </script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async
       src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
@@ -65,17 +112,21 @@ class _HtmlLatexViewerState extends State<HtmlLatexViewer> {
       }
       .content {
         padding: 12px;
-        font-family: Arial;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         font-size: 16px;
+        word-wrap: break-word;
       }
       img {
         max-width: 100%;
         height: auto;
       }
+      .mathjax_process {
+        display: inline-block;
+      }
     </style>
   </head>
   <body>
-    <div class="content">
+    <div class="content mathjax_process">
       $content
     </div>
   </body>
@@ -97,13 +148,13 @@ class _HtmlLatexViewerState extends State<HtmlLatexViewer> {
             height: _isLoading ? widget.minHeight ?? 100 : height,
             child: WebViewWidget(
               controller: _controller,
-              // Important for proper sizing
               gestureRecognizers: Set()
                 ..add(Factory<VerticalDragGestureRecognizer>(
                   () => VerticalDragGestureRecognizer(),
                 )),
+            ),
           ),
-        ));
+        );
       },
     );
   }

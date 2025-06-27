@@ -4,9 +4,11 @@ import 'package:easy_padhai/custom_widgets/custom_input.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
 import 'package:easy_padhai/custom_widgets/text.dart';
 import 'package:easy_padhai/dashboard/HtmlLatexViewer.dart';
+import 'package:easy_padhai/dashboard/instruction_popup.dart';
 import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
 import 'package:easy_padhai/model/book_model.dart';
 import 'package:easy_padhai/model/homework_model1.dart';
+import 'package:easy_padhai/model/instruc_model.dart';
 import 'package:easy_padhai/model/lesson_model.dart';
 import 'package:easy_padhai/model/profile_model.dart';
 import 'package:easy_padhai/model/question_model.dart';
@@ -43,10 +45,12 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
   List<OnlineQuesmodelData> questions = [];
   List<String> selectedQuestionIds = [];
   DashboardController dashboardController = Get.find();
+  List<String> selectedInstructions = [];
+  List<English> engIns = [];
+  List<Hindi> hindiIns = [];
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
-      
         context: context,
         initialDate: selectedDate,
         firstDate: DateTime.now(),
@@ -75,6 +79,11 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
     sub_id =
         dashboardController.profileModel?.data?.subjectDetail?[0].sId! ?? "";
     classes.retainWhere((classDetail) => classDetail.sId == classid);
+    await dashboardController.getInstruction(classid, sub_id, "Online Test");
+    setState(() {
+      engIns = dashboardController.instruction!.english!;
+      hindiIns = dashboardController.instruction!.hindi!;
+    });
   }
 
   void _showPublishDatePopup() {
@@ -214,6 +223,23 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
     }
   }
 
+  void showInstructionPopup(BuildContext context) async {
+    selectedInstructions = await showDialog(
+      context: context,
+      builder: (context) => InstructionPopup(
+        englishInstructions: engIns,
+        hindiInstructions: hindiIns,
+        preSelectedIds: selectedInstructions,
+      ),
+    );
+
+    if (selectedInstructions != null) {
+      // Use the selected instructions here
+
+      print("Selected: $selectedInstructions");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -301,7 +327,7 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<ClassDetail>(
                             hint: const Text('Select class'),
-                          style: TextStyle(
+                            style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.black,
                                 overflow: TextOverflow.ellipsis),
@@ -600,6 +626,19 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                     ),
 
                     const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () {
+                        showInstructionPopup(context);
+                      },
+                      child: const Text(
+                        "Select Instruction",
+                        style: TextStyle(
+                            color: Color(0xff2180C3),
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -731,6 +770,11 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                                   "Message", "Please select questions.",
                                   snackPosition: SnackPosition.BOTTOM);
                               return;
+                            } else if (selectedInstructions.isEmpty) {
+                              Get.snackbar(
+                                  "Message", "Please select instruction.",
+                                  snackPosition: SnackPosition.BOTTOM);
+                              return;
                             } else if (selectDate.isEmpty) {
                               Get.snackbar(
                                   "Message", "Please select publish date.",
@@ -759,7 +803,8 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                                       selectedQuestionIds,
                                       isoDate,
                                       _timeController.text,
-                                      _durationController.text);
+                                      _durationController.text,
+                                      selectedInstructions);
 
                               if (res != null && res != false) {
                                 await dashboardController.getAllPubTest(

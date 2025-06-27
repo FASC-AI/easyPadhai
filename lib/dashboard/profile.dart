@@ -62,7 +62,9 @@ class Profile extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 40,
-                  backgroundImage: NetworkImage(sanitizedUrl),
+                  backgroundImage: sanitizedUrl.isNotEmpty
+                      ? NetworkImage(sanitizedUrl)
+                      : null,
                   backgroundColor: Colors.grey[400],
                   child: (sanitizedUrl.isEmpty)
                       ? Text(
@@ -296,7 +298,7 @@ class Profile extends StatelessWidget {
                       ),
                     ],
                   ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -764,7 +766,7 @@ class Profile extends StatelessWidget {
                       ),
                     ],
                   ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 10),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

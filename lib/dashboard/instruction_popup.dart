@@ -7,21 +7,23 @@ import 'package:flutter_html/flutter_html.dart';
 class InstructionPopup extends StatefulWidget {
   final List<English> englishInstructions;
   final List<Hindi> hindiInstructions;
-  final List<String> preSelectedIds; // 👈 Add this
+  final List<String> preSelectedIds;
 
   const InstructionPopup({
     super.key,
     required this.englishInstructions,
     required this.hindiInstructions,
-    required this.preSelectedIds, // 👈 Required input
+    required this.preSelectedIds,
   });
+
   @override
   State<InstructionPopup> createState() => _InstructionPopupState();
 }
 
 class _InstructionPopupState extends State<InstructionPopup> {
-  List<bool> selectedEnglish = [];
-  List<bool> selectedHindi = [];
+  late List<bool> selectedEnglish;
+  late List<bool> selectedHindi;
+  List<String> pop = [];
 
   @override
   void initState() {
@@ -43,71 +45,146 @@ class _InstructionPopupState extends State<InstructionPopup> {
     return AlertDialog(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      //  title: const Text("Select Instructions"),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       content: ConstrainedBox(
-        constraints:
-            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: const Text(
-                      'Select Instructions',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
+          minWidth: MediaQuery.of(context).size.width * 0.8,
+          maxWidth: MediaQuery.of(context).size.width * 0.9,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Select Instructions',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  padding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () => Navigator.pop(context, pop),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (widget.englishInstructions.isNotEmpty) ...[
+                      const Text(
+                        "English",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ...List.generate(widget.englishInstructions.length,
+                          (index) {
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          decoration: BoxDecoration(
+                            color: selectedEnglish[index]
+                                ? Colors.blue.shade50
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: CheckboxListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 8),
+                            dense: true,
+                            controlAffinity: ListTileControlAffinity.leading,
+                            visualDensity: VisualDensity.compact,
+                            value: selectedEnglish[index],
+                            onChanged: (val) {
+                              setState(() => selectedEnglish[index] = val!);
+                            },
+                            title: Html(
+                              data: widget
+                                  .englishInstructions[index].description!,
+                              style: {
+                                "body": Style(
+                                  // margin: EdgeInsets.zero,
+                                  // padding: EdgeInsets.zero,
+
+                                  fontSize: FontSize(14),
+                                ),
+                              },
+                            ),
+                          ),
+                        );
+                      }),
+                      const SizedBox(height: 16),
+                    ],
+                    if (widget.hindiInstructions.isNotEmpty) ...[
+                      const Text(
+                        "Hindi",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ...List.generate(widget.hindiInstructions.length,
+                          (index) {
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          decoration: BoxDecoration(
+                            color: selectedHindi[index]
+                                ? Colors.blue.shade50
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: CheckboxListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 8),
+                            dense: true,
+                            controlAffinity: ListTileControlAffinity.leading,
+                            visualDensity: VisualDensity.compact,
+                            value: selectedHindi[index],
+                            onChanged: (val) {
+                              setState(() => selectedHindi[index] = val!);
+                            },
+                            title: Html(
+                              data: widget.hindiInstructions[index].hindi!,
+                              style: {
+                                "body": Style(
+                                  // margin: EdgeInsets.zero,
+                                  // padding: EdgeInsets.zero,
+                                  fontSize: FontSize(14),
+                                ),
+                              },
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ],
+                ),
               ),
-              const Text("English",
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              ...List.generate(widget.englishInstructions.length, (index) {
-                return CheckboxListTile(
-                  contentPadding: EdgeInsets.zero,
-                  value: selectedEnglish[index],
-                  onChanged: (val) {
-                    setState(() => selectedEnglish[index] = val!);
-                  },
-                  title: HtmlLatexViewer(
-                    htmlContent: widget.englishInstructions[index].description!,
-                    minHeight: 24,
-                  ),
-                );
-              }),
-              const SizedBox(height: 12),
-              const Text("Hindi",
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              ...List.generate(widget.hindiInstructions.length, (index) {
-                return CheckboxListTile(
-                  contentPadding: EdgeInsets.zero,
-                  value: selectedHindi[index],
-                  onChanged: (val) {
-                    setState(() => selectedHindi[index] = val!);
-                  },
-                  title: HtmlLatexViewer(
-                    htmlContent: widget.hindiInstructions[index].hindi!,
-                    minHeight: 24,
-                  ),
-                );
-              }),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
+      actionsPadding: const EdgeInsets.only(bottom: 16, right: 16, left: 16),
       actions: [
         Center(
           child: SizedBox(
-            width: 100,
+            width: 150,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.theme,

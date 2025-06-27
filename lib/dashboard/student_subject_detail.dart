@@ -75,6 +75,25 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
           });
         }
       }
+      // if (batData.isNotEmpty) {
+      //   List<String> allTeacherNames = [];
+
+      //   for (var batch in batData) {
+      //     List<String> teacherNames = getTeacherNamesForSubject([batch], subId);
+      //     if (teacherNames.isNotEmpty) {
+      //       allTeacherNames.addAll(teacherNames);
+      //     }
+      //   }
+
+      //   // Optional: remove duplicates
+      //   allTeacherNames = allTeacherNames.toSet().toList();
+
+      //   if (allTeacherNames.isNotEmpty) {
+      //     setState(() {
+      //       teacher = allTeacherNames;
+      //     });
+      //   }
+      // }
     }
     await dashboardController.getStuHomework(widget.id, cls_id);
     await dashboardController.getStuNoti();
@@ -179,7 +198,7 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                           ),
                         ),
                       ),
-        
+
                     (teacher.isNotEmpty)
                         ? Padding(
                             padding: const EdgeInsets.symmetric(
@@ -199,11 +218,11 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
-                                          children:
-                                              groupedByDate.entries.map((entry) {
+                                          children: groupedByDate.entries
+                                              .map((entry) {
                                             String date = entry.key;
                                             List<NData1> items = entry.value;
-        
+
                                             return Padding(
                                               padding: const EdgeInsets.only(
                                                   bottom: 16),
@@ -227,24 +246,26 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                                                     ],
                                                   ),
                                                   const SizedBox(height: 5),
-        
+
                                                   // Items under this date
                                                   ...items.expand((item) {
-                                                    String type = item.type ?? "";
+                                                    String type =
+                                                        item.type ?? "";
                                                     List<Data1> dataList =
                                                         item.data ?? [];
-        
+
                                                     return dataList
                                                         .map((dataEntry) {
                                                       String topic =
                                                           dataEntry.topic ?? "";
                                                       String entryType =
-                                                          dataEntry.type ?? type;
+                                                          dataEntry.type ??
+                                                              type;
                                                       String publishedDate =
                                                           dataEntry
                                                                   .publishedDate ??
                                                               date;
-        
+
                                                       return GestureDetector(
                                                         onTap: () {
                                                           if (entryType ==
@@ -294,8 +315,9 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                                                                 SizedBox(
                                                                   width: 30,
                                                                   height: 30,
-                                                                  child: Image.asset(
-                                                                      "assets/testq.png"),
+                                                                  child: Image
+                                                                      .asset(
+                                                                          "assets/testq.png"),
                                                                 )
                                                               else
                                                                 SvgPicture.asset(
@@ -352,7 +374,7 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                             : const SizedBox(
                                 height: 0,
                               ),
-        
+
                     const SizedBox(height: 20),
                     // Subject tiles
                     SizedBox(
@@ -390,9 +412,10 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                                   padding: EdgeInsets.only(right: 10),
                                   child: buildTile(
                                     label: booklist[index].book!,
-                                    imageAsset: booklist[index].images!.isNotEmpty
-                                        ? booklist[index].images![0].url!
-                                        : "", // Replace with your image
+                                    imageAsset:
+                                        booklist[index].images!.isNotEmpty
+                                            ? booklist[index].images![0].url!
+                                            : "", // Replace with your image
                                     color: Colors.black87,
                                   ),
                                 ),
@@ -407,7 +430,7 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-        
+
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: SizedBox(
@@ -420,7 +443,7 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                                 noteslist[index].notes?.isNotEmpty == true
                                     ? noteslist[index].notes![0]
                                     : null;
-        
+
                             return Padding(
                               padding: const EdgeInsets.only(right: 10),
                               child: Stack(

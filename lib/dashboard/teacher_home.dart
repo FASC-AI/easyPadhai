@@ -301,9 +301,8 @@ class _ProfileEditState extends State<TeacherHome> {
                                       ? "${extractClassNumber(batches[index].class1!).toString()}-${batches[index].section}"
                                       : "${extractClassNumber(batches[index].class1!).toString()}";
                                   return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal:
-                                            0.0), // spacing between items
+                                    padding: const EdgeInsets.only(
+                                        right: 12), // spacing between items
                                     child: GestureDetector(
                                       onTap: () {
                                         Navigator.push(

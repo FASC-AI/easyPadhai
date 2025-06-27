@@ -445,7 +445,7 @@ class AuthController extends GetxController {
     isLoading5(false);
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {};
+    Map<String, dynamic>? queryParameter = {"limit": "1000"};
     final countryJson =
         await apiHelper.get(ApiUrls.stateList, queryParameter, data);
     if (countryJson != null && countryJson != false) {
@@ -460,11 +460,36 @@ class AuthController extends GetxController {
     }
   }
 
+  searchStates(String query) async {
+    dynamic data;
+    data = await token();
+    Map<String, dynamic>? queryParameter = {"search": query};
+    String titleLower = '';
+    final categoryDataJson =
+        await apiHelper.get(ApiUrls.stateList, queryParameter, data);
+    // print(queryParameter);
+    if (categoryDataJson != null) {
+      if (categoryDataJson['status'] == true) {
+        var response = StateModel.fromJson(categoryDataJson);
+        // print(response);
+        if (response.status == true) {
+          return response.data!.list!.map((e) => e).where((e) {
+            if (response.data != null) {
+              titleLower = e.name!.english!.toLowerCase();
+            }
+            final searchLower = query.toLowerCase();
+            return titleLower.contains(searchLower);
+          }).toList();
+        }
+      }
+    }
+  }
+
   getdistrictList() async {
     isLoading5(false);
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {};
+    Map<String, dynamic>? queryParameter = {"limit": "1000"};
     final countryJson =
         await apiHelper.get(ApiUrls.district, queryParameter, data);
     if (countryJson != null && countryJson != false) {
@@ -479,20 +504,22 @@ class AuthController extends GetxController {
     }
   }
 
-  searchState(String query) async {
+  searchDistrict(String query) async {
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {};
+    Map<String, dynamic>? queryParameter = {
+      "search": query,
+    };
     String titleLower = '';
     final categoryDataJson =
-        await apiHelper.get(ApiUrls.stateList, queryParameter, data);
+        await apiHelper.get(ApiUrls.district, queryParameter, data);
     if (categoryDataJson != null) {
       if (categoryDataJson['status'] == true) {
-        var response = InstitutionListModel.fromJson(categoryDataJson);
+        var response = DistrictModel.fromJson(categoryDataJson);
         if (response.status == true) {
-          return response.data!.institutes!.map((e) => e).where((e) {
+          return response.data!.list!.map((e) => e).where((e) {
             if (response.data != null) {
-              titleLower = e.institutesName!.toLowerCase();
+              titleLower = e.name!.english!.toLowerCase();
             }
             final searchLower = query.toLowerCase();
             return titleLower.contains(searchLower);

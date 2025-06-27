@@ -105,10 +105,10 @@ class _DistrictViewState extends State<DistrictView1> {
                 ),
               ],
             ),
-            // SearchWidget(
-            //   text: query,
-            //   onChanged: searchTitle,
-            // ),
+            SearchWidget(
+              text: query,
+              onChanged: searchTitle,
+            ),
             isLoading
                 ? SizedBox(
                     height: dialogHeight,
@@ -222,15 +222,26 @@ class _DistrictViewState extends State<DistrictView1> {
     );
   }
 
-  // void searchTitle(String query) async => debounce(() async {
-  //       filteredData = await authController.searchInstitutes(query) ?? [];
-  //       // ignore: unnecessary_null_comparison
-  //       if (filteredData != null) {
-  //         if (!mounted) return;
-  //         setState(() {
-  //           this.query = query;
-  //           filteredData = filteredData;
-  //         });
-  //       }
-  //     });
+  void searchTitle(
+    String query,
+  ) async =>
+      debounce(() async {
+        // filteredData = await authController.searchDistrict(query) ?? [];
+        // // ignore: unnecessary_null_comparison
+        // if (filteredData != null) {
+        //   if (!mounted) return;
+        //   setState(() {
+        //     this.query = query;
+        //     filteredData = filteredData;
+        //   });
+        // }
+        List<List2> searchResult = filteredData.where((e) {
+          final title = e.name?.english ?? '';
+          return title.toLowerCase().contains(query.toLowerCase());
+        }).toList();
+       // print(searchResult);
+        setState(() {
+          filteredData = searchResult; // show only filtered list
+        });
+      });
 }

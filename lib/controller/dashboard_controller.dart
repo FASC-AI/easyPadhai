@@ -584,6 +584,7 @@ class DashboardController extends GetxController {
     dynamic data;
     data = await token();
     Map<String, dynamic>? queryParameter = {};
+    // print("topic id: " + id);
     final profileJson =
         await apiHelper.get(ApiUrls.gettopic + id, queryParameter, data);
     if (profileJson != null && profileJson != false) {

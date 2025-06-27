@@ -82,5 +82,5 @@ class SubjectAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(teacherName.isNotEmpty ? 140 : 100);
+  Size get preferredSize => Size.fromHeight(teacherName.isNotEmpty ? 140 : 80);
 }

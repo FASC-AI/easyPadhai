@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
+import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_searchbar.dart';
 import 'package:easy_padhai/model/institution_list_model.dart';
 import 'package:easy_padhai/model/state_model.dart';
@@ -19,6 +20,7 @@ class _StateViewState extends State<StateView> {
   final codeController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   AuthController authController = Get.find();
+  DashboardController dashboardController = Get.find();
 
   late List<List1> filteredData = [];
   bool isLoading = false;
@@ -98,10 +100,10 @@ class _StateViewState extends State<StateView> {
                 ),
               ],
             ),
-            // SearchWidget(
-            //   text: query,
-            //   onChanged: searchTitle,
-            // ),
+            SearchWidget(
+              text: query,
+              onChanged: searchTitle,
+            ),
             isLoading
                 ? SizedBox(
                     height: dialogHeight,
@@ -216,7 +218,7 @@ class _StateViewState extends State<StateView> {
   }
 
   void searchTitle(String query) async => debounce(() async {
-        filteredData = await authController.searchInstitutes(query) ?? [];
+        filteredData = await authController.searchStates(query) ?? [];
         // ignore: unnecessary_null_comparison
         if (filteredData != null) {
           if (!mounted) return;

@@ -294,6 +294,7 @@ class _LessonScreenState extends State<LessonTopics> {
                 )),
       );
     } else {
+      update();
       Navigator.pop(context);
     }
   }

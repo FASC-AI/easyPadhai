@@ -413,7 +413,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                     //     ),
                     //   ),
                     // ),
-                     SizedBox(height: height * 0.015),
+                    SizedBox(height: height * 0.015),
                   ],
                   _buildLabel(
                     'Phone',
@@ -528,6 +528,8 @@ class _ProfileEditState extends State<ProfileEdit> {
                         setState(() {
                           controllerState.text = controller.stateName.value;
                           stateId = controller.stateId.value;
+                          controllerDistrict.text = "";
+                          distId = "";
                         });
                       }
                     },

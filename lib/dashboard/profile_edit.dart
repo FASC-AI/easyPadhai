@@ -730,7 +730,6 @@ class _ProfileEditState extends State<ProfileEdit> {
   }
 
   Widget _buildClassChips(double width) {
-    // final classes = ['XI', 'XII', 'X', 'IX'];
     List<ClassDetail>? classes =
         dashboardController.profileModel?.data!.classDetail;
     return Wrap(
@@ -738,10 +737,25 @@ class _ProfileEditState extends State<ProfileEdit> {
       children: classes!
           .map((item) => Chip(
                 label: Text(item.class1!),
-                //deleteIcon: null,
-                onDeleted: () {},
+                deleteIcon: null, // Explicitly set to null
+                onDeleted: null, // Also set onDeleted to null
               ))
           .toList(),
     );
   }
+  // Widget _buildClassChips(double width) {
+  //   // final classes = ['XI', 'XII', 'X', 'IX'];
+  //   List<ClassDetail>? classes =
+  //       dashboardController.profileModel?.data!.classDetail;
+  //   return Wrap(
+  //     spacing: width * 0.025,
+  //     children: classes!
+  //         .map((item) => Chip(
+  //               label: Text(item.class1!),
+  //               //deleteIcon: null,
+  //               onDeleted: () {},
+  //             ))
+  //         .toList(),
+  //   );
+  // }
 }

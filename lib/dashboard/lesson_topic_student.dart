@@ -85,6 +85,12 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
     });
   }
 
+  Future<void> _onRefresh() async {
+    // Your refresh logic
+    await _getData();
+    //_refreshController.refreshCompleted();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,53 +98,64 @@ class _ProfileEditState extends State<LessonTopic1Screen> {
         text: widget.title,
       ),
       body: !isLoad
-          ? SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                      height: 80,
-                      decoration: const BoxDecoration(color: AppColors.theme),
-                      child: Container(
-                        margin: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                        decoration: BoxDecoration(
-                          color: AppColors.theme,
-                          border: Border.all(
-                              color: Colors.white), // Theme background
-                          borderRadius:
-                              BorderRadius.circular(30), // Full pill shape
+          ? RefreshIndicator(
+              onRefresh: _onRefresh,
+              child: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                child: SafeArea(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                            height: 80,
+                            decoration:
+                                const BoxDecoration(color: AppColors.theme),
+                            child: Container(
+                              margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                              decoration: BoxDecoration(
+                                color: AppColors.theme,
+                                border: Border.all(
+                                    color: Colors.white), // Theme background
+                                borderRadius: BorderRadius.circular(
+                                    30), // Full pill shape
+                              ),
+                              child: Row(
+                                children: [
+                                  buildTab("Topics", 0),
+                                  buildTab("Clips", 1),
+                                ],
+                              ),
+                            )),
+                        Expanded(
+                          child: Container(
+                              child: selectedTabIndex == 0
+                                  ? LessonTopics(
+                                      topic: topic,
+                                      lesson_id: lesson_id,
+                                      topic_id: widget.id,
+                                      sub_id: widget.sub_id,
+                                      wordMeanings: wordMeanings,
+                                      istestreq: widget.istestreq,
+                                      istestreq_topic: istestreq_topic,
+                                    )
+                                  : selectedTabIndex == 1
+                                      ? LessonClipsScreen(
+                                          vid_link: vid_link,
+                                          vid_title: vid_name,
+                                          lesson_id: lesson_id,
+                                          topic_id: widget.id,
+                                          lessonkey: widget.lessonkey,
+                                        )
+                                      : null),
                         ),
-                        child: Row(
-                          children: [
-                            buildTab("Topics", 0),
-                            buildTab("Clips", 1),
-                          ],
-                        ),
-                      )),
-                  Expanded(
-                    child: Container(
-                        child: selectedTabIndex == 0
-                            ? LessonTopics(
-                                topic: topic,
-                                lesson_id: lesson_id,
-                                topic_id: widget.id,
-                                sub_id: widget.sub_id,
-                                wordMeanings: wordMeanings,
-                                istestreq: widget.istestreq,
-                                istestreq_topic: istestreq_topic,
-                              )
-                            : selectedTabIndex == 1
-                                ? LessonClipsScreen(
-                                    vid_link: vid_link,
-                                    vid_title: vid_name,
-                                    lesson_id: lesson_id,
-                                    topic_id: widget.id,
-                                    lessonkey: widget.lessonkey,
-                                  )
-                                : null),
+                      ],
+                    ),
                   ),
-                ],
+                ),
               ),
             )
           : Center(

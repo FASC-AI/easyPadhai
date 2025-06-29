@@ -649,7 +649,24 @@ class _ProfileEditState extends State<TeacherHome> {
                     // Set batchController text
                     selectedClass = selectedClass1!.class1!;
                     if (type == 'School') {
+                      if (sec.isEmpty) {
+                        Get.snackbar("Message", "Section is required!",
+                            snackPosition: SnackPosition.BOTTOM);
+                        return;
+                      }
                       if (!selectedClass.isEmpty && !sec.isEmpty) {
+                        if (type.isEmpty) {
+                          Get.snackbar(
+                              "Message", "Institution type is required!",
+                              snackPosition: SnackPosition.BOTTOM);
+                          return;
+                        }
+                        if (icode.isEmpty) {
+                          Get.snackbar(
+                              "Message", "Institution code is required!",
+                              snackPosition: SnackPosition.BOTTOM);
+                          return;
+                        }
                         int? cls = extractClassNumber(selectedClass);
                         String bcode = generateBatchCode(
                             '2025', cls.toString(), type, sec, icode);
@@ -657,6 +674,18 @@ class _ProfileEditState extends State<TeacherHome> {
                       }
                     } else {
                       if (!selectedClass.isEmpty) {
+                        if (type.isEmpty) {
+                          Get.snackbar(
+                              "Message", "Institution type is required!",
+                              snackPosition: SnackPosition.BOTTOM);
+                          return;
+                        }
+                        if (icode.isEmpty) {
+                          Get.snackbar(
+                              "Message", "Institution code is required!",
+                              snackPosition: SnackPosition.BOTTOM);
+                          return;
+                        }
                         int? cls = extractClassNumber(selectedClass);
                         String bcode = generateBatchCode(
                             '2025', cls.toString(), type, sec, icode);
@@ -709,7 +738,27 @@ class _ProfileEditState extends State<TeacherHome> {
                         (e) => e.sId == value,
                       );
                       sec = selectedsec.sectionsName!;
+                      if (selectedClass.isEmpty) {
+                        Get.snackbar("Message", "Class is required!",
+                            snackPosition: SnackPosition.BOTTOM);
+                        return;
+                      }
                       int? cls = extractClassNumber(selectedClass);
+                      if (sec.isEmpty) {
+                        Get.snackbar("Message", "Section is required!",
+                            snackPosition: SnackPosition.BOTTOM);
+                        return;
+                      }
+                      if (type.isEmpty) {
+                        Get.snackbar("Message", "Institution type is required!",
+                            snackPosition: SnackPosition.BOTTOM);
+                        return;
+                      }
+                      if (icode.isEmpty) {
+                        Get.snackbar("Message", "Institution code is required!",
+                            snackPosition: SnackPosition.BOTTOM);
+                        return;
+                      }
                       String bcode = generateBatchCode(
                           '2025', cls.toString(), type, sec, icode);
                       batchController.text = bcode;

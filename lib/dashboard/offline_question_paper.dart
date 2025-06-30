@@ -1045,11 +1045,11 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                   onPressed: () async {
                     // print("Selected Questions: $selectedQuestionIds");
                     // Handle submit logic here
-                    if (selectedQuestionIds.isEmpty) {
-                      Get.snackbar("Message", "Please select questions.",
-                          snackPosition: SnackPosition.BOTTOM);
-                      return;
-                    }
+                    // if (selectedQuestionIds.isEmpty) {
+                    //   Get.snackbar("Message", "Please select questions.",
+                    //       snackPosition: SnackPosition.BOTTOM);
+                    //   return;
+                    // }
                     List<String> arr = selectedQuestionIds +
                         selectedQuestionAR +
                         selectedQuestionTF +

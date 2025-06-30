@@ -259,7 +259,7 @@ class DashboardController extends GetxController {
     isLoading4(false);
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {};
+    Map<String, dynamic>? queryParameter = {"isActive": "true"};
     final countryJson =
         await apiHelper.get(ApiUrls.institutionList, queryParameter, data);
     if (countryJson != null && countryJson != false) {
@@ -278,7 +278,10 @@ class DashboardController extends GetxController {
   searchInstitutes(String query) async {
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {"search": query};
+    Map<String, dynamic>? queryParameter = {
+      "search": query,
+      "isActive": "true"
+    };
     String titleLower = '';
     final categoryDataJson =
         await apiHelper.get(ApiUrls.institutionList, queryParameter, data);

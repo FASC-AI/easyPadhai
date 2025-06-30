@@ -112,7 +112,7 @@ class _ProfileEditState extends State<TeacherClassScreen> {
         onRefresh: _onRefresh,
         child: !isload
             ? SingleChildScrollView(
-              physics: AlwaysScrollableScrollPhysics(),
+                physics: AlwaysScrollableScrollPhysics(),
                 child: SafeArea(
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
@@ -589,7 +589,7 @@ class _ProfileEditState1 extends State<AssignmentsTab> {
                       ),
                     ],
                   ),
-                const SizedBox(width: 10),
+                if (widget.noteslist.isEmpty) const SizedBox(width: 10),
                 Expanded(
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,

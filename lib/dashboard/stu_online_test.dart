@@ -173,7 +173,8 @@ class _ProfileEditState extends State<StuOnlineTest> {
 
                               if (english.isNotEmpty)
                                 SizedBox(
-                                  height: 200,
+                                  height:
+                                      MediaQuery.of(context).size.height * .2,
                                   child: ListView.builder(
                                     scrollDirection: Axis.vertical,
                                     itemCount: english.length,
@@ -211,7 +212,8 @@ class _ProfileEditState extends State<StuOnlineTest> {
 
                               if (hindi.isNotEmpty)
                                 SizedBox(
-                                  height: 200,
+                                  height:
+                                      MediaQuery.of(context).size.height * .2,
                                   child: ListView.builder(
                                     scrollDirection: Axis.vertical,
                                     itemCount: hindi.length,
@@ -477,19 +479,21 @@ class _ProfileEditState extends State<StuOnlineTest> {
               },
             ),
             const SizedBox(height: 10),
-            Text(
-              "Submitted: ${submittedAnswers.join(', ')}",
-              style: TextStyle(
-                color: Colors.blueGrey,
-                fontWeight: FontWeight.w500,
-              ),
+            HtmlLatexViewer(
+              htmlContent: "Submitted: ${submittedAnswers.join(', ')}",
+              minHeight: 24,
+              // style: TextStyle(
+              //   color: Colors.blueGrey,
+              //   fontWeight: FontWeight.w500,
+              // ),
             ),
-            Text(
-              "Correct: ${correctAnswers.join(', ')}",
-              style: const TextStyle(
-                color: Colors.green,
-                fontWeight: FontWeight.w600,
-              ),
+            HtmlLatexViewer(
+              htmlContent: "Correct: ${correctAnswers.join(', ')}",
+              minHeight: 24,
+              // style: const TextStyle(
+              //   color: Colors.green,
+              //   fontWeight: FontWeight.w600,
+              // ),
             ),
           ],
         ),

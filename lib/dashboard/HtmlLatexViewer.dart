@@ -89,16 +89,33 @@ class _HtmlLatexViewerState extends State<HtmlLatexViewer> {
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
-      MathJax = {
+     window.MathJax = {
         options: {
-          enableLocalStorage: false,
-          ignoreHtmlClass: 'tex2jax_ignore',
-          processHtmlClass: 'mathjax_process'
+          enableMenu: false
         },
-        tex: {
-          inlineMath: [['\$', '\$'], ['\\(', '\\)']]
+        loader: {
+          load: ['input/tex', 'output/chtml']
+        },
+        chtml: {
+          useGlobalCache: false
+        },
+        startup: {
+          ready: () => {
+            MathJax.startup.defaultReady();
+            MathJax.config.chtml.useGlobalCache = false;
+          }
         }
       };
+      // MathJax = {
+      //   options: {
+      //     enableLocalStorage: false,
+      //     ignoreHtmlClass: 'tex2jax_ignore',
+      //     processHtmlClass: 'mathjax_process'
+      //   },
+      //   tex: {
+      //     inlineMath: [['\$', '\$'], ['\\(', '\\)']]
+      //   }
+      // };
     </script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async

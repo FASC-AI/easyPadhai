@@ -199,7 +199,7 @@ class _ProfileEditState extends State<SubjectDetailScreen> {
                         ),
                       ),
 
-                    //  if (teacher.isNotEmpty)
+                    if (dashboardController.isJoined.value)
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 16),

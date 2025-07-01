@@ -87,48 +87,60 @@ class _LeaderboardScreenState extends State<LeaderboardScreen1> {
               children: [
                 // Tab Bar
                 Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF5F5F5),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Row(
-                    children: List.generate(
-                      _tabs.length,
-                      (index) => Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedTabIndex = index;
-                            });
-                            getLeader();
-                            getAllMarks();
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            decoration: BoxDecoration(
-                              color: _selectedTabIndex == index
-                                  ? const Color(0xFF1E88E5)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Text(
-                              _tabs[index].subject!,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: _selectedTabIndex == index
-                                    ? Colors.white
-                                    : Colors.black87,
-                                fontWeight: FontWeight.w600,
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F5F5),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Container(
+                        constraints: BoxConstraints(
+                          minWidth: MediaQuery.of(context)
+                              .size
+                              .width, // Ensure full width
+                        ),
+                        child: Row(
+                          children: List.generate(
+                            _tabs.length,
+                            (index) => GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedTabIndex = index;
+                                });
+                                getLeader();
+                                getAllMarks();
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 4), // Add some spacing
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 16),
+                                decoration: BoxDecoration(
+                                  color: _selectedTabIndex == index
+                                      ? const Color(0xFF1E88E5)
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                child: Text(
+                                  _tabs[index].subject!,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    overflow: TextOverflow.ellipsis,
+                                    color: _selectedTabIndex == index
+                                        ? Colors.white
+                                        : Colors.black87,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
+                    )
                     ),
-                  ),
-                ),
 
                 // Leaderboard List - Now with dynamic height
                 Expanded(

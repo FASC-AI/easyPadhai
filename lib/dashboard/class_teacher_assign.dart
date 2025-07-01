@@ -111,72 +111,68 @@ class _ProfileEditState extends State<TeacherClassScreen> {
       body: RefreshIndicator(
         onRefresh: _onRefresh,
         child: !isload
-            ? SingleChildScrollView(
-                physics: AlwaysScrollableScrollPhysics(),
-                child: SafeArea(
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                            height: 70,
-                            decoration:
-                                const BoxDecoration(color: AppColors.theme),
-                            child: Container(
-                              margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                              decoration: BoxDecoration(
-                                color: AppColors.theme,
-                                border: Border.all(
-                                    color: Colors.white), // Theme background
-                                borderRadius: BorderRadius.circular(
-                                    30), // Full pill shape
-                              ),
-                              child: Row(
-                                children: [
-                                  buildTab("Assignments", 0),
-                                  buildTab("Tests", 1),
-                                  buildTab("Students", 2),
-                                ],
-                              ),
-                            )),
-                        const SizedBox(height: 16),
-
-                        // Tab Content
-                        Expanded(
+            ? SafeArea(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                          height: 70,
+                          decoration:
+                              const BoxDecoration(color: AppColors.theme),
                           child: Container(
-                            padding: const EdgeInsets.all(12),
-                            child: selectedTabIndex == 0
-                                ? AssignmentsTab(
-                                    booklist,
-                                    id,
-                                    latestAssgnModelData,
-                                    batchClassId,
-                                    noteslist,
-                                    () => setState(() {
-                                      noteslist = dashboardController.notelist;
-                                    }),
-                                    () => setState(() {
-                                      noteslist = dashboardController.notelist;
-                                    }),
-                                  )
-                                : selectedTabIndex == 1
-                                    ? TestsTab(markList: markList)
-                                    : selectedTabIndex == 2
-                                        ? StudentSelectionScreen(
-                                            students: students,
-                                            isClassteacher:
-                                                widget.isClassteacher,
-                                            class_id: batchClassId,
-                                            sub_id: id,
-                                          )
-                                        : null,
-                          ),
+                            margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                            decoration: BoxDecoration(
+                              color: AppColors.theme,
+                              border: Border.all(
+                                  color: Colors.white), // Theme background
+                              borderRadius:
+                                  BorderRadius.circular(30), // Full pill shape
+                            ),
+                            child: Row(
+                              children: [
+                                buildTab("Assignments", 0),
+                                buildTab("Tests", 1),
+                                buildTab("Students", 2),
+                              ],
+                            ),
+                          )),
+                      const SizedBox(height: 16),
+
+                      // Tab Content
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          child: selectedTabIndex == 0
+                              ? AssignmentsTab(
+                                  booklist,
+                                  id,
+                                  latestAssgnModelData,
+                                  batchClassId,
+                                  noteslist,
+                                  () => setState(() {
+                                    noteslist = dashboardController.notelist;
+                                  }),
+                                  () => setState(() {
+                                    noteslist = dashboardController.notelist;
+                                  }),
+                                )
+                              : selectedTabIndex == 1
+                                  ? TestsTab(markList: markList)
+                                  : selectedTabIndex == 2
+                                      ? StudentSelectionScreen(
+                                          students: students,
+                                          isClassteacher: widget.isClassteacher,
+                                          class_id: batchClassId,
+                                          sub_id: id,
+                                        )
+                                      : null,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               )
@@ -503,6 +499,8 @@ class _ProfileEditState1 extends State<AssignmentsTab> {
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: HtmlLatexViewer(
                         htmlContent: q.question ?? '',
+                          minHeight: 24,
+                        //  maxHeight: 50,
                         //  style: const TextStyle(fontSize: 14),
                       ),
                     )),

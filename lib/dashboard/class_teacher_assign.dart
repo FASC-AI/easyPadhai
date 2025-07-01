@@ -581,12 +581,12 @@ class _ProfileEditState1 extends State<AssignmentsTab> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 5),
-                      const Text(
-                        "Up to 10 mb file size\nare allowed",
-                        style: TextStyle(color: AppColors.red, fontSize: 10),
-                        textAlign: TextAlign.center,
-                      ),
+                      // const SizedBox(height: 5),
+                      // const Text(
+                      //   "Up to 10 mb file size\nare allowed",
+                      //   style: TextStyle(color: AppColors.red, fontSize: 10),
+                      //   textAlign: TextAlign.center,
+                      // ),
                     ],
                   ),
                 if (widget.noteslist.isEmpty) const SizedBox(width: 10),
@@ -721,10 +721,19 @@ class _ProfileEditState1 extends State<AssignmentsTab> {
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Only one PDF is allowed.\nMake sure it includes the entire syllabus.",
-                  style: TextStyle(color: Colors.red, fontSize: 13),
+                  "Only one PDF is allowed.\nMake sure it includes the entire syllabus.\nUp to 10 mb file size\nare allowed.",
+                  style: TextStyle(color: AppColors.red, fontSize: 13),
                 ),
               ),
+              // const SizedBox(height: 5),
+              // const Align(
+              //   alignment: Alignment.centerLeft,
+              //   child: Text(
+              //     "Up to 10 mb file size\nare allowed",
+              //     style: TextStyle(color: AppColors.red, fontSize: 13),
+              //     textAlign: TextAlign.center,
+              //   ),
+              // ),
               const SizedBox(height: 16),
 
               // Title field

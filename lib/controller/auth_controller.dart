@@ -200,6 +200,7 @@ class AuthController extends GetxController {
           ApiUrls.googleLogin, queryParameters);
       if (signUpJson != null) {
         RegisterModel response = RegisterModel.fromJson(signUpJson);
+        print(response.code);
         if (response.code == 200) {
           userId.value = response.data!.id!;
           userName.value = response.data!.name!;
@@ -207,6 +208,10 @@ class AuthController extends GetxController {
           box.write('userid', response.data!.id!);
           isLoading.value = false;
           return response;
+        } else if (response.code == 401) {
+          isLoading.value = false;
+          Get.snackbar("Message", response.message!,
+              snackPosition: SnackPosition.BOTTOM);
         } else {
           isLoading.value = false;
           return response;

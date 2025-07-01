@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:easy_padhai/auth/google_signin_helper.dart';
 import 'package:easy_padhai/common/api_helper.dart';
 import 'package:easy_padhai/common/api_urls.dart';
 import 'package:easy_padhai/common/app_storage.dart';
+import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/dashboard/pdf_open.dart';
 import 'package:easy_padhai/dashboard/stu_online_test.dart';
 import 'package:easy_padhai/model/banner_model.dart';
@@ -53,6 +55,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
+import 'package:get_storage/get_storage.dart' as get_storage;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
@@ -320,6 +323,8 @@ class DashboardController extends GetxController {
     }
   }
 
+  final GoogleSignInHelper _googleSignInHelper = GoogleSignInHelper();
+
   getProfile() async {
     isLoading(true);
     dynamic data;
@@ -329,6 +334,7 @@ class DashboardController extends GetxController {
         await apiHelper.get(ApiUrls.profile, queryParameter, data);
     if (profileJson != null && profileJson != false) {
       ProfileModel response = ProfileModel.fromJson(profileJson);
+      print(response.status);
       if (response.status == true) {
         profileModel = response;
         // Update box storage with profile data
@@ -340,6 +346,19 @@ class DashboardController extends GetxController {
         return profileModel;
       } else {
         isLoading(false);
+        Get.snackbar("Message", response.message!,
+            snackPosition: SnackPosition.BOTTOM);
+        await _googleSignInHelper.signOutGoogle();
+        await box.erase();
+
+        //await GetStorage().erase();
+
+        Get.delete<AuthController>();
+        Get.delete<DashboardController>();
+        Get.lazyPut(() => AuthController());
+        Get.lazyPut(() => DashboardController());
+
+        Get.offAllNamed(RouteName.login);
       }
     }
     isLoading(false);
@@ -349,7 +368,7 @@ class DashboardController extends GetxController {
     isLoading(true);
     dynamic data;
     data = await token();
-    Map<String, dynamic>? queryParameter = {};
+    Map<String, dynamic>? queryParameter = {"isMobile": "true"};
     final profileJson = await apiHelper.get(ApiUrls.noti, queryParameter, data);
     if (profileJson != null && profileJson != false) {
       NotifModel response = NotifModel.fromJson(profileJson);

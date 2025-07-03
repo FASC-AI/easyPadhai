@@ -713,6 +713,7 @@ class DashboardController extends GetxController {
     Map<String, dynamic>? queryParameter = {
       "topicId": id,
     };
+    print(queryParameter);
     final profileJson =
         await apiHelper.get(ApiUrls.getprevques, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -864,6 +865,7 @@ class DashboardController extends GetxController {
       "duration": duration,
       "instructionId": selectedInstructions
     };
+    print(queryParameter);
     final profileJson =
         await apiHelper.patch(ApiUrls.updateq1, queryParameter, data);
     if (profileJson != null && profileJson != false) {

@@ -183,7 +183,7 @@ class _EditTestScreenState extends State<EditTestScreen> {
 
     // Set controllers
     _dateController.text = DateFormat('dd-MM-yyyy').format(selectedDate);
-    _timeController.text = selectedTime?.format(context) ?? '';
+    _timeController.text = widget.test.publishedTime ?? '';
     _durationController.text =
         "${testDuration.inHours.toString().padLeft(2, '0')}:${(testDuration.inMinutes % 60).toString().padLeft(2, '0')}";
 
@@ -893,12 +893,11 @@ class _EditTestScreenState extends State<EditTestScreen> {
 
     // Call update API
     var success = await dashboardController.updateTest(
-      selectedQuestionIds,
-      isoDate,
-      _timeController.text,
-      _durationController.text,
-      selectedInstructions
-    );
+        selectedQuestionIds,
+        isoDate,
+        _timeController.text,
+        _durationController.text,
+        selectedInstructions);
 
     if (success != null && success != false) {
       await dashboardController.getAllPubTest(classId, subId);

@@ -484,8 +484,8 @@ class _ProfileEditState1 extends State<AssignmentsTab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Show assignment section if available
-          if (widget.latestAssgnModelData?.question != null &&
-              widget.latestAssgnModelData!.question!.isNotEmpty)
+           (widget.latestAssgnModelData?.question != null &&
+              widget.latestAssgnModelData!.question!.isNotEmpty) ?
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -506,7 +506,16 @@ class _ProfileEditState1 extends State<AssignmentsTab> {
                     )),
                 const SizedBox(height: 16),
               ],
-            ),
+            ):const SizedBox(
+                                height: 220,
+                                child: Center(
+                                    child: Text(
+                                  "",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      ),
+                                )),
+                              ),
 
           // Always show books
           SizedBox(

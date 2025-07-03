@@ -770,12 +770,14 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                                   "Message", "Please select questions.",
                                   snackPosition: SnackPosition.BOTTOM);
                               return;
-                            } else if (selectedInstructions.isEmpty) {
-                              Get.snackbar(
-                                  "Message", "Please select instruction.",
-                                  snackPosition: SnackPosition.BOTTOM);
-                              return;
-                            } else if (selectDate.isEmpty) {
+                            } 
+                            // else if (selectedInstructions.isEmpty) {
+                            //   Get.snackbar(
+                            //       "Message", "Please select instruction.",
+                            //       snackPosition: SnackPosition.BOTTOM);
+                            //   return;
+                            // }
+                             else if (selectDate.isEmpty) {
                               Get.snackbar(
                                   "Message", "Please select publish date.",
                                   snackPosition: SnackPosition.BOTTOM);

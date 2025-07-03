@@ -18,7 +18,7 @@ class SubjectAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(color: AppColors.theme),
-      padding: const EdgeInsets.only(top: 50, left: 16, right: 16, bottom: 16),
+      padding: const EdgeInsets.only(top: 40, left: 16, right: 16, bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -47,12 +47,12 @@ class SubjectAppBar extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
 
-          if (teacherName.isNotEmpty) const SizedBox(height: 20),
+          if (teacherName.isNotEmpty) const SizedBox(height: 10),
 
           // Horizontal teacher badges
           if (teacherName.isNotEmpty)
             SizedBox(
-              height: 40,
+              height: 45,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: teacherName.length,
@@ -60,16 +60,18 @@ class SubjectAppBar extends StatelessWidget implements PreferredSizeWidget {
                   return Container(
                     margin: const EdgeInsets.only(left: 12),
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                        const EdgeInsets.symmetric(horizontal: 15),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: Text(
-                      teacherName[index],
-                      style: const TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.w600,
+                    child: Center(
+                      child: Text(
+                        teacherName[index],
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   );
@@ -82,5 +84,5 @@ class SubjectAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(teacherName.isNotEmpty ? 140 : 80);
+  Size get preferredSize => Size.fromHeight(teacherName.isNotEmpty ? 120 : 80);
 }

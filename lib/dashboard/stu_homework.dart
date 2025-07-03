@@ -51,13 +51,13 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
         child: homeworkData.isEmpty
-            ? Center(
+            ? const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset('assets/no_homework.png', height: 120),
-                    const SizedBox(height: 16),
-                    const Text(
+                 //   Image.asset('assets/no_homework.png', height: 120),
+                    SizedBox(height: 16),
+                    Text(
                       "No homework assigned yet",
                       style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),

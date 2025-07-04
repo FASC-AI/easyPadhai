@@ -385,8 +385,13 @@ class _ProfileEditState extends State<StuOnlineTest> {
       options = ["True", "False"];
       if (test.testId!.optionTrue == "true") {
         correctAnswers.add("True");
-      } else if (test.testId!.optionFalse == "false") {
+      } else if (test.testId!.optionTrue == "false") {
         correctAnswers.add("False");
+      }
+       else if (test.testId!.optionFalse == "false") {
+        correctAnswers.add("False");
+      }else if (test.testId!.optionFalse == "true") {
+        correctAnswers.add("True");
       }
     } else if (type == "MCQ") {
       final optMap = {

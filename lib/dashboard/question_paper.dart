@@ -180,6 +180,18 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
 
   final TextEditingController _timeController = TextEditingController();
 
+  // Future<void> _selectTime(BuildContext context) async {
+  //   final TimeOfDay? picked = await showTimePicker(
+  //     context: context,
+  //     initialTime: TimeOfDay.now(),
+  //   );
+  //   if (picked != null && picked != selectTime) {
+  //     setState(() {
+  //       selectTime = picked;
+  //       _timeController.text = picked.format(context);
+  //     });
+  //   }
+  // }
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
@@ -188,9 +200,16 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
     if (picked != null && picked != selectTime) {
       setState(() {
         selectTime = picked;
-        _timeController.text = picked.format(context);
+        _timeController.text = _formatTime12Hour(picked);
       });
     }
+  }
+
+  String _formatTime12Hour(TimeOfDay time) {
+    final now = DateTime.now();
+    final dt = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    final format = DateFormat.jm(); // 12-hour format with AM/PM
+    return format.format(dt);
   }
 
   final TextEditingController _durationController = TextEditingController();
@@ -770,14 +789,14 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                                   "Message", "Please select questions.",
                                   snackPosition: SnackPosition.BOTTOM);
                               return;
-                            } 
+                            }
                             // else if (selectedInstructions.isEmpty) {
                             //   Get.snackbar(
                             //       "Message", "Please select instruction.",
                             //       snackPosition: SnackPosition.BOTTOM);
                             //   return;
                             // }
-                             else if (selectDate.isEmpty) {
+                            else if (selectDate.isEmpty) {
                               Get.snackbar(
                                   "Message", "Please select publish date.",
                                   snackPosition: SnackPosition.BOTTOM);

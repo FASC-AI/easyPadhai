@@ -192,10 +192,31 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
   //     });
   //   }
   // }
-  Future<void> _selectTime(BuildContext context) async {
+
+  Future<void> _selectTime1(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+    );
+    if (picked != null && picked != selectTime) {
+      setState(() {
+        selectTime = picked;
+        _timeController.text = _formatTime12Hour(picked);
+      });
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: selectTime ?? TimeOfDay.now(),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context)
+              .copyWith(alwaysUse24HourFormat: false), // Force 12-hour clock
+          child: child!,
+        );
+      },
     );
     if (picked != null && picked != selectTime) {
       setState(() {

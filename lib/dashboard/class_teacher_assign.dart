@@ -33,6 +33,7 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 class TeacherClassScreen extends StatefulWidget {
+  String batch_id;
   String title;
   String id;
   String sub_id;
@@ -40,6 +41,7 @@ class TeacherClassScreen extends StatefulWidget {
   bool isClassteacher;
   TeacherClassScreen(
       {super.key,
+      required this.batch_id,
       required this.title,
       required this.id,
       required this.sub_id,
@@ -76,6 +78,8 @@ class _ProfileEditState extends State<TeacherClassScreen> {
     });
     // id = widget.sub_id;
     batchClassId = widget.id;
+    dashboardController.batchId.value = widget.batch_id;
+    print("bId"+dashboardController.batchId.value);
     id = dashboardController.profileModel?.data?.subjectDetail![0].sId! ?? "";
     await dashboardController.getBook(id, widget.id);
     booklist = dashboardController.booklist;
@@ -484,38 +488,40 @@ class _ProfileEditState1 extends State<AssignmentsTab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Show assignment section if available
-           (widget.latestAssgnModelData?.question != null &&
-              widget.latestAssgnModelData!.question!.isNotEmpty) ?
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  formattedDate,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                const SizedBox(height: 8),
-                ...widget.latestAssgnModelData!.question!.map((q) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: HtmlLatexViewer(
-                        htmlContent: q.question ?? '',
-                          minHeight: 24,
-                        //  maxHeight: 50,
-                        //  style: const TextStyle(fontSize: 14),
-                      ),
-                    )),
-                const SizedBox(height: 16),
-              ],
-            ):const SizedBox(
-                                height: 220,
-                                child: Center(
-                                    child: Text(
-                                  "",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      ),
-                                )),
+          (widget.latestAssgnModelData?.question != null &&
+                  widget.latestAssgnModelData!.question!.isNotEmpty)
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      formattedDate,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    ...widget.latestAssgnModelData!.question!
+                        .map((q) => Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: HtmlLatexViewer(
+                                htmlContent: q.question ?? '',
+                                minHeight: 24,
+                                //  maxHeight: 50,
+                                //  style: const TextStyle(fontSize: 14),
                               ),
+                            )),
+                    const SizedBox(height: 16),
+                  ],
+                )
+              : const SizedBox(
+                  height: 220,
+                  child: Center(
+                      child: Text(
+                    "",
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  )),
+                ),
 
           // Always show books
           SizedBox(

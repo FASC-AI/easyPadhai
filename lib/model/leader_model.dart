@@ -58,12 +58,13 @@ class LeaderModelData {
     return data;
   }
 }
+
 class LeaderModelData1 {
   int? rank;
   String? userId;
   String? name;
   String? picture;
-  int? totalObtained;
+  double? totalObtained;
   int? totalPossible;
   String? percentage;
 
@@ -98,5 +99,3 @@ class LeaderModelData1 {
     return data;
   }
 }
-
-

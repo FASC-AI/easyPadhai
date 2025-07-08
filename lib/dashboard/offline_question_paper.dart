@@ -425,6 +425,9 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                   if (value != null) {
                                     setState(() {
                                       selectedClass = value;
+                                      selectedbook = null;
+                                      selectedlesson = null; // 🔥 Reset lesson
+                                      selectedtopic = null;
                                     });
 
                                     // Fetching books based on selected class
@@ -500,6 +503,8 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                   if (value != null) {
                                     setState(() {
                                       selectedbook = value;
+                                      selectedlesson = null; // 🔥 Reset lesson
+                                      selectedtopic = null;
                                     });
 
                                     // Fetching books based on selected class
@@ -560,6 +565,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                         selectedtopic = null;
                                       });
                                     }
+
                                     if (!lessonList.contains(selectedlesson)) {
                                       setState(() {
                                         selectedlesson = null;
@@ -611,6 +617,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                               if (value != null) {
                                 setState(() {
                                   selectedlesson = value;
+                                  selectedtopic = null;
                                 });
 
                                 // Fetching books based on selected class

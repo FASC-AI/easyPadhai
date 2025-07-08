@@ -318,15 +318,19 @@ class AuthController extends GetxController {
     Map<String, dynamic>? queryParams = {
       "institutesName": name,
       "instituteType": type,
-      "address1": add1,
-      "address2": add2,
-      "stateId": state,
-      "districtId": district,
-      "pinCode": pin,
+      "address": {
+        "pinCode": pin,
+        "address1": add1,
+        "address2": add2,
+        "stateId": state,
+        "districtId": district,
+      },
       "codee": inscode,
       "isActive": false,
       "isVerified": false
     };
+
+    print(queryParams);
 
     final countryJson =
         await apiHelper.postwithoutToken(ApiUrls.addIns, queryParams);

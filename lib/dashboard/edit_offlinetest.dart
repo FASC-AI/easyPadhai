@@ -465,6 +465,9 @@ class _EditOfflineTestScreenState extends State<EditOfflineTestScreen> {
                                   if (value != null) {
                                     setState(() {
                                       selectedClass = value;
+                                      selectedbook = null;
+                                      selectedlesson = null; // 🔥 Reset lesson
+                                      selectedtopic = null;
                                     });
 
                                     await dashboardController.getBook(
@@ -538,6 +541,9 @@ class _EditOfflineTestScreenState extends State<EditOfflineTestScreen> {
                                   if (value != null) {
                                     setState(() {
                                       selectedbook = value;
+
+                                      selectedlesson = null; // 🔥 Reset lesson
+                                      selectedtopic = null;
                                     });
 
                                     await dashboardController.getLesson(
@@ -614,6 +620,8 @@ class _EditOfflineTestScreenState extends State<EditOfflineTestScreen> {
                               if (value != null) {
                                 setState(() {
                                   selectedlesson = value;
+
+                                  selectedtopic = null;
                                 });
 
                                 setState(() {

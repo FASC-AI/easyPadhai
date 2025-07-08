@@ -862,11 +862,11 @@ class _EditTestScreenState extends State<EditTestScreen> {
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
-    if (selectedInstructions.isEmpty) {
-      Get.snackbar("Message", "Please select instruction.",
-          snackPosition: SnackPosition.BOTTOM);
-      return;
-    }
+    // if (selectedInstructions.isEmpty) {
+    //   Get.snackbar("Message", "Please select instruction.",
+    //       snackPosition: SnackPosition.BOTTOM);
+    //   return;
+    // }
     if (_dateController.text.isEmpty) {
       Get.snackbar("Message", "Please select publish date.",
           snackPosition: SnackPosition.BOTTOM);

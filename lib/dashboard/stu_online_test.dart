@@ -27,7 +27,7 @@ class StuOnlineTest extends StatefulWidget {
 }
 
 class _ProfileEditState extends State<StuOnlineTest> {
-  DashboardController dashboardController = DashboardController();
+  DashboardController dashboardController = Get.find();
   List<PrevTestModelData> testList = [];
   List<InstructionId> insList = [];
   List<String> hindi = [];
@@ -46,7 +46,7 @@ class _ProfileEditState extends State<StuOnlineTest> {
     setState(() {
       isload = true;
     });
-    await dashboardController.getPrevTest(widget.classId, widget.subId);
+    await dashboardController.getPrevTest(widget.classId, widget.subId, dashboardController.stuBatchId.value);
     testList = dashboardController.prevTest;
     // await dashboardController.getInstruction(widget.classId, widget.subId);
 
@@ -54,10 +54,14 @@ class _ProfileEditState extends State<StuOnlineTest> {
       isload = false;
       if (testList.isNotEmpty) {
         isAttempted = testList[0].tests![0].attempted != "to be attempt";
+        if (testList[_currIndex].tests?.isNotEmpty == true &&
+            testList[_currIndex].tests!.first.instructionId?.isNotEmpty ==
+                true) {
+          insList = testList[_currIndex].tests!.first.instructionId!;
+          hindi = testList[_currIndex].hindi!;
+          english = testList[_currIndex].description!;
+        }
       }
-      insList = testList[_currIndex].tests!.first.instructionId!;
-      hindi = testList[_currIndex].hindi!;
-      english = testList[_currIndex].description!;
     });
   }
 
@@ -339,10 +343,12 @@ class _ProfileEditState extends State<StuOnlineTest> {
                                     ),
                                     initiallyExpanded: isThisExpanded,
                                     children: entry.value
-    .asMap()
-    .entries
-    .map((e) => _buildQuestionReviewCard(e.value, e.key)) // e.value = test, e.key = index
-    .toList(),
+                                        .asMap()
+                                        .entries
+                                        .map((e) => _buildQuestionReviewCard(
+                                            e.value,
+                                            e.key)) // e.value = test, e.key = index
+                                        .toList(),
                                   );
                                 }).toList(),
                               ),
@@ -387,10 +393,9 @@ class _ProfileEditState extends State<StuOnlineTest> {
         correctAnswers.add("True");
       } else if (test.testId!.optionTrue == "false") {
         correctAnswers.add("False");
-      }
-       else if (test.testId!.optionFalse == "false") {
+      } else if (test.testId!.optionFalse == "false") {
         correctAnswers.add("False");
-      }else if (test.testId!.optionFalse == "true") {
+      } else if (test.testId!.optionFalse == "true") {
         correctAnswers.add("True");
       }
     } else if (type == "MCQ") {
@@ -435,72 +440,72 @@ class _ProfileEditState extends State<StuOnlineTest> {
     }
 
     return Container(
-  color: AppColors.white,
-  margin: const EdgeInsets.symmetric(vertical: 0),
-  child: Padding(
-    padding: const EdgeInsets.all(12.0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+      color: AppColors.white,
+      margin: const EdgeInsets.symmetric(vertical: 0),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Q${i + 1}. "),
-          //  const SizedBox(width: 5),
-            Expanded( // Allow HtmlLatexViewer to use remaining width
-              child: HtmlLatexViewer(
-                htmlContent: test.testId?.description ?? "",
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Q${i + 1}. "),
+                //  const SizedBox(width: 5),
+                Expanded(
+                  // Allow HtmlLatexViewer to use remaining width
+                  child: HtmlLatexViewer(
+                    htmlContent: test.testId?.description ?? "",
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 5),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: options.length,
+              itemBuilder: (context, index) {
+                final optionText = options[index];
+                final isCorrect = correctAnswers.contains(optionText);
+                final isSubmitted = submittedAnswers.contains(optionText);
+
+                Color? tileColor;
+                if (isCorrect && isSubmitted) {
+                  tileColor = Colors.green[100]; // Correct + selected
+                } else if (isSubmitted && !isCorrect) {
+                  tileColor = Colors.red[100]; // Wrong selection
+                } else if (isCorrect && !isSubmitted) {
+                  tileColor = Colors.green[50]; // Missed correct
+                }
+
+                return Container(
+                  color: tileColor,
+                  child: CheckboxListTile(
+                    value: isSubmitted,
+                    onChanged: null,
+                    title: HtmlLatexViewer(
+                      htmlContent: optionText,
+                      minHeight: 24,
+                    ),
+                    controlAffinity: ListTileControlAffinity.leading,
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+            HtmlLatexViewer(
+              htmlContent: "Submitted: ${submittedAnswers.join(', ')}",
+              minHeight: 24,
+            ),
+            HtmlLatexViewer(
+              htmlContent: "Correct: ${correctAnswers.join(', ')}",
+              minHeight: 24,
             ),
           ],
         ),
-        const SizedBox(height: 5),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: options.length,
-          itemBuilder: (context, index) {
-            final optionText = options[index];
-            final isCorrect = correctAnswers.contains(optionText);
-            final isSubmitted = submittedAnswers.contains(optionText);
-
-            Color? tileColor;
-            if (isCorrect && isSubmitted) {
-              tileColor = Colors.green[100]; // Correct + selected
-            } else if (isSubmitted && !isCorrect) {
-              tileColor = Colors.red[100]; // Wrong selection
-            } else if (isCorrect && !isSubmitted) {
-              tileColor = Colors.green[50]; // Missed correct
-            }
-
-            return Container(
-              color: tileColor,
-              child: CheckboxListTile(
-                value: isSubmitted,
-                onChanged: null,
-                title: HtmlLatexViewer(
-                  htmlContent: optionText,
-                  minHeight: 24,
-                ),
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 10),
-        HtmlLatexViewer(
-          htmlContent: "Submitted: ${submittedAnswers.join(', ')}",
-          minHeight: 24,
-        ),
-        HtmlLatexViewer(
-          htmlContent: "Correct: ${correctAnswers.join(', ')}",
-          minHeight: 24,
-        ),
-      ],
-    ),
-  ),
-)
-;
+      ),
+    );
   }
 
   Map<String, List<Tests>> groupTestsByType(List<Tests> tests) {

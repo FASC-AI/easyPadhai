@@ -377,6 +377,9 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                               if (value != null) {
                                 setState(() {
                                   selectedClass = value;
+                                  selectedbook = null;
+                                  selectedlesson = null; // 🔥 Reset lesson
+                                  selectedtopic = null;
                                 });
 
                                 // Fetching books based on selected class
@@ -452,6 +455,9 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                               if (value != null) {
                                 setState(() {
                                   selectedbook = value;
+
+                                  selectedlesson = null; // 🔥 Reset lesson
+                                  selectedtopic = null;
                                 });
 
                                 // Fetching books based on selected class
@@ -535,6 +541,8 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                               if (value != null) {
                                 setState(() {
                                   selectedlesson = value;
+
+                                  selectedtopic = null;
                                 });
 
                                 // Fetching books based on selected class

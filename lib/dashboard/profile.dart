@@ -113,7 +113,7 @@ class Profile extends StatelessWidget {
                         title: 'Leader Board',
                         onTap: () {
                           Get.toNamed(RouteName.leaderboard);
-                          // Get.toNamed(RouteName.registerInstitution);
+                         //  Get.toNamed(RouteName.registerInstitution);
                         },
                       )
                     : profileTile(

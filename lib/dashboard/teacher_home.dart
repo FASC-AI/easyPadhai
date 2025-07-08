@@ -310,6 +310,8 @@ class _ProfileEditState extends State<TeacherHome> {
                                           MaterialPageRoute(
                                               builder: (_) =>
                                                   TeacherClassScreen(
+                                                    batch_id:
+                                                        batches[index].id!,
                                                     title: cls,
                                                     id: batches[index].classId!,
                                                     sub_id: batches[index]

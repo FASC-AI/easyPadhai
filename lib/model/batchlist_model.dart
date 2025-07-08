@@ -31,6 +31,7 @@ class BatchlistModel {
 }
 
 class BbData {
+  String? id;
   String? code;
   String? section;
   String? class1;
@@ -42,7 +43,8 @@ class BbData {
   bool? classTeacher;
 
   BbData(
-      {this.code,
+      {this.id,
+      this.code,
       this.section,
       this.class1,
       this.classId,
@@ -53,6 +55,7 @@ class BbData {
       this.classTeacher});
 
   BbData.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
     code = json['code'];
     section = json['section'];
     class1 = json['class'];
@@ -67,6 +70,7 @@ class BbData {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
     data['code'] = this.code;
     data['section'] = this.section;
     data['class'] = this.class1;

@@ -20,7 +20,7 @@ class TestInProgressScreen extends StatefulWidget {
 
 class _TestInProgressScreenState extends State<TestInProgressScreen> {
   int _currentIndex = 0;
-  Duration _duration = const Duration(hours: 1);
+  Duration _duration = const Duration(minutes: 1);
   Timer? _timer;
   String _selectedAnswer = '';
   List<String> _selectedAnswers = [];
@@ -120,6 +120,7 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_duration.inSeconds == 0) {
+        _showtimeupDialog();
         timer.cancel();
       } else {
         setState(() {
@@ -241,15 +242,21 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
     }
   }
 
-  void _showCannotGoBackDialog() {
+  void _showtimeupDialog() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (_) => AlertDialog(
-        title: const Text("Cannot go back"),
-        content: const Text("You must submit the test before exiting."),
+        backgroundColor: Colors.white,
+        title: const Text("Your Test time is Up"),
+        content: const Text(
+            "Please click ok for exiting, your test will be auto submitted."),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              Navigator.pop(context);
+              submit();
+            },
             child: const Text("OK"),
           )
         ],
@@ -281,7 +288,7 @@ class _TestInProgressScreenState extends State<TestInProgressScreen> {
             ),
             onPressed: () {
               // Navigator.pop(context);
-              _showCannotGoBackDialog;
+              //_showCannotGoBackDialog;
             },
           ),
           titleSpacing: 10,

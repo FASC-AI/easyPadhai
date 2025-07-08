@@ -148,7 +148,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen1> {
                     children: [
                       // Leaderboard List - Flexible part 1
                       Flexible(
-                        flex: 2, // Takes 3 parts of available space
+                        flex: 4, // Takes 3 parts of available space
                         child: SingleChildScrollView(
                           padding: EdgeInsets.all(16),
                           child: Column(
@@ -181,7 +181,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen1> {
 
                       // Date Filter Section - Flexible part 2
                       Flexible(
-                        flex: 8, // Takes 2 parts of available space
+                        flex: 6, // Takes 2 parts of available space
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -394,7 +394,7 @@ class LeaderboardItem extends StatelessWidget {
     final isTopRank = rank <= 3;
 
     return Container(
-      margin: _getMargin(),
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: _getBackgroundColor(),

@@ -220,9 +220,22 @@ class _InstitutionRegistrationState extends State<InstitutionRegistration> {
                 label: 'Enter Pincode',
                 enable: true,
                 controller: pincode,
-                inputType: TextInputType.text,
+                inputType: TextInputType.number,
                 wholeBackground: AppColors.white,
                 isPrefix: false,
+                validation: (value) {
+                  // bool isEmail =
+                  //     RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")
+                  //         .hasMatch(value);
+
+                  bool isPhoneNumber =
+                      value!.length == 6 && int.tryParse(value) != null;
+
+                  if (!isPhoneNumber) {
+                    return "Please enter a valid Pincode";
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: height * 0.12),
             ],
@@ -246,8 +259,8 @@ class _InstitutionRegistrationState extends State<InstitutionRegistration> {
                   _institutionType!,
                   add1.text.toString().trim(),
                   add2.text.toString().trim(),
-                  controllerState.text.toString().trim(),
-                  controllerDistrict.text.toString().trim(),
+                  controller.stateId.value,
+                  controller.districtId.value,
                   pincode.text.toString().trim(),
                   code);
               if (res != null && res.status == true) {

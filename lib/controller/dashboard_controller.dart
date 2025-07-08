@@ -97,6 +97,7 @@ class DashboardController extends GetxController {
   RxString instituteId = ''.obs;
   RxString instituteName = ''.obs;
   RxBool isJoined = false.obs;
+  RxString stuBatchId = ''.obs;
   RxBool isLoading4 = false.obs;
   List<JoinedData> batchData = [];
   List<LessonTestModelData> lessonQList = [];
@@ -113,6 +114,7 @@ class DashboardController extends GetxController {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   RxString whatsappTeacher = ''.obs;
   RxString whatsappStudent = ''.obs;
+  RxString batchId = ''.obs;
 
   @override
   void onInit() {
@@ -712,6 +714,7 @@ class DashboardController extends GetxController {
     data = await token();
     Map<String, dynamic>? queryParameter = {
       "topicId": id,
+      "batchId": batchId.value
     };
     print(queryParameter);
     final profileJson =
@@ -742,7 +745,9 @@ class DashboardController extends GetxController {
     Map<String, dynamic>? queryParameter = {
       "ids": ids,
       "publishedDate": date,
+      "batchId": batchId.value
     };
+    print(queryParameter);
     final profileJson =
         await apiHelper.patch(ApiUrls.uphome, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -774,6 +779,7 @@ class DashboardController extends GetxController {
       if (response.status == true) {
         if (response.data!.isNotEmpty) {
           isJoined.value = true;
+          stuBatchId.value = response.data!.first.batchId!;
         }
 
         // Update box storage with profile data
@@ -863,7 +869,8 @@ class DashboardController extends GetxController {
       "publishedDate": date,
       "publishedTime": time,
       "duration": duration,
-      "instructionId": selectedInstructions
+      "instructionId": selectedInstructions,
+      "batchId": batchId.value
     };
     print(queryParameter);
     final profileJson =
@@ -895,7 +902,8 @@ class DashboardController extends GetxController {
       "publishedDate": date,
       "publishedTime": time,
       "duration": duration,
-      "instructionId": selectedInstructions
+      "instructionId": selectedInstructions,
+      "batchId": batchId.value
     };
     print(queryParameter);
     final profileJson =
@@ -950,8 +958,10 @@ class DashboardController extends GetxController {
     data = await token();
     Map<String, dynamic>? queryParameter = {
       "classId": clsId,
-      "subjectId": subId
+      "subjectId": subId,
+      "batchId": batchId.value
     };
+    print(queryParameter);
     final profileJson =
         await apiHelper.get(ApiUrls.getAllTest, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -1012,7 +1022,8 @@ class DashboardController extends GetxController {
       "publishedTime": pubTime,
       "duration": duration,
       "classId": clsId,
-      "subjectId": subId
+      "subjectId": subId,
+      "batchId": stuBatchId.value
     };
     print(queryParameter);
     final profileJson =
@@ -1035,14 +1046,16 @@ class DashboardController extends GetxController {
     isLoading(false);
   }
 
-  getPrevTest(String classid, String subid) async {
+  getPrevTest(String classid, String subid, String value) async {
     isLoading(true);
     dynamic data;
     data = await token();
     Map<String, dynamic>? queryParameter = {
       "classId": classid,
       "subjectId": subid,
+      "batchId": value
     };
+    print(queryParameter);
     final profileJson =
         await apiHelper.get(ApiUrls.prevTest, queryParameter, data);
     if (profileJson != null && profileJson != false) {
@@ -1514,7 +1527,8 @@ class DashboardController extends GetxController {
     data = await token();
     Map<String, dynamic>? queryParameter = {
       "classId": class_id,
-      "subjectId": sub_id
+      "subjectId": sub_id,
+      "batchId": batchId.value
     };
     print(queryParameter);
     final profileJson =
@@ -1544,7 +1558,8 @@ class DashboardController extends GetxController {
     data = await token();
     Map<String, dynamic>? queryParameter = {
       "classId": class_id,
-      "subjectId": sub_id
+      "subjectId": sub_id,
+      "batchId": stuBatchId.value
     };
     print(queryParameter);
     final profileJson =
@@ -1663,6 +1678,7 @@ class DashboardController extends GetxController {
       "message": msg,
       "classId": clsid,
       "subjectId": subid,
+      "batchId": batchId.value
     };
     print(queryParameter);
     final profileJson =
@@ -1690,10 +1706,18 @@ class DashboardController extends GetxController {
     isLoading(true);
     dynamic data;
     data = await token();
+    String bid = "";
+    if (userRole() == 'teacher') {
+      bid = batchId.value;
+    } else {
+      bid = stuBatchId.value;
+    }
     Map<String, dynamic>? queryParameter = {
       "classId": class_id,
-      "subjectId": sub_id
+      "subjectId": sub_id,
+      "batchId": bid
     };
+    // print(queryParameter);
     final profileJson =
         await apiHelper.get(ApiUrls.getleaderBoard, queryParameter, data);
     if (profileJson != null && profileJson != false) {

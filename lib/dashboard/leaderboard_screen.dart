@@ -3,6 +3,7 @@ import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_appbar.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
 import 'package:easy_padhai/dashboard/teacher_bottomsheet.dart';
+import 'package:easy_padhai/model/batchlist_model.dart';
 import 'package:easy_padhai/model/leader_model.dart';
 import 'package:easy_padhai/model/profile_model.dart';
 import 'package:easy_padhai/model/test_marks_model.dart';
@@ -24,6 +25,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   List<LeaderModelData> _leaderboard = [];
   List<LeaderModelData1> _leaderboardData = [];
   DashboardController dashboardController = Get.find();
+  String batch_id = "";
   List<TestMarksModelData> markList = [];
   String subId = "";
   bool isload = false;
@@ -41,6 +43,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     _tabs = dashboardController.profileModel?.data?.classDetail! ?? [];
     subId =
         dashboardController.profileModel?.data?.subjectDetail![0].sId! ?? "";
+
     getLeader();
     getAllMarks();
     setState(() {
@@ -50,30 +53,70 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   Future<void> getLeader() async {
     String cls_id = _tabs[_selectedTabIndex].sId!;
-    await dashboardController.getleaderBoard(cls_id, subId);
-    setState(() {
-      if (dashboardController.leaderList.isNotEmpty) {
-        _leaderboard = dashboardController.leaderList;
-        if (_leaderboard.isNotEmpty) {
-          _leaderboardData = _leaderboard[0].data!;
-        }
+    List<BbData> batches = dashboardController.batchlist;
+    for (int i = 0; i < batches.length; i++) {
+      if (batches[i].classId == cls_id) {
+        batch_id = batches[i].id!;
+        dashboardController.batchId.value = batch_id;
+        await dashboardController.getleaderBoard(cls_id, subId, batch_id);
+        setState(() {
+          if (dashboardController.leaderList.isNotEmpty) {
+            _leaderboard = dashboardController.leaderList;
+            if (_leaderboard.isNotEmpty) {
+              _leaderboardData = _leaderboard[0].data!;
+            }
+          } else {
+            _leaderboard = [];
+            _leaderboardData = [];
+          }
+        });
+        break;
       } else {
-        _leaderboard = [];
-        _leaderboardData = [];
+        dashboardController.batchId.value = "";
+        await dashboardController.getleaderBoard(cls_id, subId, batch_id);
+        setState(() {
+          if (dashboardController.leaderList.isNotEmpty) {
+            _leaderboard = dashboardController.leaderList;
+            if (_leaderboard.isNotEmpty) {
+              _leaderboardData = _leaderboard[0].data!;
+            }
+          } else {
+            _leaderboard = [];
+            _leaderboardData = [];
+          }
+        });
       }
-    });
+    }
   }
 
   Future<void> getAllMarks() async {
     String cls_id = _tabs[_selectedTabIndex].sId!;
-    await dashboardController.getStuTestMarks(cls_id, subId);
-    setState(() {
-      if (dashboardController.marksList.isNotEmpty) {
-        markList = dashboardController.marksList;
+    List<BbData> batches = dashboardController.batchlist;
+    for (int i = 0; i < batches.length; i++) {
+      if (batches[i].classId == cls_id) {
+        batch_id = batches[i].id!;
+        dashboardController.batchId.value = batch_id;
+        await dashboardController.getStuTestMarks(cls_id, subId, batch_id);
+        setState(() {
+          if (dashboardController.marksList.isNotEmpty) {
+            markList = dashboardController.marksList;
+          } else {
+            markList = [];
+          }
+        });
+        break;
       } else {
-        markList = [];
+        dashboardController.batchId.value = "";
+        await dashboardController.getStuTestMarks(cls_id, subId, batch_id);
+        setState(() {
+          if (dashboardController.marksList.isNotEmpty) {
+            markList = dashboardController.marksList;
+          } else {
+            markList = [];
+          }
+        });
       }
-    });
+    }
   }
 
   @override
@@ -88,13 +131,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               children: [
                 // Tab Bar
                 Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF5F5F5),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: SingleChildScrollView(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F5F5),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Container(
                         constraints: BoxConstraints(
@@ -140,8 +183,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                           ),
                         ),
                       ),
-                    )
-                ),
+                    )),
 
                 // Leaderboard List - Now with dynamic height
                 Expanded(

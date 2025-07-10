@@ -49,7 +49,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen1> {
 
   Future<void> getLeader() async {
     String sub_id = _tabs[_selectedTabIndex].sId!;
-    await dashboardController.getleaderBoard(clsId, sub_id);
+    await dashboardController.getleaderBoard(
+        clsId, sub_id, dashboardController.stuBatchId.value);
     setState(() {
       if (dashboardController.leaderList.isNotEmpty) {
         _leaderboard = dashboardController.leaderList;
@@ -139,8 +140,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen1> {
                           ),
                         ),
                       ),
-                    )
-                    ),
+                    )),
 
                 // Leaderboard List - Now with dynamic height
                 Expanded(

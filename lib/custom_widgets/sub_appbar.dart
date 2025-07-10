@@ -52,7 +52,7 @@ class SubjectAppBar extends StatelessWidget implements PreferredSizeWidget {
           // Horizontal teacher badges
           if (teacherName.isNotEmpty)
             SizedBox(
-              height: 45,
+              height: 40,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: teacherName.length,

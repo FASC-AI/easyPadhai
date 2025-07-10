@@ -92,6 +92,16 @@ class Profile extends StatelessWidget {
                   box.read('email') ?? '',
                   style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
+                if (dashboardController.isJoined.value)
+                  userRole() == 'teacher'
+                      ? const SizedBox(
+                          height: 0,
+                        )
+                      : Text(
+                          dashboardController.stuBatchCode.value,
+                          style: const TextStyle(
+                              color: Colors.white70, fontSize: 14),
+                        )
               ],
             ),
           ),
@@ -113,7 +123,7 @@ class Profile extends StatelessWidget {
                         title: 'Leader Board',
                         onTap: () {
                           Get.toNamed(RouteName.leaderboard);
-                         //  Get.toNamed(RouteName.registerInstitution);
+                          //  Get.toNamed(RouteName.registerInstitution);
                         },
                       )
                     : profileTile(
@@ -137,6 +147,20 @@ class Profile extends StatelessWidget {
                     : const SizedBox(
                         height: 0,
                       ),
+                // if (dashboardController.isJoined.value)
+                //   userRole() == 'teacher'
+                //       ? const SizedBox(
+                //           height: 0,
+                //         )
+                //       :
+                //         profileTile(
+                //           context,
+                //           iconPath: 'assets/blist.svg',
+                //           title: dashboardController.stuBatchCode.value,
+                //           onTap: () {
+                //             //Get.toNamed(RouteName.batchlist);
+                //           },
+                //         ),
                 const Spacer(),
                 profileTile(
                   context,

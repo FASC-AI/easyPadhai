@@ -79,7 +79,7 @@ class _ProfileEditState extends State<TeacherClassScreen> {
     // id = widget.sub_id;
     batchClassId = widget.id;
     dashboardController.batchId.value = widget.batch_id;
-    print("bId"+dashboardController.batchId.value);
+    print("bId" + dashboardController.batchId.value);
     id = dashboardController.profileModel?.data?.subjectDetail![0].sId! ?? "";
     await dashboardController.getBook(id, widget.id);
     booklist = dashboardController.booklist;
@@ -87,7 +87,8 @@ class _ProfileEditState extends State<TeacherClassScreen> {
     testList = dashboardController.testList;
     await dashboardController.getStudentfromBatch(batchClassId);
     students = dashboardController.studentList;
-    await dashboardController.getStuTestMarks(batchClassId, id);
+    await dashboardController.getStuTestMarks(
+        batchClassId, id, dashboardController.batchId.value);
     markList = dashboardController.marksList;
     await dashboardController.getAssignment(batchClassId, id);
     latestAssgnModelData = dashboardController.assignData;

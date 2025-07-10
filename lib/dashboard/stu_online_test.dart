@@ -91,7 +91,7 @@ class _ProfileEditState extends State<StuOnlineTest> {
                         itemCount: testList.length,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
-                          return GestureDetector(
+                          return InkWell(
                             onTap: () {
                               setState(() {
                                 _currIndex = index;

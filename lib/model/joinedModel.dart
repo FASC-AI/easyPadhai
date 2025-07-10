@@ -1,5 +1,5 @@
 class Joinedmodel {
-  int? code;
+  String? code;
   bool? status;
   String? message;
   List<JoinedData>? data;
@@ -7,7 +7,7 @@ class Joinedmodel {
   Joinedmodel({this.code, this.status, this.message, this.data});
 
   Joinedmodel.fromJson(Map<String, dynamic> json) {
-    code = json['code'];
+    code = json['batchCode'];
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
@@ -20,7 +20,7 @@ class Joinedmodel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['code'] = this.code;
+    data['batchCode'] = this.code;
     data['status'] = this.status;
     data['message'] = this.message;
     if (this.data != null) {

@@ -64,7 +64,7 @@ class LeaderModelData1 {
   String? userId;
   String? name;
   String? picture;
-  double? totalObtained;
+  String? totalObtained;
   int? totalPossible;
   String? percentage;
 

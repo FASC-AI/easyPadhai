@@ -505,7 +505,7 @@ class Profile extends StatelessWidget {
                         }
                         int? cls = extractClassNumber(selectedClass);
                         String bcode = generateBatchCode(
-                            '2025', cls.toString(), type, sec, icode);
+                            DateTime.now().year.toString(), cls.toString(), type, sec, icode);
                         batchController.text = bcode;
                       }
                     } else {
@@ -524,7 +524,7 @@ class Profile extends StatelessWidget {
                         }
                         int? cls = extractClassNumber(selectedClass);
                         String bcode = generateBatchCode(
-                            '2025', cls.toString(), type, sec, icode);
+                            DateTime.now().year.toString(), cls.toString(), type, sec, icode);
                         batchController.text = bcode;
                       }
                     }
@@ -597,7 +597,7 @@ class Profile extends StatelessWidget {
                       }
                       //   int? cls = extractClassNumber(selectedClass);
                       String bcode = generateBatchCode(
-                          '2025', cls.toString(), type, sec, icode);
+                          DateTime.now().year.toString(), cls.toString(), type, sec, icode);
                       batchController.text = bcode;
                     }
                   },

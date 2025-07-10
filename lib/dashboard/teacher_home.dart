@@ -671,7 +671,7 @@ class _ProfileEditState extends State<TeacherHome> {
                         }
                         int? cls = extractClassNumber(selectedClass);
                         String bcode = generateBatchCode(
-                            '2025', cls.toString(), type, sec, icode);
+                            DateTime.now().year.toString(), cls.toString(), type, sec, icode);
                         batchController.text = bcode;
                       }
                     } else {
@@ -690,7 +690,7 @@ class _ProfileEditState extends State<TeacherHome> {
                         }
                         int? cls = extractClassNumber(selectedClass);
                         String bcode = generateBatchCode(
-                            '2025', cls.toString(), type, sec, icode);
+                            DateTime.now().year.toString(), cls.toString(), type, sec, icode);
                         batchController.text = bcode;
                       }
                     }
@@ -762,7 +762,7 @@ class _ProfileEditState extends State<TeacherHome> {
                         return;
                       }
                       String bcode = generateBatchCode(
-                          '2025', cls.toString(), type, sec, icode);
+                          DateTime.now().year.toString(), cls.toString(), type, sec, icode);
                       batchController.text = bcode;
                     }
                   },

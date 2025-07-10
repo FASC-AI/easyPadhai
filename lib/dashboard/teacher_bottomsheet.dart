@@ -314,7 +314,7 @@ class BatchHelperTeacher {
                         }
                         int? cls = extractClassNumber(selectedClass);
                         String bcode = generateBatchCode(
-                            '2025', cls.toString(), type, sec, icode);
+                            DateTime.now().year.toString(), cls.toString(), type, sec, icode);
                         batchController.text = bcode;
                       }
                     } else {
@@ -333,7 +333,7 @@ class BatchHelperTeacher {
                         }
                         int? cls = extractClassNumber(selectedClass);
                         String bcode = generateBatchCode(
-                            '2025', cls.toString(), type, sec, icode);
+                            DateTime.now().year.toString(), cls.toString(), type, sec, icode);
                         batchController.text = bcode;
                       }
                     }
@@ -406,7 +406,7 @@ class BatchHelperTeacher {
                       }
                       // int? cls = extractClassNumber(selectedClass);
                       String bcode = generateBatchCode(
-                          '2025', cls.toString(), type, sec, icode);
+                          DateTime.now().year.toString(), cls.toString(), type, sec, icode);
                       batchController.text = bcode;
                     }
                   },

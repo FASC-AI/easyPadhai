@@ -43,15 +43,15 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
       isload = true;
     });
 
-    await dashboardController.getHWQbyTopic(widget.lessonId, widget.tid);
+    await dashboardController.getHWQbyTopic(widget.lessonId);
 
     // await dashboardController.getHWQbyTopic(widget.tid);
     questions = dashboardController.queslist;
-    if (widget.tid.isNotEmpty) {
-      await dashboardController.getPHWQbyTopic(widget.tid);
-    } else {
-      await dashboardController.getPHWQbyTopic(widget.lessonId);
-    }
+    // if (widget.tid.isNotEmpty) {
+    //   await dashboardController.getPHWQbyTopic(widget.tid);
+    // } else {
+    await dashboardController.getPHWQbyTopic(widget.lessonId);
+    // }
 
     prevH = dashboardController.prevHlist;
     setState(() {
@@ -203,7 +203,8 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
                               "Publish Date",
                               style: TextStyle(
                                   color: Color(0xff2180C3),
-                                  fontWeight: FontWeight.bold,fontSize: 12),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12),
                             ),
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: Color(0xff2180C3)),
@@ -263,8 +264,9 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
                                                 BorderRadius.circular(4),
                                           ),
                                           title: HtmlLatexViewer(
-                                              htmlContent: questions[index].question ??
-                                                  ''),
+                                              htmlContent:
+                                                  questions[index].question ??
+                                                      ''),
                                           value: questions[index].isPublished,
                                           onChanged: (bool? value) {
                                             setState(() {

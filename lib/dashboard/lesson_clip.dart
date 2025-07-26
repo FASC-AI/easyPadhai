@@ -6,7 +6,8 @@ import 'package:easy_padhai/custom_widgets/custom_input.dart';
 import 'package:easy_padhai/custom_widgets/custom_input2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+// import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class LessonClipsScreen extends StatefulWidget {
   String vid_link;
@@ -30,6 +31,7 @@ class _LessonClipsScreenState extends State<LessonClipsScreen> {
   List<String> videoLinks = [];
   TextEditingController textEditingController = TextEditingController();
   DashboardController dashboardController = Get.find();
+  late final YoutubePlayerController _controller;
 
   @override
   void initState() {
@@ -38,7 +40,14 @@ class _LessonClipsScreenState extends State<LessonClipsScreen> {
     if (widget.vid_link.isNotEmpty) {
       videoLinks = parseVideoLinks(widget.vid_link);
     }
-
+    _controller = YoutubePlayerController(
+      params: const YoutubePlayerParams(
+        mute: false,
+        showControls: true,
+        showFullscreenButton: true,
+        //   autoPlay: false,
+      ),
+    );
     print(videoLinks);
   }
 
@@ -149,14 +158,23 @@ class _LessonClipsScreenState extends State<LessonClipsScreen> {
     );
   }
 
+  // bool isValidYoutubeLink(String link) {
+  //   final videoId = YoutubePlayer.convertUrlToId(link);
+  //   return videoId != null && videoId.length == 11;
+  // }
+
   bool isValidYoutubeLink(String link) {
-    final videoId = YoutubePlayer.convertUrlToId(link);
-    return videoId != null && videoId.length == 11;
+    try {
+      final videoId = YoutubePlayerController.convertUrlToId(link);
+      return videoId != null && videoId.length == 11;
+    } catch (e) {
+      return false;
+    }
   }
 
   Widget _buildVideoCard(String link, String title) {
-    final String? videoId = YoutubePlayer.convertUrlToId(link);
-
+    final String? videoId = YoutubePlayerController.convertUrlToId(link);
+    _controller.loadVideoById(videoId: videoId!);
     return SizedBox(
       height: 280,
       child: Card(
@@ -165,15 +183,29 @@ class _LessonClipsScreenState extends State<LessonClipsScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Column(
           children: [
+            // ClipRRect(
+            //   borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+            //   child: videoId != null
+            //       ? YoutubePlayer(
+            //           controller: YoutubePlayerController(
+            //             initialVideoId: videoId,
+            //             flags: YoutubePlayerFlags(autoPlay: false),
+            //           ),
+            //           showVideoProgressIndicator: true,
+            //         )
+            //       : Container(
+            //           height: 200,
+            //           color: Colors.grey.shade300,
+            //           alignment: Alignment.center,
+            //           child: Text('Invalid video link'),
+            //         ),
+            // ),
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
               child: videoId != null
-                  ? YoutubePlayer(
-                      controller: YoutubePlayerController(
-                        initialVideoId: videoId,
-                        flags: YoutubePlayerFlags(autoPlay: false),
-                      ),
-                      showVideoProgressIndicator: true,
+                  ? YoutubePlayerScaffold(
+                      controller: _controller,
+                      builder: (context, player) => player,
                     )
                   : Container(
                       height: 200,

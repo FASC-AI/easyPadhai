@@ -225,7 +225,7 @@ class _ProfileEditState extends State<StudentHome> {
 
                             Container(
                               width: double.infinity,
-                              height: 220,
+                              height: 250,
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
@@ -317,7 +317,7 @@ class _ProfileEditState extends State<StudentHome> {
                             const SizedBox(height: 20),
                             SizedBox(
                               width: double.infinity,
-                              height: 200, // Adjust height based on card size
+                              height: 180, // Adjust height based on card size
                               child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
                                 padding: const EdgeInsets.symmetric(

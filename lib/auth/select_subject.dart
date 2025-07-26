@@ -54,11 +54,17 @@ class SelectSubject extends StatelessWidget {
             child: CustomButton(
               text: 'Confirm Subject',
               onTap: () async {
+                if (authController.selectedSubjectIds.length > 6) {
+                  Get.snackbar(
+                      "Message", "Maximum limit of selected subject is 6",
+                      snackPosition: SnackPosition.BOTTOM);
+                  return;
+                }
                 authController.selectedSubjectIds.isNotEmpty
                     ? {
                         await authController.getInstitutes(),
                         Get.lazyPut(() => DashboardController()),
-                       await authController.postUpdateAuthInfo('subject')
+                        await authController.postUpdateAuthInfo('subject')
                       }
                     : Get.snackbar(
                         '',

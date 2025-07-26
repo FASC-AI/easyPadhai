@@ -165,8 +165,8 @@ class DashboardController extends GetxController {
         break;
       case 3:
         await openWhatsAppChat(
-          phoneNumber: "+91${whatsappTeacher.value}",
-          message: '',
+          "+91${whatsappTeacher.value}",
+          "",
         );
         // Get.offAllNamed(RouteName.teacherHome);
         break;
@@ -189,8 +189,8 @@ class DashboardController extends GetxController {
       case 2:
         //Get.offAllNamed(RouteName.support);
         await openWhatsAppChat(
-          phoneNumber: "+91${whatsappStudent.value}",
-          message: '',
+          "+91${whatsappStudent.value}",
+          "",
         );
         break;
       case 3:
@@ -212,8 +212,8 @@ class DashboardController extends GetxController {
       case 2:
         // Get.offAllNamed(RouteName.teacherHome);
         await openWhatsAppChat(
-          phoneNumber: "+91${whatsappTeacher.value}",
-          message: '',
+          "+91${whatsappTeacher.value}",
+          "",
         );
         break;
       case 3:
@@ -222,22 +222,88 @@ class DashboardController extends GetxController {
     }
   }
 
-  Future<void> openWhatsAppChat({
+  Future<void> openWhatsAppChat1({
     required String phoneNumber,
     String message = '',
   }) async {
     // Format phone number (remove any non-digit characters)
+    // final formattedNumber = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+
+    // // Create the WhatsApp URL
+    // final url = Uri.parse(
+    //     'https://wa.me/$formattedNumber?text=${Uri.encodeComponent(message)}');
+
+    // // Try launching WhatsApp
+    // if (await canLaunchUrl(url)) {
+    //   await launchUrl(url);
+    // } else {
+    //   throw 'Could not launch WhatsApp';
+    // }
     final formattedNumber = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
-
-    // Create the WhatsApp URL
-    final url = Uri.parse(
-        'https://wa.me/$formattedNumber?text=${Uri.encodeComponent(message)}');
-
-    // Try launching WhatsApp
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
+    final String whatsappUrl =
+        "whatsapp://send?phone=$formattedNumber&text=${Uri.encodeComponent(message)}";
+    if (await canLaunch(whatsappUrl)) {
+      await launch(whatsappUrl);
     } else {
       throw 'Could not launch WhatsApp';
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //       content:
+      //           Text("WhatsApp is not installed or could not be launched")),
+      // );
+    }
+  }
+
+  Future<void> openWhatsAppChat(String phoneNumber, String message) async {
+    try {
+      final formattedNumber = phoneNumber.replaceAll(RegExp(r'[^0-9+]'), '');
+      final encodedMessage = Uri.encodeComponent(message);
+
+      // All possible URL patterns
+      final urlsToTry = [
+        Uri.parse(
+            'whatsapp://send?phone=$formattedNumber&text=$encodedMessage'),
+        Uri.parse('https://wa.me/$formattedNumber?text=$encodedMessage'),
+        Uri.parse(
+            'https://api.whatsapp.com/send?phone=$formattedNumber&text=$encodedMessage'),
+      ];
+
+      bool launched = false;
+
+      for (final url in urlsToTry) {
+        try {
+          if (await canLaunchUrl(url)) {
+            await launchUrl(
+              url,
+              mode: LaunchMode.externalApplication,
+            );
+            launched = true;
+            break;
+          }
+        } catch (e) {
+          debugPrint('Failed to launch URL $url: $e');
+          continue;
+        }
+      }
+
+      if (!launched) {
+        // Ultimate fallback - open play store
+        final playStoreUrl = Uri.parse(
+            'https://play.google.com/store/apps/details?id=com.whatsapp');
+
+        if (await canLaunchUrl(playStoreUrl)) {
+          await launchUrl(
+            playStoreUrl,
+            mode: LaunchMode.externalApplication,
+          );
+        } else {
+          throw 'Could not launch WhatsApp. Please install WhatsApp.';
+        }
+      }
+    } catch (e) {
+      debugPrint('Error opening WhatsApp: $e');
+      // Show user-friendly message
+      throw 'Could not open WhatsApp. Please ensure WhatsApp is installed.';
     }
   }
 
@@ -677,20 +743,14 @@ class DashboardController extends GetxController {
     isLoading(false);
   }
 
-  getHWQbyTopic(String id, String tid) async {
+  getHWQbyTopic(String id) async {
     isLoading(true);
     dynamic data;
     data = await token();
     Map<String, dynamic>? queryParameter;
-    if (tid.isEmpty) {
-      queryParameter = {
-        "lessonId": id,
-      };
-    } else {
-      queryParameter = {
-        "topicId": tid,
-      };
-    }
+    queryParameter = {
+      "lessonId": id,
+    };
 
     final profileJson =
         await apiHelper.get(ApiUrls.getques, queryParameter, data);
@@ -1710,7 +1770,7 @@ class DashboardController extends GetxController {
     isLoading(true);
     dynamic data;
     data = await token();
-   // String bid = "";
+    // String bid = "";
     // if (userRole() == 'teacher') {
     //   bid = batchId.value;
     // } else {

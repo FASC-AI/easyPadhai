@@ -519,6 +519,7 @@ class DashboardController extends GetxController {
     if (profileJson != null && profileJson != false) {
       BinfoModel response = BinfoModel.fromJson(profileJson);
       if (response.status == true) {
+        print(response.message);
         BinfoModel dta = response;
         // Update box storage with profile data
         isLoading(false);

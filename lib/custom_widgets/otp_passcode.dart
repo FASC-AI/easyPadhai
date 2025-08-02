@@ -50,14 +50,30 @@ class _OtpPasscodeState extends State<OtpPasscode> {
     }
   }
 
-  void _onOtpChanged(String value, int index) {
+  // void _onOtpChanged(String value, int index) {
+  //   if (value.length == 1 && index < widget.digits - 1) {
+  //     _focusNodes[index + 1].requestFocus();
+  //   } else if (index == widget.digits - 1 && value.length == 1) {
+  //     String otp = _controllers.map((c) => c.text).join();
+  //     widget.onCompleted(otp);
+  //   } else if (value.isEmpty && index > 0) {
+  //     _focusNodes[index - 1].requestFocus();
+  //   }
+  // }
+
+  void _onOtpChanged(String value, int index) async {
     if (value.length == 1 && index < widget.digits - 1) {
-      _focusNodes[index + 1].requestFocus();
+      await Future.delayed(Duration(milliseconds: 50)); // Small delay
+      _focusNodes[index].unfocus(); // Unfocus current field first
+      FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
     } else if (index == widget.digits - 1 && value.length == 1) {
       String otp = _controllers.map((c) => c.text).join();
       widget.onCompleted(otp);
+      FocusScope.of(context).unfocus();
     } else if (value.isEmpty && index > 0) {
-      _focusNodes[index - 1].requestFocus();
+      await Future.delayed(Duration(milliseconds: 50));
+      _focusNodes[index].unfocus();
+      FocusScope.of(context).requestFocus(_focusNodes[index - 1]);
     }
   }
 
@@ -109,7 +125,13 @@ class _OtpPasscodeState extends State<OtpPasscode> {
                     child: TextField(
                       controller: _controllers[index],
                       focusNode: _focusNodes[index],
+                      autocorrect: false,
+                      enableSuggestions: false,
                       keyboardType: TextInputType.number,
+                      textInputAction: index == widget.digits - 1
+                          ? TextInputAction
+                              .done // Closes keyboard on last field
+                          : TextInputAction.next,
                       textAlign: TextAlign.center,
                       textAlignVertical: TextAlignVertical.center,
                       cursorColor: AppColors.white,
@@ -120,6 +142,12 @@ class _OtpPasscodeState extends State<OtpPasscode> {
                       ),
                       maxLength: 1,
                       onChanged: (value) => _onOtpChanged(value, index),
+                      onSubmitted: (value) {
+                        if (index < widget.digits - 1) {
+                          FocusScope.of(context)
+                              .requestFocus(_focusNodes[index + 1]);
+                        }
+                      },
                       decoration: InputDecoration(
                         counterText: '',
                         enabledBorder: border,

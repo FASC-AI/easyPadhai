@@ -44,6 +44,7 @@ class _ProfileEditState extends State<ProfileEdit> {
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
   bool isVisible = false;
+  final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -245,152 +246,360 @@ class _ProfileEditState extends State<ProfileEdit> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              Container(
-                height: height * 0.09,
-                color: AppColors.theme,
+      body: Form(
+        key: formKey,
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                Container(
+                  height: height * 0.09,
+                  color: AppColors.theme,
+                ),
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              top: height * 0.015,
+              left: (width - (width * 0.24)) / 2,
+              child: GestureDetector(
+                onTap: _showImagePickerModal,
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: width * 0.12,
+                      backgroundImage: _imageFile != null
+                          ? FileImage(_imageFile!)
+                          : (userPic().isNotEmpty
+                              ? NetworkImage(userPic())
+                              : null),
+                      backgroundColor: Colors.grey[400],
+                      child: (_imageFile == null && userPic().isEmpty)
+                          ? Text(
+                              userName().isNotEmpty
+                                  ? userName()[0].toUpperCase()
+                                  : '',
+                              style: TextStyle(
+                                fontSize: width * 0.08,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          : null,
+                      onBackgroundImageError:
+                          _imageFile != null || userPic().isNotEmpty
+                              ? (exception, stackTrace) {
+                                  setState(() {
+                                    _imageFile = null;
+                                  });
+                                }
+                              : null,
+                    ),
+                  ],
+                ),
               ),
-              Expanded(
+            ),
+            Positioned(
+              top: height * 0.085,
+              left: (width - (width * 0.18)) / 1.5,
+              child: GestureDetector(
+                onTap: _showImagePickerModal,
                 child: Container(
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          Positioned(
-            top: height * 0.015,
-            left: (width - (width * 0.24)) / 2,
-            child: GestureDetector(
-              onTap: _showImagePickerModal,
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: width * 0.12,
-                    backgroundImage: _imageFile != null
-                        ? FileImage(_imageFile!)
-                        : (userPic().isNotEmpty
-                            ? NetworkImage(userPic())
-                            : null),
-                    backgroundColor: Colors.grey[400],
-                    child: (_imageFile == null && userPic().isEmpty)
-                        ? Text(
-                            userName().isNotEmpty
-                                ? userName()[0].toUpperCase()
-                                : '',
-                            style: TextStyle(
-                              fontSize: width * 0.08,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
-                        : null,
-                    onBackgroundImageError:
-                        _imageFile != null || userPic().isNotEmpty
-                            ? (exception, stackTrace) {
-                                setState(() {
-                                  _imageFile = null;
-                                });
-                              }
-                            : null,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(color: Colors.white),
                   ),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            top: height * 0.085,
-            left: (width - (width * 0.18)) / 1.5,
-            child: GestureDetector(
-              onTap: _showImagePickerModal,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(50),
-                  border: Border.all(color: Colors.white),
-                ),
-                child: Padding(
-                  padding:
-                      EdgeInsets.all(MediaQuery.of(context).size.width * .01),
-                  child: const Icon(
-                    Icons.edit_outlined,
-                    color: AppColors.theme,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            top: height * 0.135,
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: width * 0.05),
-              child: Column(
-                children: [
-                  SizedBox(height: height * 0.03),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Personal Info',
-                      style: TextStyle(
-                        fontSize: width * 0.045,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  child: Padding(
+                    padding:
+                        EdgeInsets.all(MediaQuery.of(context).size.width * .01),
+                    child: const Icon(
+                      Icons.edit_outlined,
+                      color: AppColors.theme,
                     ),
                   ),
-                  SizedBox(height: height * 0.02),
-                  _buildLabel('Full name', width, context: context),
-                  _buildTextField(
-                    controller: nameController,
-                    hint: 'Enter your name',
-                    context: context,
-                  ),
-                  SizedBox(height: height * 0.015),
-                  _buildLabel('Class', width, context: context),
-                  (dashboardController.profileModel?.data?.userDetails!.role! !=
-                          'student')
-                      ? Container(
-                          alignment: Alignment.topLeft,
-                          child: _buildClassChips(width))
-                      : _buildTextField(
-                          controller: classController,
-                          hint: 'Enter your class',
-                          context: context,
-                          enabled: false,
+                ),
+              ),
+            ),
+            Positioned.fill(
+              top: height * 0.135,
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: width * 0.05),
+                child: Column(
+                  children: [
+                    SizedBox(height: height * 0.03),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Personal Info',
+                        style: TextStyle(
+                          fontSize: width * 0.045,
+                          fontWeight: FontWeight.bold,
                         ),
-                  SizedBox(height: height * 0.015),
-                  if (dashboardController
-                          .profileModel?.data?.userDetails!.role! !=
-                      'student') ...[
-                    _buildLabel('Institution', width, context: context),
+                      ),
+                    ),
+                    SizedBox(height: height * 0.02),
+                    _buildLabel('Full name', width, context: context),
+                    // _buildTextField(
+                    //   controller: nameController,
+                    //   hint: 'Enter your name',
+                    //   context: context,
+
+                    // ),
+                    TextFormField(
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: InputDecoration(
+                          fillColor: AppColors.white,
+                          filled: true,
+                          isDense: false,
+                          contentPadding: EdgeInsets.only(left: 10),
+                          counterText: '',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 1.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 1.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 1.0),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                BorderSide(color: AppColors.grey7, width: 1.0),
+                          ),
+                          suffixIconConstraints:
+                              BoxConstraints(maxHeight: 25, maxWidth: 30),
+                          hintText: "Enter your name",
+                          hintStyle:
+                              TextStyle(fontSize: 14, color: Colors.grey)),
+                      controller: nameController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a name';
+                        }
+
+                        // Regex: Only alphabets (A-Z, a-z) and spaces allowed
+                        final nameRegExp = RegExp(r'^[a-zA-Z ]+$');
+
+                        if (!nameRegExp.hasMatch(value)) {
+                          return 'Only alphabets and spaces are allowed';
+                        }
+
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: height * 0.015),
+                    _buildLabel('Class', width, context: context),
+                    (dashboardController
+                                .profileModel?.data?.userDetails!.role! !=
+                            'student')
+                        ? Container(
+                            alignment: Alignment.topLeft,
+                            child: _buildClassChips(width))
+                        : _buildTextField(
+                            controller: classController,
+                            hint: 'Enter your class',
+                            context: context,
+                            enabled: false,
+                          ),
+                    SizedBox(height: height * 0.015),
+                    if (dashboardController
+                            .profileModel?.data?.userDetails!.role! !=
+                        'student') ...[
+                      _buildLabel('Institution', width, context: context),
+                      GestureDetector(
+                        onTap: () async {
+                          await dashboardController.getInstitutes();
+                          bool? result = await showDialog<bool>(
+                            context: context,
+                            barrierDismissible: true,
+                            builder: (BuildContext context) {
+                              return InstitutesPopup2();
+                            },
+                          );
+                          if (result == true) {
+                            setState(() {
+                              instituteController.text =
+                                  dashboardController.instituteName.value;
+                              insId = dashboardController.instituteId.value;
+                            });
+                          }
+                        },
+                        child: CustomInput2(
+                          label: 'Select Your Institution',
+                          enable: false,
+                          controller: instituteController,
+                          validation: (value) {
+                            if (value!.isEmpty) {
+                              return 'Institution is required';
+                            }
+                            return null;
+                          },
+                          inputType: TextInputType.text,
+                          customSuffixIcon: Icons.keyboard_arrow_down,
+                          wholeBackground: AppColors.white,
+                          isPrefix: false,
+                        ),
+                      ),
+                      // Padding(
+                      //   padding: EdgeInsets.only(top: width * .02),
+                      //   child: Align(
+                      //     alignment: Alignment.centerRight,
+                      //     child: Text(
+                      //       'Change Your Institution',
+                      //       style: TextStyle(
+                      //         color: AppColors.theme,
+                      //         fontWeight: FontWeight.w600,
+                      //         fontSize: width * 0.032,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      SizedBox(height: height * 0.015),
+                    ],
+                    _buildLabel(
+                      'Phone',
+                      width,
+                      context: context,
+                    ),
+                    // _buildTextField(
+                    //   hint: 'Enter your phone number',
+                    //   context: context,
+                    //   isPin: true,
+                    //   maxNum: 10,
+                    // ),
+                    TextFormField(
+                      maxLength: 10,
+                      keyboardType: TextInputType.phone,
+                      textInputAction: TextInputAction.next,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: InputDecoration(
+                          fillColor: AppColors.white,
+                          filled: true,
+                          isDense: false,
+                          contentPadding: EdgeInsets.only(left: 10),
+                          counterText: '',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 1.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 1.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 1.0),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                BorderSide(color: AppColors.grey7, width: 1.0),
+                          ),
+                          suffixIconConstraints:
+                              BoxConstraints(maxHeight: 25, maxWidth: 30),
+                          hintText: "Enter your phone number",
+                          hintStyle:
+                              TextStyle(fontSize: 14, color: Colors.grey)),
+                      controller: phoneController,
+                      validator: (value) {
+                        // bool isEmail =
+                        //     RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")
+                        //         .hasMatch(value);
+                        if (phoneController.text.isNotEmpty) {
+                          bool isPhoneNumber = value!.length == 10 &&
+                              int.tryParse(value) != null;
+
+                          if (!isPhoneNumber) {
+                            return "Please enter a valid phone number";
+                          }
+                        }
+
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: height * 0.015),
+                    _buildLabel('Email', width, context: context),
+                    _buildTextField(
+                      controller: emailController,
+                      hint: 'Enter your email',
+                      context: context,
+                      enabled: false,
+                    ),
+                    SizedBox(height: height * 0.015),
+                    _buildLabel('Address', width, context: context),
+                    _buildTextField(
+                      hint: 'Enter address',
+                      context: context,
+                      controller: add1Controller,
+                    ),
+                    // CustomInput(
+                    //   label: 'Address 1',
+                    //   controller: add1Controller,
+                    //   inputType: TextInputType.text,
+                    //   wholeBackground: AppColors.white,
+                    //   isPrefix: false,
+                    // ),
+                    SizedBox(height: height * 0.015),
+                    _buildLabel('Address 2', width, context: context),
+                    _buildTextField(
+                      hint: 'Enter address 2',
+                      context: context,
+                      controller: add2Controller,
+                    ),
+                    // CustomInput(
+                    //   label: 'Address 2',
+                    //   controller: add2Controller,
+                    //   inputType: TextInputType.text,
+                    //   wholeBackground: AppColors.white,
+                    //   isPrefix: false,
+                    // ),
+                    SizedBox(height: height * 0.015),
+                    _buildLabel('State', width, context: context),
                     GestureDetector(
                       onTap: () async {
-                        await dashboardController.getInstitutes();
+                        // await controller.getStateList();
                         bool? result = await showDialog<bool>(
                           context: context,
                           barrierDismissible: true,
                           builder: (BuildContext context) {
-                            return InstitutesPopup2();
+                            return State1Popup();
                           },
                         );
                         if (result == true) {
                           setState(() {
-                            instituteController.text =
-                                dashboardController.instituteName.value;
-                            insId = dashboardController.instituteId.value;
+                            controllerState.text = controller.stateName.value;
+                            stateId = controller.stateId.value;
+                            controllerDistrict.text = "";
+                            distId = "";
                           });
                         }
                       },
                       child: CustomInput2(
-                        label: 'Select Your Institution',
+                        label: 'Select Your State',
                         enable: false,
-                        controller: instituteController,
+                        controller: controllerState,
                         validation: (value) {
-                          if (value!.isEmpty) {
-                            return 'Institution is required';
-                          }
+                          // if (value!.isEmpty) {
+                          //   return 'State is required';
+                          // }
                           return null;
                         },
                         inputType: TextInputType.text,
@@ -399,255 +608,108 @@ class _ProfileEditState extends State<ProfileEdit> {
                         isPrefix: false,
                       ),
                     ),
-                    // Padding(
-                    //   padding: EdgeInsets.only(top: width * .02),
-                    //   child: Align(
-                    //     alignment: Alignment.centerRight,
-                    //     child: Text(
-                    //       'Change Your Institution',
-                    //       style: TextStyle(
-                    //         color: AppColors.theme,
-                    //         fontWeight: FontWeight.w600,
-                    //         fontSize: width * 0.032,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
                     SizedBox(height: height * 0.015),
-                  ],
-                  _buildLabel(
-                    'Phone',
-                    width,
-                    context: context,
-                  ),
-                  // _buildTextField(
-                  //   hint: 'Enter your phone number',
-                  //   context: context,
-                  //   isPin: true,
-                  //   maxNum: 10,
-                  // ),
-                  TextFormField(
-                    maxLength: 10,
-                    keyboardType: TextInputType.phone,
-                    textInputAction: TextInputAction.next,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    decoration: InputDecoration(
-                        fillColor: AppColors.white,
-                        filled: true,
-                        isDense: false,
-                        contentPadding: EdgeInsets.only(left: 10),
-                        counterText: '',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              BorderSide(color: Colors.grey, width: 1.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              BorderSide(color: Colors.grey, width: 1.0),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              BorderSide(color: Colors.grey, width: 1.0),
-                        ),
-                        disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              BorderSide(color: AppColors.grey7, width: 1.0),
-                        ),
-                        suffixIconConstraints:
-                            BoxConstraints(maxHeight: 25, maxWidth: 30),
-                        hintText: "Enter your phone number",
-                        hintStyle: TextStyle(fontSize: 14, color: Colors.grey)),
-                    controller: phoneController,
-                    validator: (value) {
-                      // bool isEmail =
-                      //     RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")
-                      //         .hasMatch(value);
-
-                      bool isPhoneNumber =
-                          value!.length == 10 && int.tryParse(value) != null;
-
-                      if (!isPhoneNumber) {
-                        return "Please enter a valid phone number";
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: height * 0.015),
-                  _buildLabel('Email', width, context: context),
-                  _buildTextField(
-                    controller: emailController,
-                    hint: 'Enter your email',
-                    context: context,
-                    enabled: false,
-                  ),
-                  SizedBox(height: height * 0.015),
-                  _buildLabel('Address', width, context: context),
-                  _buildTextField(
-                    hint: 'Enter address',
-                    context: context,
-                    controller: add1Controller,
-                  ),
-                  // CustomInput(
-                  //   label: 'Address 1',
-                  //   controller: add1Controller,
-                  //   inputType: TextInputType.text,
-                  //   wholeBackground: AppColors.white,
-                  //   isPrefix: false,
-                  // ),
-                  SizedBox(height: height * 0.015),
-                  _buildLabel('Address 2', width, context: context),
-                  _buildTextField(
-                    hint: 'Enter address 2',
-                    context: context,
-                    controller: add2Controller,
-                  ),
-                  // CustomInput(
-                  //   label: 'Address 2',
-                  //   controller: add2Controller,
-                  //   inputType: TextInputType.text,
-                  //   wholeBackground: AppColors.white,
-                  //   isPrefix: false,
-                  // ),
-                  SizedBox(height: height * 0.015),
-                  _buildLabel('State', width, context: context),
-                  GestureDetector(
-                    onTap: () async {
-                      // await controller.getStateList();
-                      bool? result = await showDialog<bool>(
-                        context: context,
-                        barrierDismissible: true,
-                        builder: (BuildContext context) {
-                          return State1Popup();
+                    _buildLabel('District', width, context: context),
+                    GestureDetector(
+                      onTap: () async {
+                        if (controllerState.text.isEmpty) {
+                          Get.snackbar("Message", "Please Select State",
+                              snackPosition: SnackPosition.BOTTOM);
+                        } else {
+                          //   await controller.getdistrictList();
+                          bool? result = await showDialog<bool>(
+                            context: context,
+                            barrierDismissible: true,
+                            builder: (BuildContext context) {
+                              return District1Popup();
+                            },
+                          );
+                          if (result == true) {
+                            setState(() {
+                              controllerDistrict.text =
+                                  controller.districtName.value;
+                              distId = controller.districtId.value;
+                            });
+                          }
+                        }
+                      },
+                      child: CustomInput2(
+                        label: 'Select Your District',
+                        enable: false,
+                        controller: controllerDistrict,
+                        validation: (value) {
+                          // if (value!.isEmpty) {
+                          //   return 'State is required';
+                          // }
+                          return null;
                         },
-                      );
-                      if (result == true) {
-                        setState(() {
-                          controllerState.text = controller.stateName.value;
-                          stateId = controller.stateId.value;
-                          controllerDistrict.text = "";
-                          distId = "";
-                        });
-                      }
-                    },
-                    child: CustomInput2(
-                      label: 'Select Your State',
-                      enable: false,
-                      controller: controllerState,
-                      validation: (value) {
-                        if (value!.isEmpty) {
-                          return 'State is required';
+                        inputType: TextInputType.text,
+                        customSuffixIcon: Icons.keyboard_arrow_down,
+                        wholeBackground: AppColors.white,
+                        isPrefix: false,
+                      ),
+                    ),
+                    SizedBox(height: height * 0.015),
+                    _buildLabel('Pin Code', width, context: context),
+                    TextFormField(
+                      maxLength: 10,
+                      keyboardType: TextInputType.phone,
+                      textInputAction: TextInputAction.next,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: InputDecoration(
+                          fillColor: AppColors.white,
+                          filled: true,
+                          isDense: false,
+                          contentPadding: EdgeInsets.only(left: 10),
+                          counterText: '',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 1.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 1.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                BorderSide(color: Colors.grey, width: 1.0),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide:
+                                BorderSide(color: AppColors.grey7, width: 1.0),
+                          ),
+                          suffixIconConstraints:
+                              BoxConstraints(maxHeight: 25, maxWidth: 30),
+                          hintText: "Enter your pin",
+                          hintStyle:
+                              TextStyle(fontSize: 14, color: Colors.grey)),
+                      controller: pinController,
+                      validator: (value) {
+                        // bool isEmail =
+                        //     RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")
+                        //         .hasMatch(value);
+                        if (pinController.text.isNotEmpty) {
+                          bool isPhoneNumber =
+                              value!.length == 6 && int.tryParse(value) != null;
+
+                          if (!isPhoneNumber) {
+                            return "Please enter a valid Pincode";
+                          }
                         }
                         return null;
                       },
-                      inputType: TextInputType.text,
-                      customSuffixIcon: Icons.keyboard_arrow_down,
-                      wholeBackground: AppColors.white,
-                      isPrefix: false,
                     ),
-                  ),
-                  SizedBox(height: height * 0.015),
-                  _buildLabel('District', width, context: context),
-                  GestureDetector(
-                    onTap: () async {
-                      if (controllerState.text.isEmpty) {
-                        Get.snackbar("Message", "Please Select State",
-                            snackPosition: SnackPosition.BOTTOM);
-                      } else {
-                        //   await controller.getdistrictList();
-                        bool? result = await showDialog<bool>(
-                          context: context,
-                          barrierDismissible: true,
-                          builder: (BuildContext context) {
-                            return District1Popup();
-                          },
-                        );
-                        if (result == true) {
-                          setState(() {
-                            controllerDistrict.text =
-                                controller.districtName.value;
-                            distId = controller.districtId.value;
-                          });
-                        }
-                      }
-                    },
-                    child: CustomInput2(
-                      label: 'Select Your District',
-                      enable: false,
-                      controller: controllerDistrict,
-                      validation: (value) {
-                        if (value!.isEmpty) {
-                          return 'State is required';
-                        }
-                        return null;
-                      },
-                      inputType: TextInputType.text,
-                      customSuffixIcon: Icons.keyboard_arrow_down,
-                      wholeBackground: AppColors.white,
-                      isPrefix: false,
-                    ),
-                  ),
-                  SizedBox(height: height * 0.015),
-                  _buildLabel('Pin Code', width, context: context),
-                  TextFormField(
-                    maxLength: 10,
-                    keyboardType: TextInputType.phone,
-                    textInputAction: TextInputAction.next,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    decoration: InputDecoration(
-                        fillColor: AppColors.white,
-                        filled: true,
-                        isDense: false,
-                        contentPadding: EdgeInsets.only(left: 10),
-                        counterText: '',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              BorderSide(color: Colors.grey, width: 1.0),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              BorderSide(color: Colors.grey, width: 1.0),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              BorderSide(color: Colors.grey, width: 1.0),
-                        ),
-                        disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              BorderSide(color: AppColors.grey7, width: 1.0),
-                        ),
-                        suffixIconConstraints:
-                            BoxConstraints(maxHeight: 25, maxWidth: 30),
-                        hintText: "Enter your pin",
-                        hintStyle: TextStyle(fontSize: 14, color: Colors.grey)),
-                    controller: pinController,
-                    validator: (value) {
-                      // bool isEmail =
-                      //     RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")
-                      //         .hasMatch(value);
-
-                      bool isPhoneNumber =
-                          value!.length == 6 && int.tryParse(value) != null;
-
-                      if (!isPhoneNumber) {
-                        return "Please enter a valid Pincode";
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: height * 0.12),
-                ],
+                    SizedBox(height: height * 0.12),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.symmetric(
@@ -657,18 +719,25 @@ class _ProfileEditState extends State<ProfileEdit> {
         child: CustomButton2(
           text: 'Update',
           onTap: () async {
-            ProUpdateModel res = await dashboardController.updatePro(
-                nameController.text.toString().trim(),
-                phoneController.text.toString().trim(),
-                add1Controller.text.toString().trim(),
-                add2Controller.text.toString().trim(),
-                pinController.text.toString().trim(),
-                stateId,
-                distId,
-                userPic(),
-                insId);
-            if (res.status == true) {
-              Get.offNamed(RouteName.profile);
+            if (formKey.currentState!.validate()) {
+              if (stateId.isEmpty && distId.isNotEmpty) {
+                Get.snackbar("Message", "State is required!",
+                    snackPosition: SnackPosition.BOTTOM);
+                return;
+              }
+              ProUpdateModel res = await dashboardController.updatePro(
+                  nameController.text.toString().trim(),
+                  phoneController.text.toString().trim(),
+                  add1Controller.text.toString().trim(),
+                  add2Controller.text.toString().trim(),
+                  pinController.text.toString().trim(),
+                  stateId,
+                  distId,
+                  userPic(),
+                  insId);
+              if (res.status == true) {
+                Get.offNamed(RouteName.profile);
+              }
             }
           },
         ),

@@ -21,7 +21,7 @@ class ApiUrls {
   // Base urlhttps://codesuperb.com/
 
   static const String apiBaseUrl = 'easypadhai.in';
-  static const String prodApiBaseUrl = 'http://easypadhai.in/';
+  static const String prodApiBaseUrl = 'https://easypadhai.in/';
 
   // Api End Point
 

@@ -16,9 +16,14 @@ const jwtUtils = {
    * const token = jwtUtils.generateToken({ id: '12345' });
    */
   generateToken(payload, expiresIn = '21d') {
+    // Ensure payload.id exists and is valid
+    if (!payload.id) {
+      throw new Error('Payload must contain an id field');
+    }
+    
     return jwt.sign(payload, config.jwt.secret, {
       expiresIn,
-      audience: payload.id,
+      audience: payload.id.toString(),
       issuer: 'upsdma',
     });
   },
@@ -41,8 +46,14 @@ const jwtUtils = {
   verifyToken(token) {
     try {
       const decoded = jwt.decode(token);
+      const audience = decoded.id || decoded.userId;
+      
+      if (!audience) {
+        throw new Error('Token missing audience field');
+      }
+      
       return jwt.verify(token, config.jwt.secret, {
-        audience: decoded.id || decoded.userId,
+        audience: audience.toString(),
         issuer: 'upsdma',
       });
     } catch (error) {

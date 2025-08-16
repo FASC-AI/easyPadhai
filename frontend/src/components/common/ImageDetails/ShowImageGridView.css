@@ -1,0 +1,58 @@
+.show-image-gv{background: #FFF;box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.10);display: flex;flex-direction: column;}
+.show-image-gv .show-image-title{padding: 24px 28px 2px 24px; display: flex; justify-content: space-between;}
+.show-image-gv .img-gv-detail-container{display: grid; padding: 15px 24px; grid-template-columns: repeat(2, 1fr);grid-gap: 15px;}
+
+.show-image-gv .img-gv-detail-container .img-gv-container{background: #D9D9D9;height: 157px;display: flex;justify-content: center;align-items: center;}
+.show-image-gv .img-gv-detail-container .img-gv-detail-box .img-gv-name{display: flex;justify-content: space-between;padding: 8px 0px 5px 0px;}
+.show-image-gv .img-gv-detail-container .img-gv-detail-box .img-gv-name .img-threedot{rotate: 90deg;}
+
+/* Modal overlay for full screen */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9); /* Dark background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+/* Modal content */
+.modal-content {
+  position: relative;
+  background: transparent; /* No background for content */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  max-height: 100%;
+  padding: 0;
+  z-index: 1100; /* Ensure image is on top of the background */
+}
+
+/* Full-screen image */
+.modal-image {
+  width: 90vw; /* Make image at least 90% of screen width */
+  height: 90vh; /* Make image at least 90% of screen height */
+  object-fit: contain; /* Maintain aspect ratio */
+  border-radius: 10px;
+}
+
+/* Close button */
+.modal-close {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  font-size: 30px;
+  color: black;
+  padding: 1px 15px;
+  cursor: pointer;
+  border-radius: 50%;
+  z-index: 1200;
+}

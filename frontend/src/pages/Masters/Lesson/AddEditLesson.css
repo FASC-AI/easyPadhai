@@ -1,0 +1,122 @@
+/* Container for the entire form */
+.add-v-form {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Ensure the form takes up the full width but has a max-width for larger screens */
+.width90 {
+    width: 100%;
+    max-width: 1200px;
+   
+    margin: 0 auto;
+}
+
+/* Section shadow for the form card */
+.section-shadow {
+    /* width: 100%; */
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Right section of the form */
+.add-v-form-right-section {
+    width: 100%;
+}
+
+/* Form section containing the fields */
+.add-v-form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Group of fields (e.g., Class, Subject, Book) */
+.group-type-2-equal {
+    display: flex;
+    flex-wrap: wrap;
+    /* Allow wrapping on smaller screens */
+    gap: 20px;
+    width: 100%;
+}
+
+/* Individual field containers */
+.group-type-2-equal .flex-1 {
+    flex: 1;
+    min-width: 300px;
+    /* Minimum width for each field */
+    width: 100%;
+    /* Take full width on smaller screens */
+}
+
+/* Single field group (e.g., Description) */
+.group-type-1 {
+    width: 100%;
+}
+
+/* Ensure text areas and inputs are responsive */
+.group-type-1 .flex-1,
+.group-type-2-equal .flex-1 {
+    width: 100%;
+}
+
+/* Dropdown and text field styles */
+.flex-1 input,
+.flex-1 textarea,
+.flex-1 select {
+ 
+    box-sizing: border-box;
+    padding: 8px;
+ 
+    
+    transition: border-color 0.2s ease-in-out;
+}
+
+/* Media Queries for smaller screens */
+@media (max-width: 768px) {
+    .add-v-form {
+        padding: 10px;
+        /* Reduce padding on smaller screens */
+    }
+
+    .group-type-2-equal {
+        flex-direction: column;
+        /* Stack fields vertically on mobile */
+        gap: 15px;
+    }
+
+    .group-type-2-equal .flex-1 {
+        min-width: 100%;
+        /* Full width on smaller screens */
+    }
+
+    .section-shadow {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .add-v-form {
+        padding: 5px;
+    }
+
+    .group-type-2-equal .flex-1 {
+        min-width: 100%;
+    }
+
+    .section-shadow {
+        padding: 10px;
+    }
+
+    .flex-1 input,
+    .flex-1 textarea,
+    .flex-1 select {
+        font-size: 14px;
+        /* Adjust font size for smaller screens */
+    } }

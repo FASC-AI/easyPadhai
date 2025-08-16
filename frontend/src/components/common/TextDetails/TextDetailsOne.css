@@ -1,0 +1,10 @@
+.text-details-one{background: #FFF;display: flex;flex-direction: column; border-radius: 20px;}
+.text-details-one .text-details-title{padding: 24px 28px 2px 24px;}
+.text-details-one .text-detail-box{padding: 15px 24px;display: flex;border-bottom:1px solid #D1D1D1;}
+.text-details-one .text-detail-box .text-detail-box-title{width: 33%;}
+.text-details-one .text-detail-box .text-detail-box-name{width: 37%;}
+.text-details-one .text-detail-box .text-detail-box-title2{width: 33%;}
+.text-details-one .text-detail-box .text-detail-box-name2{width: 66%;}
+
+.text-details-one .text-detail-box .text-detail-box-last-text{width: 30%;text-align: end;}
+.text-detail-box:last-child{border-bottom: unset;}

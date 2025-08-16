@@ -1,0 +1,9 @@
+/* lms.css */
+@import "katex/dist/katex.min.css";
+
+.katex {
+    font-size: 1.1em;
+    margin: 0 0.2em;
+    display: inline-block;
+    vertical-align: middle;
+}

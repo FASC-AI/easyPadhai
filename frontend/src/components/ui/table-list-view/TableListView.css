@@ -1,0 +1,6 @@
+
+/* Optional: If you want to target the header cells specifically */
+.MuiDataGrid-root .MuiDataGrid-container--top .MuiDataGrid-columnHeader {
+    background-color: #1A6FAB !important;
+    /* Ensure header cells are styled */
+    color: white !important; }

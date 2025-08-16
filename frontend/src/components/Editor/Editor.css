@@ -1,0 +1,33 @@
+.editor-container {
+    padding: 20px;
+}
+
+.math-guide {
+    position: absolute;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    z-index: 1000;
+    max-width: 300px;
+}
+
+.math-button {
+    position: relative;
+}
+
+.math-dropdown {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 5px;
+    z-index: 1000;
+}
+
+.math-symbol {
+    cursor: pointer;
+    padding: 5px;
+    display: inline-block;
+}
+
+.math-symbol:hover {
+    background: #f0f0f0; }

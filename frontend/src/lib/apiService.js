@@ -7,6 +7,7 @@ import LogoutHelper from "@/utils/LogoutHelper";
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   timeout: 120000, // Set a timeout if needed
+  withCredentials: true, // Enable sending cookies with requests
   headers: {
     "Content-Type": "application/json",
     "Device-Platform": "web",

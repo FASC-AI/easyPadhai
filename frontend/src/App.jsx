@@ -29,7 +29,7 @@ function App() {
       try {
         const res = await apiService.get("/auth/verifyToken");
 
-        if (res.code === 200) {
+        if (res.status === true) {
           setIsAuthenticated(true);
           setUser(res?.data?.user);
           setUserProfile(res?.data?.userProfile);

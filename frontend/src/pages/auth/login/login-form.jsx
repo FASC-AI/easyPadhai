@@ -56,10 +56,16 @@ export function LoginForm({ className, ...props }) {
       try {
         const response = await apiService.post(AUTH_APIS.AUTH_LOGIN, values);
 
-        if (response?.status === true) {
+        if (response?.code === 200 && response?.status === true) {
           toast.success(response?.message || "Login successful");
           setUser(response?.data);
           setIsAuthenticated(true);
+          
+          // Store token in localStorage for API requests
+          if (response?.data?.token) {
+            localStorage.setItem('token', response.data.token);
+          }
+          
           queryClient.invalidateQueries(['verifyToken']);
           formik.resetForm();
           setIsReCaptcha(false);

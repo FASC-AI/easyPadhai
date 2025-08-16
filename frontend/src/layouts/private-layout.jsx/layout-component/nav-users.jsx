@@ -49,6 +49,8 @@ export function NavUser() {
         toast.success(response?.message);
         setUser(null);
         setIsAuthenticated(false);
+        // Clear token from localStorage
+        localStorage.removeItem('token');
         navigate('/', { replace: true })
       } else {
         toast.error(response?.message);

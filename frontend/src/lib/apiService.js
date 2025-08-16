@@ -3,11 +3,18 @@ import axios from "axios";
 import { toast } from "sonner";
 export const BASE_URL = `${import.meta.env.VITE_APP_BASE_URL_V1}`;
 import LogoutHelper from "@/utils/LogoutHelper";
+
+// Helper function to get cookie value
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+};
 // Create an Axios instance with default configuration
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   timeout: 120000, // Set a timeout if needed
-  withCredentials: true, // Enable sending cookies with requests
   headers: {
     "Content-Type": "application/json",
     "Device-Platform": "web",
@@ -17,6 +24,11 @@ const axiosInstance = axios.create({
 // Interceptors to handle request/response logging or error handling
 axiosInstance.interceptors.request.use(
   (config) => {
+    // Get token from localStorage or cookies
+    const token = localStorage.getItem('token') || getCookie('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {

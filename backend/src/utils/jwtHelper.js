@@ -23,7 +23,6 @@ const jwtUtils = {
     
     return jwt.sign(payload, config.jwt.secret, {
       expiresIn,
-      audience: payload.id.toString(),
       issuer: 'upsdma',
     });
   },
@@ -45,15 +44,7 @@ const jwtUtils = {
    */
   verifyToken(token) {
     try {
-      const decoded = jwt.decode(token);
-      const audience = decoded.id || decoded.userId;
-      
-      if (!audience) {
-        throw new Error('Token missing audience field');
-      }
-      
       return jwt.verify(token, config.jwt.secret, {
-        audience: audience.toString(),
         issuer: 'upsdma',
       });
     } catch (error) {

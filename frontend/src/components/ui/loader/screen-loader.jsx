@@ -53,13 +53,13 @@ export const LoaderDisplay = () => {
                         <svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                             <defs>
                                 <linearGradient id="mixedGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#4caf50" />
-                                    <stop offset="50%" stop-color="#FFA500" />
-                                    <stop offset="100%" stop-color="#FF5733" />
+                                            <stop offset="0%" stopColor="#4caf50" />
+        <stop offset="50%" stopColor="#FFA500" />
+        <stop offset="100%" stopColor="#FF5733" />
                                 </linearGradient>
                             </defs>
-                            <circle cx="50" cy="50" r="45" stroke="#f3f3f3" stroke-width="5" fill="none" />
-                            <circle cx="50" cy="50" r="45" stroke="url(#mixedGradient)" stroke-width="5" fill="none" stroke-linecap="round">
+                            <circle cx="50" cy="50" r="45" stroke="#f3f3f3" strokeWidth="5" fill="none" />
+                            <circle cx="50" cy="50" r="45" stroke="url(#mixedGradient)" strokeWidth="5" fill="none" strokeLinecap="round">
                                 <animate
                                     attributeName="stroke-dashoffset"
                                     values="283;0"

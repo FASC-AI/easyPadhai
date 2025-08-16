@@ -122,19 +122,19 @@ const getAllTest = async (req, res) => {
     // If user is not admin, only show active institutions
     if (userRole !== 'admin') {
       query.isActive = true;
-      if (profileDate.classId) {
+      if (profileDate && profileDate.classId && profileDate.classId.length > 0) {
         query.classes = {
           $elemMatch: { _id: { $in: profileDate.classId } },
         };
       }
 
-      if (profileDate.subjectId) {
+      if (profileDate && profileDate.subjectId && profileDate.subjectId.length > 0) {
         query.subjects = {
           $elemMatch: { _id: { $in: profileDate.subjectId } },
         };
       }
 
-      if (profileDate.bookId) {
+      if (profileDate && profileDate.bookId && profileDate.bookId.length > 0) {
         query.book = {
           $elemMatch: { _id: { $in: profileDate.bookId } },
         };

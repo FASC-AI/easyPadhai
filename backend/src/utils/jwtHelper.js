@@ -18,7 +18,7 @@ const jwtUtils = {
   generateToken(payload, expiresIn = '21d') {
     return jwt.sign(payload, config.jwt.secret, {
       expiresIn,
-      audience: [payload.id],
+      audience: payload.id,
       issuer: 'upsdma',
     });
   },
@@ -40,8 +40,9 @@ const jwtUtils = {
    */
   verifyToken(token) {
     try {
+      const decoded = jwt.decode(token);
       return jwt.verify(token, config.jwt.secret, {
-        audience: jwt.decode(token).userId,
+        audience: decoded.id || decoded.userId,
         issuer: 'upsdma',
       });
     } catch (error) {

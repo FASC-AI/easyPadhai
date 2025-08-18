@@ -41,37 +41,39 @@ dependencies:
   connectivity_plus: ^6.1.0
   localstorage: ^4.0.1+4
   flutter_svg: ^2.0.17
-  http: 
-  flutter_statusbarcolor_ns: ^0.6.0
+  http: ^1.1.0
+  web: ^1.0.0
+  # flutter_statusbarcolor_ns: ^0.6.0
   package_info_plus: ^8.0.2
   local_auth: ^2.1.8
-  lottie: ^2.7.0
+  lottie: ^3.3.1
   carousel_slider: ^5.0.0
-  intl: ^0.19.0
+  # intl: 0.19.0  # Commented out - let Flutter SDK handle version
   provider: ^6.1.2
   pin_code_fields: ^8.0.1
-  firebase_messaging: 
-  firebase_core: ^2.32.0
-  firebase_auth: ^4.20.0
-  google_sign_in: ^6.2.1
+  firebase_core: ^3.4.1
+  firebase_auth: ^5.3.1
+  firebase_messaging: ^15.0.0
+  google_sign_in: 6.1.6
   get_storage: ^2.1.1
   image_picker: ^1.0.7
-  image_cropper: ^5.0.1
+  image_cropper: ^9.1.0
   url_launcher: ^6.3.1
   flutter_html: ^3.0.0-beta.2
   webview_flutter: ^4.2.2
-  file_picker: ^6.1.1
+  file_picker: 10.2.4
 
   # youtube_player_flutter: ^8.1.2
   open_file: ^3.5.4
   image: ^4.1.3
   
-  permission_handler: ^11.3.1
-  syncfusion_flutter_pdfviewer: ^27.2.5
+  permission_handler: ^12.0.1
+  syncfusion_flutter_pdfviewer: ^28.2.12
   path_provider: ^2.1.5
   http_parser: ^4.0.2
   easy_pdf_viewer: ^1.0.8
   youtube_player_iframe: ^5.1.3
+  google_sign_in_web: 0.12.4+4
 
 
 
@@ -86,7 +88,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

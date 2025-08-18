@@ -46,7 +46,48 @@ class SelectSubject extends StatelessWidget {
         children: [
           Padding(
               padding: EdgeInsets.all(MediaQuery.of(context).size.width * .03),
-              child: SubjectView()),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Hint text based on class selection
+                  Obx(() {
+                    int selectedClassCount = authController.selectedClassIds.length;
+                    String hintText = '';
+                    Color hintColor = Colors.blue;
+                    
+                    if (selectedClassCount > 1) {
+                      hintText = '📚 Multiple classes selected: You can choose exactly 1 subject';
+                      hintColor = Colors.orange;
+                    } else if (selectedClassCount == 1) {
+                      hintText = '📚 Single class selected: Choose 5-7 subjects';
+                      hintColor = Colors.green;
+                    } else {
+                      hintText = '📚 Please select classes first';
+                      hintColor = Colors.grey;
+                    }
+                    
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: hintColor.withOpacity(0.1),
+                        border: Border.all(color: hintColor.withOpacity(0.3)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        hintText,
+                        style: TextStyle(
+                          color: hintColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    );
+                  }),
+                  Expanded(child: SubjectView()),
+                ],
+              )),
           Positioned(
             left: MediaQuery.of(context).size.width * .125,
             bottom: MediaQuery.of(context).size.width * .05,
@@ -54,12 +95,35 @@ class SelectSubject extends StatelessWidget {
             child: CustomButton(
               text: 'Confirm Subject',
               onTap: () async {
-                if (authController.selectedSubjectIds.length > 6) {
-                  Get.snackbar(
-                      "Message", "Maximum limit of selected subject is 6",
-                      snackPosition: SnackPosition.BOTTOM);
-                  return;
+                // Get the number of selected classes
+                int selectedClassCount = authController.selectedClassIds.length;
+                
+                // Apply different validation rules based on class count
+                if (selectedClassCount > 1) {
+                  // Multiple classes selected - can only select 1 subject
+                  if (authController.selectedSubjectIds.length != 1) {
+                    Get.snackbar(
+                        "Message", "When selecting multiple classes, you can only choose exactly 1 subject",
+                        snackPosition: SnackPosition.BOTTOM);
+                    return;
+                  }
+                } else if (selectedClassCount == 1) {
+                  // Single class selected - min 5, max 7 subjects
+                  if (authController.selectedSubjectIds.length < 5) {
+                    Get.snackbar(
+                        "Message", "When selecting 1 class, you must choose at least 5 subjects",
+                        snackPosition: SnackPosition.BOTTOM);
+                    return;
+                  }
+                  if (authController.selectedSubjectIds.length > 7) {
+                    Get.snackbar(
+                        "Message", "When selecting 1 class, you can choose maximum 7 subjects",
+                        snackPosition: SnackPosition.BOTTOM);
+                    return;
+                  }
                 }
+                
+                // Validation passed - proceed with subject confirmation
                 authController.selectedSubjectIds.isNotEmpty
                     ? {
                         await authController.getInstitutes(),

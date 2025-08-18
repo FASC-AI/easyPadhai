@@ -4,28 +4,46 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class GoogleSignInHelper {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: '276680617082-3rotnpilhp475ettgt3rc4sh13hco7be.apps.googleusercontent.com',
+  );
 
   Future<User?> signInWithGoogle() async {
     try {
+      print('Debug: Starting Google Sign-In process...');
+      
       final GoogleSignInAccount? googleSignInAccount =
           await _googleSignIn.signIn();
+      
+      if (googleSignInAccount == null) {
+        print('Debug: User cancelled Google Sign-In');
+        return null;
+      }
+      
+      print('Debug: Google Sign-In account obtained: ${googleSignInAccount.email}');
+      
       final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount!.authentication;
+          await googleSignInAccount.authentication;
+
+      print('Debug: Authentication tokens obtained');
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleSignInAuthentication.accessToken,
         idToken: googleSignInAuthentication.idToken,
       );
 
+      print('Debug: Credential created, signing in with Firebase...');
+
       final UserCredential authResult =
           await _firebaseAuth.signInWithCredential(credential);
       final User? user = authResult.user;
 
+      print('Debug: Firebase sign-in successful: ${user?.email}');
       return user;
     } catch (e) {
       if (kDebugMode) {
-        print(e);
+        print('Google Sign-In Error: $e');
+        print('Error type: ${e.runtimeType}');
       }
       return null;
     }

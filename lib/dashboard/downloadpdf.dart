@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'dart:typed_data';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -7,13 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
 import 'package:intl/intl.dart';
-
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:get/get.dart';
-import 'package:open_file/open_file.dart';
+import 'package:easy_padhai/common/platform_helper.dart';
 
 class PdfDownloader {
   static Future<void> downloadAndOpenPdf({
@@ -84,7 +78,7 @@ class PdfDownloader {
       // Proceed with file operations
       Directory? targetDir;
 
-      if (Platform.isAndroid) {
+      if (PlatformHelper.isAndroid) {
         // Try multiple locations with fallbacks
         try {
           // First try the standard Downloads directory
@@ -147,7 +141,7 @@ class PdfDownloader {
   }
 
   static Future<bool?> requestStoragePermission() async {
-    if (Platform.isAndroid) {
+    if (PlatformHelper.isAndroid) {
       // For Android 11+ (API 30+), use manageExternalStorage
       if (await Permission.manageExternalStorage.isDenied) {
         final status = await Permission.manageExternalStorage.request();
@@ -179,7 +173,7 @@ class PdfDownloader {
     final File file = await File(filePath).writeAsBytes(pdfBytes);
 
     // Make file visible in gallery/file managers (Android)
-    if (Platform.isAndroid) {
+    if (PlatformHelper.isAndroid) {
       await _scanMedia(file.path);
     }
 
@@ -188,7 +182,7 @@ class PdfDownloader {
 
   // Android-specific: Make file visible in gallery/file managers
   static Future<void> _scanMedia(String filePath) async {
-    if (Platform.isAndroid) {
+    if (PlatformHelper.isAndroid) {
       try {
         const MethodChannel platform =
             MethodChannel('com.example/pdf_downloader');

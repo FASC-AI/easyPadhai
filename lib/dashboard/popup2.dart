@@ -95,7 +95,7 @@ class OnlineTestListPopup extends StatelessWidget {
                                   style: const TextStyle(fontSize: 14),
                                 ),
                                 title: Text(
-                                  "Online Test (${testList[index].publishedDate ?? 'N/A'})",
+                                  "${testList[index].tests?[0].class1?[0].nameEn ?? 'N/A'} - ${testList[index].tests?[0].lesson?[0].nameEn ?? 'N/A'}",
                                 ),
                                 trailing: PopupMenuButton<String>(
                                   onSelected: (value) {

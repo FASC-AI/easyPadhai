@@ -367,6 +367,7 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<ClassDetail>(
                             hint: const Text('Select class'),
+                            isExpanded: true,
                             style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.black,
@@ -420,8 +421,11 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                             items: classes.map((ClassDetail cls) {
                               return DropdownMenuItem<ClassDetail>(
                                 value: cls,
-                                child: Text(cls.class1 ??
-                                    'Unknown'), // Display class name
+                                child: Text(
+                                  cls.class1 ?? 'Unknown',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 12),
+                                ),
                               );
                             }).toList(),
                           ),
@@ -445,6 +449,7 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton(
                             hint: const Text('Select book'),
+                            isExpanded: true,
                             style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.black,
@@ -508,7 +513,12 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                             },
                             items: booklist
                                 .map((cls) => DropdownMenuItem(
-                                    value: cls, child: Text(cls.book!)))
+                                    value: cls, 
+                                    child: Text(
+                                      cls.book!,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(fontSize: 12),
+                                    )))
                                 .toList(),
                           ),
                         ),
@@ -531,6 +541,7 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<LData>(
                             hint: const Text('Select lesson'),
+                            isExpanded: true,
                             style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.black,
@@ -591,87 +602,92 @@ class _CreateTestScreenState extends State<CreateTestScreen> {
                             },
                             items: lessonList
                                 .map((cls) => DropdownMenuItem(
-                                    value: cls, child: Text(cls.lesson!)))
+                                    value: cls, 
+                                    child: Text(
+                                      cls.lesson!,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(fontSize: 12),
+                                    )))
                                 .toList(),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      width: double.infinity,
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: AppColors.grey7, width: 1.0),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(12))),
-                            contentPadding: EdgeInsets.only(
-                                left: 10, top: 0, bottom: 0, right: 10),
-                            filled: true,
-                            fillColor: Colors.white),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<Topics>(
-                            hint: const Text('Select topics'),
-                            style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.black,
-                                overflow: TextOverflow.ellipsis),
-                            value: selectedtopic,
-                            dropdownColor: Colors.lightBlue.shade50,
-                            onChanged: (Topics? value) async {
-                              if (value != null) {
-                                setState(() {
-                                  selectedtopic = value;
-                                });
-                                await dashboardController.getOnlineQ1(
-                                    selectedClass!.sId!,
-                                    sub_id,
-                                    selectedbook!.sId!,
-                                    selectedlesson!.sId!,
-                                    selectedtopic!.sId!);
-                                // Fetching books based on selected class
-                                setState(() {
-                                  questions = dashboardController.quesList;
-                                });
+                    // const SizedBox(height: 10),
+                    // SizedBox(
+                    //   width: double.infinity,
+                    //   child: InputDecorator(
+                    //     decoration: const InputDecoration(
+                    //         enabledBorder: OutlineInputBorder(
+                    //             borderSide: BorderSide(
+                    //                 color: AppColors.grey7, width: 1.0),
+                    //             borderRadius:
+                    //                 BorderRadius.all(Radius.circular(12))),
+                    //         contentPadding: EdgeInsets.only(
+                    //             left: 10, top: 0, bottom: 0, right: 10),
+                    //         filled: true,
+                    //         fillColor: Colors.white),
+                    //     child: DropdownButtonHideUnderline(
+                    //       child: DropdownButton<Topics>(
+                    //         hint: const Text('Select topics'),
+                    //         style: const TextStyle(
+                    //             fontSize: 12,
+                    //             color: Colors.black,
+                    //             overflow: TextOverflow.ellipsis),
+                    //         value: selectedtopic,
+                    //         dropdownColor: Colors.lightBlue.shade50,
+                    //         onChanged: (Topics? value) async {
+                    //           if (value != null) {
+                    //             setState(() {
+                    //               selectedtopic = value;
+                    //             });
+                    //             await dashboardController.getOnlineQ1(
+                    //                 selectedClass!.sId!,
+                    //                 sub_id,
+                    //                 selectedbook!.sId!,
+                    //                 selectedlesson!.sId!,
+                    //                 selectedtopic!.sId!);
+                    //             // Fetching books based on selected class
+                    //             setState(() {
+                    //               questions = dashboardController.quesList;
+                    //             });
 
-                                if (!classes.contains(selectedClass)) {
-                                  setState(() {
-                                    selectedClass = null;
-                                    selectedbook = null;
-                                    selectedlesson = null;
-                                    selectedtopic = null;
-                                  });
-                                }
-                                if (!booklist.contains(selectedbook)) {
-                                  setState(() {
-                                    selectedbook = null;
-                                    selectedlesson = null;
-                                    selectedtopic = null;
-                                  });
-                                }
-                                if (!lessonList.contains(selectedlesson)) {
-                                  setState(() {
-                                    selectedlesson = null;
-                                    selectedtopic = null;
-                                  });
-                                }
-                                if (!topics.contains(selectedtopic)) {
-                                  setState(() {
-                                    selectedtopic = null;
-                                  });
-                                }
-                              }
-                            },
-                            items: topics
-                                .map((cls) => DropdownMenuItem(
-                                    value: cls, child: Text(cls.topic!)))
-                                .toList(),
-                          ),
-                        ),
-                      ),
-                    ),
+                    //             if (!classes.contains(selectedClass)) {
+                    //               setState(() {
+                    //                 selectedClass = null;
+                    //                 selectedbook = null;
+                    //                 selectedlesson = null;
+                    //                 selectedtopic = null;
+                    //               });
+                    //             }
+                    //             if (!booklist.contains(selectedbook)) {
+                    //               setState(() {
+                    //                 selectedbook = null;
+                    //                 selectedlesson = null;
+                    //                 selectedtopic = null;
+                    //               });
+                    //             }
+                    //             if (!lessonList.contains(selectedlesson)) {
+                    //               setState(() {
+                    //                 selectedlesson = null;
+                    //                 selectedtopic = null;
+                    //               });
+                    //             }
+                    //             if (!topics.contains(selectedtopic)) {
+                    //               setState(() {
+                    //                 selectedtopic = null;
+                    //               });
+                    //             }
+                    //           }
+                    //         },
+                    //         items: topics
+                    //             .map((cls) => DropdownMenuItem(
+                    //                 value: cls, child: Text(cls.topic!)))
+                    //             .toList(),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
 
                     const SizedBox(height: 20),
                     GestureDetector(

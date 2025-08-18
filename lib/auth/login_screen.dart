@@ -89,6 +89,7 @@ class _LoginState extends State<Login> {
                             height: MediaQuery.of(context).size.height * .12,
                           ),
 
+                          // Google Sign-In button
                           GestureDetector(
                             onTap: () async {
                               if (_isGoogleLoading)
@@ -99,14 +100,24 @@ class _LoginState extends State<Login> {
                               });
 
                               try {
+                                print('Debug: Login screen: Starting Google Sign-In...');
                                 final User? user = await _googleSignInHelper
                                     .signInWithGoogle();
                                 if (user != null) {
+                                  print('Debug: Login screen: Google Sign-In successful, calling authController...');
                                   await authController.googleSignin('google');
+                                } else {
+                                  print('Debug: Login screen: Google Sign-In returned null user');
+                                  Get.snackbar(
+                                    "Error", "Google Sign-In failed. Please try again.",
+                                    snackPosition: SnackPosition.BOTTOM);
                                 }
                               } catch (e) {
-                                // Handle error if needed
-                                print('Google sign in error: $e');
+                                print('Debug: Login screen: Google Sign-In error: $e');
+                                print('Debug: Login screen: Error type: ${e.runtimeType}');
+                                Get.snackbar(
+                                  "Error", "Google Sign-In error: $e",
+                                  snackPosition: SnackPosition.BOTTOM);
                               } finally {
                                 if (mounted) {
                                   setState(() {
@@ -159,10 +170,11 @@ class _LoginState extends State<Login> {
                                                 .06,
                                           ),
                                           SizedBox(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                .01,
+                                            width:
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    .01,
                                           ),
                                           Text(
                                             'Continue with Google',

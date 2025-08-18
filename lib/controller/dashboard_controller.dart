@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:easy_padhai/auth/google_signin_helper.dart';
+// import 'package:easy_padhai/auth/google_signin_helper.dart';  // Temporarily disabled
 import 'package:easy_padhai/common/api_helper.dart';
 import 'package:easy_padhai/common/api_urls.dart';
 import 'package:easy_padhai/common/app_storage.dart';
@@ -51,12 +51,12 @@ import 'package:easy_padhai/model/tpupdate_model.dart';
 import 'package:easy_padhai/model/video_clip_model.dart';
 import 'package:easy_padhai/model/watsapp_model.dart';
 import 'package:easy_padhai/route/route_name.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';  // Temporarily disabled
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:get_storage/get_storage.dart' as get_storage;
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:google_sign_in/google_sign_in.dart';  // Temporarily disabled
 import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
@@ -111,8 +111,8 @@ class DashboardController extends GetxController {
   IData? instruction;
   VideoClipModelData? vidList;
   LatestAssgnModelData? assignData;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  // final FirebaseAuth _auth = FirebaseAuth.instance;  // Temporarily disabled
+  // final GoogleSignIn _googleSignIn = GoogleSignIn();  // Temporarily disabled
   RxString whatsappTeacher = ''.obs;
   RxString whatsappStudent = ''.obs;
   RxString batchId = ''.obs;
@@ -127,27 +127,27 @@ class DashboardController extends GetxController {
     // getBatch();
   }
 
-  Future<void> signOut() async {
-    try {
-      // Sign out from Firebase
-      await _auth.signOut();
+  // Future<void> signOut() async {  // Temporarily disabled
+  //   try {
+  //     // Sign out from Firebase
+  //     await _auth.signOut();
 
-      // Sign out from Google
-      await _googleSignIn.signOut();
-      await _googleSignIn.disconnect();
+  //     // Sign out from Google
+  //     await _googleSignIn.signOut();
+  //     await _googleSignIn.disconnect();
 
-      // Clear local storage
-      //  await _storage.erase();
+  //     // Clear local storage
+  //     //  await _storage.erase();
 
-      // Optional: Reset any state management (like GetX)
-      // Get.reset();
+  //     // Optional: Reset any state management (like GetX)
+  //     // Get.reset();
 
-      print('User signed out successfully');
-    } catch (e) {
-      print('Error signing out: $e');
-      throw Exception('Failed to sign out');
-    }
-  }
+  //     print('User signed out successfully');
+  //   } catch (e) {
+  //     print('Error signing out: $e');
+  //     throw Exception('Failed to sign out');
+  //   }
+  // }
 
 //watsapp teacher : +919810168391, watsapp student : +918882130397
   Future<void> changeIndex(int index) async {
@@ -392,7 +392,7 @@ class DashboardController extends GetxController {
     }
   }
 
-  final GoogleSignInHelper _googleSignInHelper = GoogleSignInHelper();
+  // final GoogleSignInHelper _googleSignInHelper = GoogleSignInHelper();  // Temporarily disabled
 
   getProfile() async {
     isLoading(true);
@@ -417,7 +417,7 @@ class DashboardController extends GetxController {
         isLoading(false);
         Get.snackbar("Message", response.message!,
             snackPosition: SnackPosition.BOTTOM);
-        await _googleSignInHelper.signOutGoogle();
+        // await _googleSignInHelper.signOutGoogle();  // Temporarily disabled
         await box.erase();
 
         //await GetStorage().erase();
@@ -778,42 +778,64 @@ class DashboardController extends GetxController {
       "topicId": id,
       "batchId": batchId.value
     };
-    print(queryParameter);
+    print("Debug: getPHWQbyTopic called with:");
+    print("Debug: - topicId: $id");
+    print("Debug: - batchId: ${batchId.value}");
+    print("Debug: Full queryParameter: $queryParameter");
+    print("Debug: Calling API: ${ApiUrls.getprevques}");
     final profileJson =
         await apiHelper.get(ApiUrls.getprevques, queryParameter, data);
+    print("Debug: API Response: $profileJson");
+    
     if (profileJson != null && profileJson != false) {
       HomeworkModel3 response = HomeworkModel3.fromJson(profileJson);
+      print("Debug: Parsed response - status: ${response.status}");
+      
       if (response.status == true) {
         prevHlist = response.data!;
+        print("Debug: prevHlist length: ${prevHlist.length}");
         // Update box storage with profile data
 
         isLoading(false);
         return prevHlist;
       } else {
+        print("Debug: API returned false status");
         prevHlist = [];
         isLoading(false);
       }
     } else {
+      print("Debug: API returned null or false");
       prevHlist = [];
     }
 
     isLoading(false);
   }
 
-  updateHomework(List<String> ids, String date) async {
+  updateHomework(List<String> ids, String date, String topicId) async {
     isLoading(true);
     dynamic data;
     data = await token();
     Map<String, dynamic>? queryParameter = {
       "ids": ids,
       "publishedDate": date,
+      "topicId": topicId,
       "batchId": batchId.value
     };
-    print(queryParameter);
+    print("Debug: updateHomework called with parameters:");
+    print("Debug: - ids: $ids");
+    print("Debug: - date: $date");
+    print("Debug: - topicId: $topicId");
+    print("Debug: - batchId: ${batchId.value}");
+    print("Debug: Full queryParameter: $queryParameter");
+    print("Debug: Calling API: ${ApiUrls.uphome}");
     final profileJson =
         await apiHelper.patch(ApiUrls.uphome, queryParameter, data);
+    print("Debug: API Response: $profileJson");
+    
     if (profileJson != null && profileJson != false) {
       TpupdateModel response = TpupdateModel.fromJson(profileJson);
+      print("Debug: Parsed response - status: ${response.status}, message: ${response.message}");
+      
       if (response.status == true) {
         //topic = response.data!;
         // Update box storage with profile data
@@ -823,8 +845,11 @@ class DashboardController extends GetxController {
         isLoading(false);
         return response;
       } else {
+        print("Debug: API returned false status");
         isLoading(false);
       }
+    } else {
+      print("Debug: API returned null or false");
     }
     isLoading(false);
   }

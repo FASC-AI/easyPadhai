@@ -1,5 +1,5 @@
 import 'package:easy_padhai/dashboard/batch_req.dart';
-import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_core/firebase_core.dart';  // Temporarily disabled
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:easy_padhai/common/app_storage.dart';
@@ -13,7 +13,7 @@ import 'package:get_storage/get_storage.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp();
+  // await Firebase.initializeApp();  // Temporarily disabled
   await GetStorage.init();
   Get.lazyPut(() => AuthController());
   runApp(const MyApp());

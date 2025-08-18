@@ -125,11 +125,11 @@ class _ProfileEditState extends State<TeacherClassScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                          height: 70,
+                          height: 54,
                           decoration:
                               const BoxDecoration(color: AppColors.theme),
                           child: Container(
-                            margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                            margin: const EdgeInsets.fromLTRB(20, 0, 20, 10),
                             decoration: BoxDecoration(
                               color: AppColors.theme,
                               border: Border.all(

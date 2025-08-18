@@ -4,8 +4,13 @@ import 'package:easy_padhai/common/api_urls.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:easy_padhai/common/platform_helper.dart';
 
 class ApiHelper {
+  String _getPlatform() {
+    return PlatformHelper.platformName;
+  }
+
   Future<dynamic> get(
       String url, Map<String, dynamic>? queryParameters, String tokenId) async {
     dynamic responseJson;
@@ -14,7 +19,7 @@ class ApiHelper {
           .get(Uri.https(ApiUrls.apiBaseUrl, url, queryParameters), headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer $tokenId",
-        "Device-Platform": Platform.isAndroid ? "Android" : "iOS",
+        "Device-Platform": _getPlatform(),
       });
       responseJson = _returnResponse(response);
       if (response.statusCode == 503) {
@@ -51,7 +56,7 @@ class ApiHelper {
           headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer $tokenId",
-            "Device-Platform": Platform.isAndroid ? "Android" : "iOS",
+            "Device-Platform": _getPlatform(),
           },
           body: jsonEncode(data));
       responseJson = _returnResponse(response);
@@ -73,7 +78,7 @@ class ApiHelper {
           headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer $tokenId",
-            "Device-Platform": Platform.isAndroid ? "Android" : "iOS",
+            "Device-Platform": _getPlatform(),
           },
           body: jsonEncode(data));
       responseJson = _returnResponse(response);
@@ -94,7 +99,7 @@ class ApiHelper {
           headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer $tokenId",
-            "Device-Platform": Platform.isAndroid ? "Android" : "iOS",
+            "Device-Platform": _getPlatform(),
           },
           body: jsonEncode(data));
       responseJson = _returnResponse(response);
@@ -136,7 +141,7 @@ class ApiHelper {
           headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer $tokenId",
-            "Device-Platform": Platform.isAndroid ? "Android" : "iOS",
+            "Device-Platform": _getPlatform(),
           },
           body: jsonEncode(data));
       responseJson = _returnResponse(response);
@@ -158,7 +163,7 @@ class ApiHelper {
           headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer $tokenId",
-            "Device-Platform": Platform.isAndroid ? "Android" : "iOS",
+            "Device-Platform": _getPlatform(),
           },
           body: jsonEncode(data));
       responseJson = _returnResponse(response);
@@ -199,7 +204,7 @@ class ApiHelper {
         headers: {
           "Content-Type": "application/json",
           "Authorization": tokenId,
-          "Device-Platform": Platform.isAndroid ? "Android" : "iOS",
+          "Device-Platform": _getPlatform(),
         },
       );
       responseJson = _returnResponse(response);

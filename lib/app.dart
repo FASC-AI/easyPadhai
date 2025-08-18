@@ -5,7 +5,7 @@ import 'package:easy_padhai/route/custom_route.dart';
 import 'package:easy_padhai/route/route_name.dart';
 import 'package:easy_padhai/services/connectivity_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
+// import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +19,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    FlutterStatusbarcolor.setStatusBarColor(AppColors.theme);
+    // FlutterStatusbarcolor.setStatusBarColor(AppColors.theme);
 
     return ChangeNotifierProvider(
       create: (context) => ConnectivityProvider(),

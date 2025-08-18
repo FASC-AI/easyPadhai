@@ -130,49 +130,13 @@ class AuthController extends GetxController {
   }
 
   googleSignin(String method) async {
-    isLoading1.value = true;
-    final User? user = await _googleSignInHelper.signInWithGoogle();
-    if (user != null) {
-      dynamic queryParameters = {
-        "email": user.email,
-        "name": user.displayName,
-        "picture": user.photoURL,
-        "signInMethod": method
-      };
-      final signUpJson = await apiHelper.postwithoutToken(
-          ApiUrls.googleLogin, queryParameters);
-      if (signUpJson != null) {
-        RegisterModel response = RegisterModel.fromJson(signUpJson);
-        if (response.code == 200) {
-          userId.value = response.data!.id!;
-          userName.value = response.data!.name!;
-          box.write('username', response.data!.name!);
-          box.write('userid', response.data!.id!);
-          response.data!.isMpinSet == true
-              ? Get.toNamed(RouteName.verifyMpin)
-              : Get.toNamed(RouteName.setMPin);
-
-          isLoading1.value = false;
-          return response;
-        } else {
-          Get.snackbar(
-            '',
-            '',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: AppColors.red,
-            titleText: const SizedBox.shrink(),
-            messageText: Text(
-              response.message.toString(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-              ),
-            ),
-          );
-          isLoading1.value = false;
-          return response;
-        }
-      } else {
+    try {
+      isLoading1.value = true;
+      final User? user = await _googleSignInHelper.signInWithGoogle();
+      
+      if (user == null) {
+        print('Debug: Google Sign-In returned null user');
+        isLoading1.value = false;
         Get.snackbar(
           '',
           '',
@@ -180,15 +144,109 @@ class AuthController extends GetxController {
           backgroundColor: AppColors.red,
           titleText: const SizedBox.shrink(),
           messageText: const Text(
-            'Please try again!',
+            'Google Sign-In failed. Please try again.',
             style: TextStyle(
               color: Colors.white,
               fontSize: 16,
             ),
           ),
         );
-        isLoading1.value = false;
+        return null;
       }
+
+      print('Debug: Google Sign-In successful, user email: ${user.email}');
+      
+      dynamic queryParameters = {
+        "email": user.email,
+        "name": user.displayName ?? 'User',
+        "picture": user.photoURL ?? '',
+        "signInMethod": method
+      };
+      
+      print('Debug: Calling API with parameters: $queryParameters');
+      
+      final signUpJson = await apiHelper.postwithoutToken(
+          ApiUrls.googleLogin, queryParameters);
+      
+      if (signUpJson != null) {
+        print('Debug: API response received: $signUpJson');
+        RegisterModel response = RegisterModel.fromJson(signUpJson);
+        
+        if (response.code == 200) {
+          print('Debug: API call successful, code: 200');
+          userId.value = response.data!.id!;
+          userName.value = response.data!.name!;
+          box.write('username', response.data!.name!);
+          box.write('userid', response.data!.id!);
+          
+          isLoading1.value = false;
+          
+          // Navigate based on MPIN status
+          if (response.data!.isMpinSet == true) {
+            print('Debug: Navigating to verify MPIN');
+            Get.toNamed(RouteName.verifyMpin);
+          } else {
+            print('Debug: Navigating to set MPIN');
+            Get.toNamed(RouteName.setMPin);
+          }
+          
+          return response;
+        } else {
+          print('Debug: API call failed, code: ${response.code}, message: ${response.message}');
+          isLoading1.value = false;
+          Get.snackbar(
+            '',
+            '',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.red,
+            titleText: const SizedBox.shrink(),
+            messageText: Text(
+              response.message?.toString() ?? 'Login failed. Please try again.',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+          );
+          return response;
+        }
+      } else {
+        print('Debug: API call returned null response');
+        isLoading1.value = false;
+        Get.snackbar(
+          '',
+          '',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.red,
+          titleText: const SizedBox.shrink(),
+          messageText: const Text(
+            'Server error. Please try again!',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          ),
+        );
+        return null;
+      }
+    } catch (e) {
+      print('Debug: Exception in googleSignin: $e');
+      isLoading1.value = false;
+      Get.snackbar(
+        '',
+        '',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.red,
+        titleText: const SizedBox.shrink(),
+        messageText: Text(
+          'An error occurred: $e',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+          ),
+        ),
+      );
+      return null;
     }
   }
 

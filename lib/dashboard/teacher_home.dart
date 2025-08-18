@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_padhai/common/constant.dart';
+import 'package:easy_padhai/common/platform_helper.dart';
 import 'package:easy_padhai/controller/dashboard_controller.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
 import 'package:easy_padhai/custom_widgets/custom_nav_bar.dart';
@@ -71,7 +71,7 @@ class _ProfileEditState extends State<TeacherHome> {
   }
 
   static Future<bool> requestStoragePermission() async {
-    if (Platform.isAndroid) {
+    if (PlatformHelper.isAndroid) {
       final sdkInt = await _getAndroidSdkInt();
 
       if (sdkInt >= 33) {

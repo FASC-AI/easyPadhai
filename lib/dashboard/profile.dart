@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:easy_padhai/auth/google_signin_helper.dart';
+// import 'package:easy_padhai/auth/google_signin_helper.dart';  // Temporarily disabled
 import 'package:easy_padhai/common/app_storage.dart';
 import 'package:easy_padhai/common/constant.dart';
 import 'package:easy_padhai/controller/auth_controller.dart';
@@ -21,7 +21,7 @@ import 'package:lottie/lottie.dart';
 // ignore: must_be_immutable
 class Profile extends StatelessWidget {
   DashboardController dashboardController = Get.find();
-  final GoogleSignInHelper _googleSignInHelper = GoogleSignInHelper();
+  // final GoogleSignInHelper _googleSignInHelper = GoogleSignInHelper();  // Temporarily disabled
   String name = "", type = "", icode = "";
   Profile({super.key});
 
@@ -1117,7 +1117,7 @@ class Profile extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  await _googleSignInHelper.signOutGoogle();
+                  // await _googleSignInHelper.signOutGoogle();  // Temporarily disabled
                   await box.erase();
                   await GetStorage().erase();
 

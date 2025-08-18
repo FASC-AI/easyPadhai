@@ -352,7 +352,7 @@ void showCustomPopup(BuildContext context) {
                     vertical: MediaQuery.of(context).size.height * .02,
                     horizontal: MediaQuery.of(context).size.width * .05),
                 child: Text(
-                  "New here? This email isn’t registered yet.\nJoin us faster with Google!",
+                  "New here? This email isn't registered yet.\nJoin us faster with Google!",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: MediaQuery.of(context).size.width * .035,

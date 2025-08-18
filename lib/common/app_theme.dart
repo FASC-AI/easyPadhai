@@ -11,7 +11,7 @@ class AppTheme {
       progressIndicatorTheme: const ProgressIndicatorThemeData(
           circularTrackColor: AppColors.backGroundColor,
           color: AppColors.backGroundColor),
-      tabBarTheme: const TabBarTheme(
+      tabBarTheme: const TabBarThemeData(
         labelStyle: TextStyle(
           color: AppColors.backGroundColor,
         ),

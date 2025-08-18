@@ -29,8 +29,6 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
   List<String> selectedQuestionIds = [];
   DashboardController dashboardController = Get.find();
   bool isload = false;
-  DateTime selectedDate = DateTime.now();
-  String selectDate = '';
 
   @override
   void initState() {
@@ -43,91 +41,58 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
       isload = true;
     });
 
+    print("Debug: getData() called with lessonId: ${widget.lessonId}");
+    print("Debug: Testing for Class 12, 'Bharat itihas ke kuch vishaya', Lesson 08, Topic 'Parichay'");
+
     await dashboardController.getHWQbyTopic(widget.lessonId);
 
     // await dashboardController.getHWQbyTopic(widget.tid);
     questions = dashboardController.queslist;
+    print("Debug: Questions loaded: ${questions.length}");
+    
     // if (widget.tid.isNotEmpty) {
     //   await dashboardController.getPHWQbyTopic(widget.tid);
     // } else {
+    print("Debug: Calling getPHWQbyTopic with lessonId: ${widget.lessonId}");
     await dashboardController.getPHWQbyTopic(widget.lessonId);
     // }
 
     prevH = dashboardController.prevHlist;
+    print("Debug: Previous homework loaded: ${prevH.length}");
+    print("Debug: Previous homework data: $prevH");
+    
+    // Additional debug info
+    if (prevH.isNotEmpty) {
+      print("Debug: First homework item details:");
+      print("Debug: - publishedDate: ${prevH.first.publishedDate}");
+      print("Debug: - homeworks count: ${prevH.first.homeworks?.length ?? 0}");
+      if (prevH.first.homeworks != null && prevH.first.homeworks!.isNotEmpty) {
+        print("Debug: - First question: ${prevH.first.homeworks!.first.question}");
+      }
+    } else {
+      print("Debug: No previous homework found for lessonId: ${widget.lessonId}");
+    }
+    
     setState(() {
       isload = false;
     });
   }
 
-  final TextEditingController _dateController = TextEditingController();
+
   final List<String> previousHomework = [
     "Homework (20/12/2024)",
     "Homework (08/12/2024)",
     "Homework (01/12/2024)",
   ];
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2101));
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-        selectDate = DateFormat('dd-MM-yyyy')
-            .format(selectedDate.toLocal())
-            .split(' ')[0];
-        _dateController.text = selectDate;
-      });
-    }
-  }
 
-  void _showPublishDatePopup() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.white,
-        title: const Text(
-          "Test Ready for Launch",
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-        ),
-        content: GestureDetector(
-            onTap: () {
-              _selectDate(context);
-            },
-            child: TextFormField(
-              controller: _dateController, // Bind the controller here
-              readOnly: true,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey, width: 1.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey, width: 1.0),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey, width: 1.0),
-                ),
-                disabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: AppColors.grey7, width: 1.0),
-                ),
-                hintText: "Pick a Date",
-                suffixIcon: IconButton(
-                  icon: const Icon(
-                    Icons.calendar_month,
-                    color: Color(0xFF2765CA),
-                  ),
-                  onPressed: () {
-                    _selectDate(context);
-                  },
-                ),
-              ),
-            )),
+
+
+
+
+
+
+
         // child: Container(
         //   padding: EdgeInsets.all(10),
         //   decoration: BoxDecoration(
@@ -154,25 +119,7 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
         //         ),
         //       ]),
         // )),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (selectDate != null) {
-                // Implement publish logic here
-                Navigator.pop(context);
-                Get.snackbar("Success", "Publish date set to $selectDate");
-              }
-            },
-            child: const Text("Save"),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -188,29 +135,10 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Choose Your Questions",
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold),
-                          ),
-                          OutlinedButton.icon(
-                            onPressed: _showPublishDatePopup,
-                            icon: SvgPicture.asset('assets/publish.svg'),
-                            label: const Text(
-                              "Publish Date",
-                              style: TextStyle(
-                                  color: Color(0xff2180C3),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12),
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Color(0xff2180C3)),
-                            ),
-                          ),
-                        ],
+                      const Text(
+                        "Choose Your Questions",
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
 
@@ -313,38 +241,76 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
                         child: SizedBox(
                           width: 200,
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              print("Debug: ===== SUBMIT BUTTON PRESSED =====");
+                              print("Debug: Step 1: Validating input data...");
+                              
                               // print("Selected Questions: $selectedQuestionIds");
                               // Handle submit logic here
                               if (selectedQuestionIds.isEmpty) {
+                                print("Debug: ❌ VALIDATION FAILED: No questions selected");
                                 Get.snackbar(
                                     "Message", "Please select questions.",
                                     snackPosition: SnackPosition.BOTTOM);
                                 return;
-                              } else if (selectDate.isEmpty) {
-                                Get.snackbar(
-                                    "Message", "Please select publish date.",
-                                    snackPosition: SnackPosition.BOTTOM);
-                                return;
                               } else {
-                                DateTime parsedDate =
-                                    DateFormat('dd-MM-yyyy').parse(selectDate);
+                                print("Debug: ✅ VALIDATION PASSED: ${selectedQuestionIds.length} questions selected");
+                                print("Debug: Step 2: Preparing submission data...");
+                                
+                                // Automatically use current date instead of user-selected date
+                                DateTime currentDate = DateTime.now();
+                                String isoDate = formatToISOWithOffset(currentDate);
 
-                                // Step 2: Convert to UTC and format to ISO 8601
-                                String isoDate =
-                                    formatToISOWithOffset(parsedDate);
+                                print("Debug: Submitting homework with:");
+                                print("Debug: - selectedQuestionIds = $selectedQuestionIds");
+                                print("Debug: - isoDate = $isoDate");
+                                print("Debug: - lessonId = ${widget.lessonId}");
+                                print("Debug: - Testing for Class 12, 'Bharat itihas ke kuch vishaya', Lesson 08, Topic 'Parichay'");
 
-                                var res = dashboardController.updateHomework(
-                                    selectedQuestionIds, isoDate);
+                                print("Debug: Step 3: Calling updateHomework API...");
+                                var res = await dashboardController.updateHomework(
+                                    selectedQuestionIds, isoDate, widget.lessonId);
+
+                                print("Debug: Step 4: API Response received");
+                                print("Debug: - updateHomework result = $res");
+                                print("Debug: - Result type: ${res.runtimeType}");
+                                print("Debug: - Result is null: ${res == null}");
+                                print("Debug: - Result is false: ${res == false}");
+                                
+                                print("Debug: === DATABASE CHECK ===");
+                                print("Debug: Checking if homework was saved to database...");
 
                                 if (res != null && res != false) {
+                                  print("Debug: ✅ SUCCESS: Homework saved successfully!");
+                                  print("Debug: Step 5: Refreshing data from database...");
+                                  
+                                  // Refresh the data after saving
+                                  await getData();
+                                  
+                                  print("Debug: Step 6: Data refresh completed");
+                                  
                                   setState(() {
-                                    // selectDate = "";
-                                    // selectedQuestionIds = [];
+                                    // Navigate back to topic after successful submission
                                     Navigator.pop(context);
                                     Navigator.pop(context);
                                   });
+                                  
+                                  print("Debug: Step 7: Redirecting back to topic");
+                                  
+                                  // Show success message
+                                  Get.snackbar(
+                                      "Success", "Homework assigned successfully!",
+                                      snackPosition: SnackPosition.BOTTOM);
+                                } else {
+                                  print("Debug: ❌ FAILURE: Homework save failed");
+                                  print("Debug: - Result was null: ${res == null}");
+                                  print("Debug: - Result was false: ${res == false}");
+                                  Get.snackbar(
+                                      "Error", "Failed to save homework.",
+                                      snackPosition: SnackPosition.BOTTOM);
                                 }
+                                
+                                print("Debug: ===== SUBMIT PROCESS COMPLETED =====");
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -358,6 +324,9 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
+
+
+                      const SizedBox(height: 10),
 
                       // Previous Homework List
                       const Text(
@@ -511,4 +480,6 @@ class _AssignHomeworkScreenState extends State<AssignHomeworkScreen> {
     // Format to ISO 8601 string
     return adjustedDate.toUtc().toIso8601String();
   }
+
+
 }

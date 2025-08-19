@@ -824,6 +824,7 @@ class _ProfileEditState extends State<StudentHome> {
       children: [
         Container(
           width: 160,
+          height: 120,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: isSelected
@@ -844,61 +845,62 @@ class _ProfileEditState extends State<StudentHome> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                imageAsset.isNotEmpty
-                    ? Image.network(
-                        imageAsset,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[300],
-                            alignment: Alignment.center,
-                            child: Icon(
-                              Icons.broken_image,
-                              color: Colors.grey[600],
-                              size: 50,
-                            ),
-                          );
-                        },
-                      )
-                    : Container(
-                        color: Colors.grey[300],
-                        alignment: Alignment.center,
-                        child: Icon(
-                          Icons.image_not_supported,
-                          color: Colors.grey[600],
-                          size: 50,
-                        ),
-                      ),
-                Align(
-                  alignment: Alignment.bottomLeft,
+                // Background Image
+                Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    image: imageAsset.isNotEmpty
+                        ? DecorationImage(
+                            image: NetworkImage(imageAsset),
+                            fit: BoxFit.cover,
+                            onError: (error, stackTrace) {
+                              debugPrint('Image load failed: $error');
+                            },
+                          )
+                        : null,
+                    color: Colors.grey[300], // Background color if no image
+                  ),
+                ),
+                // Gradient Overlay on Bottom Half
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: 60, // Half of the card height (120/2)
                   child: Container(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        if (icon != null) ...[
-                          Icon(icon, color: Colors.white, size: 20),
-                          const SizedBox(width: 4),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.8),
                         ],
-                        Flexible(
-                          child: Text(
-                            subject,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
+                  ),
+                ),
+                // Text Content
+                Positioned(
+                  bottom: 12,
+                  left: 12,
+                  right: 12,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        subject,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ),
               ],

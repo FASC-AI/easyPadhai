@@ -718,104 +718,104 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      width: double.infinity,
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: AppColors.grey7, width: 1.0),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(12))),
-                            contentPadding: EdgeInsets.only(
-                                left: 10, top: 0, bottom: 0, right: 10),
-                            filled: true,
-                            fillColor: Colors.white),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<Topics>(
-                            hint: const Text('Select topics'),
-                            isExpanded: true,
-                            style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.black,
-                                overflow: TextOverflow.ellipsis),
-                            value: selectedtopic,
-                            dropdownColor: Colors.lightBlue.shade50,
-                            onChanged: (Topics? value) async {
-                              if (value != null) {
-                                setState(() {
-                                  selectedtopic = value;
-                                });
-                                await dashboardController.getOfflineQ1(
-                                    selectedClass!.sId!,
-                                    sub_id,
-                                    selectedbook!.sId!,
-                                    selectedlesson!.sId!,
-                                    selectedtopic!.sId!);
-                                // Fetching books based on selected class
-                                setState(() {
-                                  questions.clear();
-                                  ARQuestions.clear();
-                                  DSQuestions.clear();
-                                  mcqQuestions.clear();
-                                  TFQuestions.clear();
-                                  questions = dashboardController.OffquesList;
-                                  // print(questions.length);
-                                  if (questions.isNotEmpty) {
-                                    for (int i = 0; i < questions.length; i++) {
-                                      if (questions[i].sId ==
-                                          "Assertion-Reason") {
-                                        ARQuestions = questions[i].tests!;
-                                      } else if (questions[i].sId ==
-                                          "Descriptive") {
-                                        DSQuestions = questions[i].tests!;
-                                      } else if (questions[i].sId == "MCQ") {
-                                        mcqQuestions = questions[i].tests!;
-                                      } else if (questions[i].sId ==
-                                          "True/False") {
-                                        TFQuestions = questions[i].tests!;
-                                      }
-                                    }
-                                  }
-                                });
+                    // const SizedBox(height: 10),
+                    // SizedBox(
+                    //   width: double.infinity,
+                    //   child: InputDecorator(
+                    //     decoration: const InputDecoration(
+                    //         enabledBorder: OutlineInputBorder(
+                    //             borderSide: BorderSide(
+                    //                 color: AppColors.grey7, width: 1.0),
+                    //             borderRadius:
+                    //                 BorderRadius.all(Radius.circular(12))),
+                    //         contentPadding: EdgeInsets.only(
+                    //             left: 10, top: 0, bottom: 0, right: 10),
+                    //         filled: true,
+                    //         fillColor: Colors.white),
+                    //     child: DropdownButtonHideUnderline(
+                    //       child: DropdownButton<Topics>(
+                    //         hint: const Text('Select topics'),
+                    //         isExpanded: true,
+                    //         style: const TextStyle(
+                    //             fontSize: 12,
+                    //             color: Colors.black,
+                    //             overflow: TextOverflow.ellipsis),
+                    //         value: selectedtopic,
+                    //         dropdownColor: Colors.lightBlue.shade50,
+                    //         onChanged: (Topics? value) async {
+                    //           if (value != null) {
+                    //             setState(() {
+                    //               selectedtopic = value;
+                    //             });
+                    //             await dashboardController.getOfflineQ1(
+                    //                 selectedClass!.sId!,
+                    //                 sub_id,
+                    //                 selectedbook!.sId!,
+                    //                 selectedlesson!.sId!,
+                    //                 selectedtopic!.sId!);
+                    //             // Fetching books based on selected class
+                    //             setState(() {
+                    //               questions.clear();
+                    //               ARQuestions.clear();
+                    //               DSQuestions.clear();
+                    //               mcqQuestions.clear();
+                    //               TFQuestions.clear();
+                    //               questions = dashboardController.OffquesList;
+                    //               // print(questions.length);
+                    //               if (questions.isNotEmpty) {
+                    //                 for (int i = 0; i < questions.length; i++) {
+                    //                   if (questions[i].sId ==
+                    //                       "Assertion-Reason") {
+                    //                     ARQuestions = questions[i].tests!;
+                    //                   } else if (questions[i].sId ==
+                    //                       "Descriptive") {
+                    //                     DSQuestions = questions[i].tests!;
+                    //                   } else if (questions[i].sId == "MCQ") {
+                    //                     mcqQuestions = questions[i].tests!;
+                    //                   } else if (questions[i].sId ==
+                    //                       "True/False") {
+                    //                     TFQuestions = questions[i].tests!;
+                    //                   }
+                    //                 }
+                    //               }
+                    //             });
 
-                                if (!classes.contains(selectedClass)) {
-                                  setState(() {
-                                    selectedClass = null;
-                                    selectedbook = null;
-                                    selectedlesson = null;
-                                    selectedtopic = null;
-                                  });
-                                }
-                                if (!booklist.contains(selectedbook)) {
-                                  setState(() {
-                                    selectedbook = null;
-                                    selectedlesson = null;
-                                    selectedtopic = null;
-                                  });
-                                }
-                                if (!lessonList.contains(selectedlesson)) {
-                                  setState(() {
-                                    selectedlesson = null;
-                                    selectedtopic = null;
-                                  });
-                                }
-                                if (!topics.contains(selectedtopic)) {
-                                  setState(() {
-                                    selectedtopic = null;
-                                  });
-                                }
-                              }
-                            },
-                            items: topics
-                                .map((cls) => DropdownMenuItem(
-                                    value: cls, child: Text(cls.topic!)))
-                                .toList(),
-                          ),
-                        ),
-                      ),
-                    ),
+                    //             if (!classes.contains(selectedClass)) {
+                    //               setState(() {
+                    //                 selectedClass = null;
+                    //                 selectedbook = null;
+                    //                 selectedlesson = null;
+                    //                 selectedtopic = null;
+                    //               });
+                    //             }
+                    //             if (!booklist.contains(selectedbook)) {
+                    //               setState(() {
+                    //                 selectedbook = null;
+                    //                 selectedlesson = null;
+                    //                 selectedtopic = null;
+                    //               });
+                    //             }
+                    //             if (!lessonList.contains(selectedlesson)) {
+                    //               setState(() {
+                    //                 selectedlesson = null;
+                    //                 selectedtopic = null;
+                    //               });
+                    //             }
+                    //             if (!topics.contains(selectedtopic)) {
+                    //               setState(() {
+                    //                 selectedtopic = null;
+                    //               });
+                    //             }
+                    //           }
+                    //         },
+                    //         items: topics
+                    //             .map((cls) => DropdownMenuItem(
+                    //                 value: cls, child: Text(cls.topic!)))
+                    //             .toList(),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
 
                     const SizedBox(height: 20),
                     GestureDetector(

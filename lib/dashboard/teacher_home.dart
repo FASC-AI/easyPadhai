@@ -285,12 +285,12 @@ class _ProfileEditState extends State<TeacherHome> {
                             Container(
                                 color: Colors.white,
                                 width: MediaQuery.of(context).size.width,
-                                height: 250,
+                                height: 200,
                                 child: const RequestsScreen()),
                             const SizedBox(height: 20),
                             SizedBox(
                               height:
-                                  200, // Slightly increased height if needed
+                                  150, // Slightly increased height if needed
                               child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
                                 itemCount: batches.length,
@@ -970,40 +970,74 @@ class _ProfileEditState extends State<TeacherHome> {
       borderRadius: BorderRadius.circular(12),
       child: Container(
         width: 160,
-        decoration: BoxDecoration(
-          image: imagePath.isNotEmpty
-              ? DecorationImage(
-                  image: NetworkImage(imagePath),
-                  fit: BoxFit.cover,
-                  onError: (error, stackTrace) {
-                    debugPrint('Image load failed: $error'); // Error logging
-                  },
-                )
-              : null,
-          color: Colors.grey[300], // Background color if no image
-        ),
-        padding: const EdgeInsets.all(12),
-        alignment: Alignment.bottomLeft,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        height: 120,
+        child: Stack(
           children: [
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+            // Background Image
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                image: imagePath.isNotEmpty
+                    ? DecorationImage(
+                        image: NetworkImage(imagePath),
+                        fit: BoxFit.cover,
+                        onError: (error, stackTrace) {
+                          debugPrint('Image load failed: $error');
+                        },
+                      )
+                    : null,
+                color: Colors.grey[300], // Background color if no image
               ),
             ),
-            if (subtitle.isNotEmpty)
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 12,
+            // Gradient Overlay on Bottom Half
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 60, // Half of the card height (120/2)
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.8),
+                    ],
+                  ),
                 ),
               ),
+            ),
+            // Text Content
+            Positioned(
+              bottom: 12,
+              left: 12,
+              right: 12,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (subtitle.isNotEmpty)
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

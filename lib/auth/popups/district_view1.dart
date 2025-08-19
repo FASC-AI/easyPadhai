@@ -21,7 +21,7 @@ class _DistrictViewState extends State<DistrictView1> {
   final formKey = GlobalKey<FormState>();
   AuthController authController = Get.find();
 
-  late List<List2> filteredData = [];
+  late List<DistrictList> filteredData = [];
   bool isLoading = false;
   Timer? debouncer;
   String query = '';
@@ -235,7 +235,7 @@ class _DistrictViewState extends State<DistrictView1> {
         //     filteredData = filteredData;
         //   });
         // }
-        List<List2> searchResult = filteredData.where((e) {
+        List<DistrictList> searchResult = filteredData.where((e) {
           final title = e.name?.english ?? '';
           return title.toLowerCase().contains(query.toLowerCase());
         }).toList();

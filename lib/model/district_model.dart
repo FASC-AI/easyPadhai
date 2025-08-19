@@ -48,15 +48,15 @@ class Pagination {
 }
 
 class DistrictModelData {
-  List<List2>? list;
+  List<DistrictList>? list;
 
   DistrictModelData({this.list});
 
   DistrictModelData.fromJson(Map<String, dynamic> json) {
     if (json['list'] != null) {
-      list = <List2>[];
+      list = <DistrictList>[];
       json['list'].forEach((v) {
-        list!.add(new List2.fromJson(v));
+                  list!.add(new DistrictList.fromJson(v));
       });
     }
   }
@@ -70,7 +70,7 @@ class DistrictModelData {
   }
 }
 
-class List2 {
+class DistrictList {
   Name? name;
   String? sId;
   Country? country;
@@ -84,7 +84,7 @@ class List2 {
   int? iV;
   String? id;
 
-  List2(
+  DistrictList(
       {this.name,
       this.sId,
       this.country,
@@ -98,7 +98,7 @@ class List2 {
       this.iV,
       this.id});
 
-  List2.fromJson(Map<String, dynamic> json) {
+  DistrictList.fromJson(Map<String, dynamic> json) {
     name = json['name'] != null ? new Name.fromJson(json['name']) : null;
     sId = json['_id'];
     country =

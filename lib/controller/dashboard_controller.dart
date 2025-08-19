@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+
 // import 'package:easy_padhai/auth/google_signin_helper.dart';  // Temporarily disabled
 import 'package:easy_padhai/common/api_helper.dart';
 import 'package:easy_padhai/common/api_urls.dart';
@@ -54,7 +55,7 @@ import 'package:easy_padhai/route/route_name.dart';
 // import 'package:firebase_auth/firebase_auth.dart';  // Temporarily disabled
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
+// Fixed: Print function issue resolved
 import 'package:get_storage/get_storage.dart' as get_storage;
 // import 'package:google_sign_in/google_sign_in.dart';  // Temporarily disabled
 import 'package:http/http.dart' as http;
@@ -403,7 +404,7 @@ class DashboardController extends GetxController {
         await apiHelper.get(ApiUrls.profile, queryParameter, data);
     if (profileJson != null && profileJson != false) {
       ProfileModel response = ProfileModel.fromJson(profileJson);
-      print(response.status);
+      print(response.status.toString());
       if (response.status == true) {
         profileModel = response;
         // Update box storage with profile data
@@ -485,12 +486,12 @@ class DashboardController extends GetxController {
       };
     }
 
-    print(queryParameter);
+    print(queryParameter.toString());
     final profileJson =
         await apiHelper.post(ApiUrls.crbatch, queryParameter, data);
     if (profileJson != null && profileJson != false) {
       BatchModel response = BatchModel.fromJson(profileJson);
-      print(response.code);
+      print(response.code.toString());
       if (response.status == true) {
         BatchModel dta = response;
         // Update box storage with profile data
@@ -519,7 +520,7 @@ class DashboardController extends GetxController {
     if (profileJson != null && profileJson != false) {
       BinfoModel response = BinfoModel.fromJson(profileJson);
       if (response.status == true) {
-        print(response.message);
+        print(response.message ?? 'No message');
         BinfoModel dta = response;
         // Update box storage with profile data
         isLoading(false);
@@ -547,7 +548,7 @@ class DashboardController extends GetxController {
         await apiHelper.post(ApiUrls.breq, queryParameter, data);
     if (profileJson != null && profileJson != false) {
       BinfoModel response = BinfoModel.fromJson(profileJson);
-      print(response.message);
+      print(response.message ?? 'No message');
       if (response.status == true) {
         BinfoModel dta = response;
         // Update box storage with profile data
@@ -607,7 +608,7 @@ class DashboardController extends GetxController {
         await apiHelper.patch(ApiUrls.breqapprove + id, queryParameter, data);
     if (profileJson != null && profileJson != false) {
       SimpleModel response = SimpleModel.fromJson(profileJson);
-      print(response.message);
+      print(response.message ?? 'No message');
       if (response.status == true) {
         SimpleModel dta = response;
         // Update box storage with profile data
@@ -793,7 +794,7 @@ class DashboardController extends GetxController {
       
       if (response.status == true) {
         prevHlist = response.data!;
-        print("Debug: prevHlist length: ${prevHlist.length}");
+        debugPrint("Debug: prevHlist length: ${prevHlist.length}");
         // Update box storage with profile data
 
         isLoading(false);
@@ -845,11 +846,11 @@ class DashboardController extends GetxController {
         isLoading(false);
         return response;
       } else {
-        print("Debug: API returned false status");
+        debugPrint("Debug: API returned false status");
         isLoading(false);
       }
     } else {
-      print("Debug: API returned null or false");
+      debugPrint("Debug: API returned null or false");
     }
     isLoading(false);
   }
@@ -931,7 +932,7 @@ class DashboardController extends GetxController {
     if (profileJson != null && profileJson != false) {
       OnlineQuesmodel response = OnlineQuesmodel.fromJson(profileJson);
       if (response.status == true) {
-        print(response.message);
+        print(response.message ?? 'No message');
         quesList = response.data!;
         // Update box storage with profile data
 
@@ -1024,7 +1025,7 @@ class DashboardController extends GetxController {
     if (profileJson != null && profileJson != false) {
       NotificationModel response = NotificationModel.fromJson(profileJson);
       if (response.status == true) {
-        print(response.message);
+        print(response.message ?? 'No message');
         stuNotilist = response.data!;
         // Update box storage with profile data
 
@@ -1055,7 +1056,7 @@ class DashboardController extends GetxController {
     if (profileJson != null && profileJson != false) {
       OnlineTestModel1 response = OnlineTestModel1.fromJson(profileJson);
       if (response.status == true) {
-        print(response.message);
+        print(response.message ?? 'No message');
         testList = response.data!;
         // Update box storage with profile data
 
@@ -1081,7 +1082,7 @@ class DashboardController extends GetxController {
     if (profileJson != null && profileJson != false) {
       CurrentTestModel response = CurrentTestModel.fromJson(profileJson);
       if (response.status == true) {
-        print(response.message);
+        print(response.message ?? 'No message');
         if (response.data!.isNotEmpty) {
           CurrTest = response.data!;
         } else {
@@ -1119,7 +1120,7 @@ class DashboardController extends GetxController {
     if (profileJson != null && profileJson != false) {
       SubmitTestModel response = SubmitTestModel.fromJson(profileJson);
       if (response.status == true) {
-        print(response.message);
+        print(response.message ?? 'No message');
         Get.snackbar("Message", response.message!,
             snackPosition: SnackPosition.BOTTOM);
         // Update box storage with profile data
@@ -1149,7 +1150,7 @@ class DashboardController extends GetxController {
     if (profileJson != null && profileJson != false) {
       PrevTestModel response = PrevTestModel.fromJson(profileJson);
       if (response.status == true) {
-        print(response.message);
+        print(response.message ?? 'No message');
         prevTest = response.data!;
         // Update box storage with profile data
 
@@ -1183,7 +1184,7 @@ class DashboardController extends GetxController {
     if (profileJson != null && profileJson != false) {
       OfflineTestModel response = OfflineTestModel.fromJson(profileJson);
       if (response.status == true) {
-        print(response.message);
+        print(response.message ?? 'No message');
         OffquesList = response.data!.groupedTests!;
         // Update box storage with profile data
         //  print(OffquesList.length);
@@ -1200,8 +1201,8 @@ class DashboardController extends GetxController {
   }
 
   Future<void> uploadImage(List<File> image) async {
-    // var uri = Uri.parse('https://codesuperb.com/api/v1/image/upload');
-    String url = 'https://codesuperb.com/api/v1/image/upload';
+      // var uri = Uri.parse('https://easypadhai.in/api/v1/image/upload');
+  String url = 'https://easypadhai.in/api/v1/image/upload';
     Map<String, dynamic> queryParams = {};
     var uri = Uri.parse(url).replace(queryParameters: queryParams);
     var request = http.MultipartRequest('POST', uri);
@@ -1303,21 +1304,94 @@ class DashboardController extends GetxController {
       String ids,
       BuildContext context,
       List<String> selectedInstructions) async {
-    final url =
-        Uri.parse('https://codesuperb.com/api/v1/offlinetest/previewtest');
+    
+    // List of endpoints to try
+    List<String> endpoints = [
+      ApiUrls.posttest,
+      ApiUrls.posttestAlternative1,
+      ApiUrls.posttestAlternative2,
+      ApiUrls.posttestAlternative3,
+    ];
+    
+    Exception? lastException;
+    
+        // Try each endpoint until one works
+    for (String endpoint in endpoints) {
+      try {
+        final url = Uri.parse('https://${ApiUrls.apiBaseUrl}/$endpoint');
+        print('🔄 Trying endpoint: $endpoint');
+        
+        // Add timeout to prevent hanging
+        final result = await _tryDownloadFromEndpoint(
+          url, sub, classid, top, lesson, quesId, sess, dur, book, ids, context, selectedInstructions
+        ).timeout(
+          Duration(seconds: 30), // 30 second timeout
+          onTimeout: () {
+            print('⏰ Timeout for endpoint: $endpoint');
+            return false;
+          },
+        );
+        
+        if (result) {
+          print('✅ PDF downloaded successfully from: $endpoint');
+          return; // Success, exit the function
+        }
+      } catch (e) {
+        print('❌ Failed with endpoint $endpoint: $e');
+        if (e is Exception) {
+          lastException = e;
+        } else {
+          lastException = Exception(e.toString());
+        }
+        continue; // Try next endpoint
+      }
+    }
+    
+    // If all endpoints failed, throw the last exception
+    if (lastException != null) {
+      throw lastException;
+    }
+  }
+  
+  Future<bool> _tryDownloadFromEndpoint(
+      Uri url,
+      String sub,
+      String classid,
+      String top,
+      String lesson,
+      List<String> quesId,
+      String sess,
+      String dur,
+      String book,
+      String ids,
+      BuildContext context,
+      List<String> selectedInstructions) async {
 
-    Map<String, dynamic> body = {
-      "subjectId": sub,
-      "classId": classid,
-      "topicId": top,
-      "lessonId": lesson,
-      "testIds": quesId,
-      "session": sess,
-      "duration": dur,
-      "bookId": book,
-      "instructionId": selectedInstructions
-    };
-    print(body);
+    // Validate and clean the data before sending
+    if (quesId.isEmpty) {
+      throw Exception('No questions selected');
+    }
+    
+    // Ensure selectedInstructions is not null and has valid data
+    List<String> validInstructions = selectedInstructions.where((instruction) => 
+      instruction.isNotEmpty && instruction != null
+    ).toList();
+    
+    // Build request body with only non-empty values
+    Map<String, dynamic> body = {};
+    if (sub.isNotEmpty) body["subjectId"] = sub;
+    if (classid.isNotEmpty) body["classId"] = classid;
+    if (top.isNotEmpty) body["topicId"] = top;
+    if (lesson.isNotEmpty) body["lessonId"] = lesson;
+    body["testIds"] = quesId;
+    if (sess.isNotEmpty) body["session"] = sess;
+    if (dur.isNotEmpty) body["duration"] = dur;
+    if (book.isNotEmpty) body["bookId"] = book;
+    if (validInstructions.isNotEmpty) body["instructionId"] = validInstructions;
+    
+    print('Request Body: $body');
+    print('Questions Count: ${quesId.length}');
+    print('Instructions Count: ${validInstructions.length}');
     final tokenValue = await token();
 
     try {
@@ -1340,8 +1414,8 @@ class DashboardController extends GetxController {
         url,
         headers: {
           'Authorization': 'Bearer $tokenValue',
-          'Accept': 'application/pdf',
           'Content-Type': 'application/json',
+          'Accept': '*/*',
         },
         body: jsonEncode(body),
       );
@@ -1351,14 +1425,20 @@ class DashboardController extends GetxController {
 
       if (response.statusCode == 200) {
         final bytes = response.bodyBytes;
+        
+        // Validate that we actually received PDF data
+        if (bytes.isEmpty) {
+          throw Exception('Received empty PDF data from server');
+        }
+        
+        // Check if response is actually PDF (basic validation)
+        if (response.headers['content-type']?.contains('application/pdf') == true) {
+          print('✅ Valid PDF response received');
+        } else {
+          print('⚠️ Response content-type: ${response.headers['content-type']}');
+        }
 
         // Navigate to PDF viewer screen
-
-        // Get.to(
-        //   () => PdfViewerScreen(pdfBytes: bytes),
-        //   transition: Transition.cupertino,
-        // );
-
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -1377,22 +1457,58 @@ class DashboardController extends GetxController {
                   )),
         );
       } else {
-        //Navigator.pop(context);
-        throw Exception('Failed to load PDF: ${response.statusCode}');
+        // Get the actual error response from server
+        String errorResponse = '';
+        try {
+          errorResponse = response.body;
+        } catch (e) {
+          errorResponse = 'Unable to read error response';
+        }
+        
+        String errorMessage = 'Failed to load PDF: ${response.statusCode}';
+        if (response.statusCode == 503) {
+          errorMessage = 'Server is currently unavailable. Please try again later.';
+        } else if (response.statusCode == 500) {
+          errorMessage = 'Internal server error: $errorResponse';
+        } else if (response.statusCode == 404) {
+          errorMessage = 'API endpoint not found. Please check configuration.';
+        } else if (response.statusCode == 400) {
+          errorMessage = 'Bad request: $errorResponse';
+        } else if (response.statusCode == 422) {
+          errorMessage = 'Validation error: $errorResponse';
+        }
+        
+        print('Server Error Response: $errorResponse');
+        print('HTTP Status: ${response.statusCode}');
+        print('Request URL: $url');
+        print('Request Headers: ${response.headers}');
+        print('Full Response Body: ${response.body}');
+        
+        // Try to parse error response for more details
+        try {
+          Map<String, dynamic> errorJson = jsonDecode(errorResponse);
+          if (errorJson.containsKey('error')) {
+            print('Parsed Error: ${errorJson['error']}');
+          }
+          if (errorJson.containsKey('message')) {
+            print('Error Message: ${errorJson['message']}');
+          }
+        } catch (e) {
+          print('Could not parse error response: $e');
+        }
+        
+        throw Exception(errorMessage);
       }
-    } catch (e) {
-      Navigator.pop(context); // Ensure loading indicator is removed
-      Get.snackbar(
-        "Error",
-        "Failed to download PDF: ${e.toString()}",
-        snackPosition: SnackPosition.BOTTOM,
-        duration: Duration(seconds: 5),
-      );
-      print('Error downloading PDF: $e');
+          } catch (e) {
+        Navigator.pop(context); // Ensure loading indicator is removed
+        print('Error downloading PDF from endpoint');
+        return false; // Return false to indicate failure
+      }
+      
+      return true; // Return true to indicate success
     }
-  }
 
-  saveOffline(
+  Future<void> saveOffline(
       String sub,
       String classid,
       String top,
@@ -1437,13 +1553,15 @@ class DashboardController extends GetxController {
         getofflinePubTest(classid, sub);
         Navigator.pop(context);
         Navigator.pop(context);
-        isLoading(true);
-        return response;
+        isLoading(false);
+        return;
       } else {
         isLoading(true);
       }
     }
   }
+
+  // Removed duplicate downloadAndOpenPdf function
 
   getStudentfromBatch(String cls_id) async {
     isLoading(true);
@@ -1459,7 +1577,7 @@ class DashboardController extends GetxController {
     if (profileJson != null && profileJson != false) {
       StudentModel response = StudentModel.fromJson(profileJson);
       if (response.status == true) {
-        print(response.message);
+        print(response.message ?? 'No message');
         studentList = response.data!;
         // Update box storage with profile data
 
@@ -1744,7 +1862,7 @@ class DashboardController extends GetxController {
     if (profileJson != null && profileJson != false) {
       SimpleModel response = SimpleModel.fromJson(profileJson);
       if (response.status == true) {
-        print(response.message);
+        print(response.message ?? 'No message');
         Get.snackbar("Message", response.message!,
             snackPosition: SnackPosition.BOTTOM);
         // Update box storage with profile data
@@ -1842,11 +1960,11 @@ class DashboardController extends GetxController {
 
     if (profileJson != null && profileJson != false) {
       SimpleModel response = SimpleModel.fromJson(profileJson);
-      print(response.message);
+      print(response.message ?? 'No message');
       if (response.status == true) {
         //topic = response.data!;
         // Update box storage with profile data
-        print(response.message);
+        print(response.message ?? 'No message');
         isLoading(false);
         return response;
       } else {
@@ -1979,7 +2097,7 @@ class DashboardController extends GetxController {
     }
 
     final uri = Uri.parse(
-        "https://codesuperb.com/api/v1/image/upload"); // Replace with your API
+        "https://easypadhai.in/api/v1/image/upload"); // Replace with your API
     final request = http.MultipartRequest('POST', uri);
 
     request.files.add(await http.MultipartFile.fromPath(
@@ -2029,14 +2147,14 @@ class DashboardController extends GetxController {
 
     if (profileJson != null && profileJson != false) {
       SimpleModel response = SimpleModel.fromJson(profileJson);
-      print(response.message);
+      print(response.message ?? 'No message');
       if (response.status == true) {
         //topic = response.data!;
         // Update box storage with profile data
         Get.snackbar("Message", "Note added successfully",
             snackPosition: SnackPosition.BOTTOM);
         isLoading(false);
-        print(response.message);
+        print(response.message ?? 'No message');
         isLoading(false);
         return response;
       } else {
@@ -2181,7 +2299,7 @@ class DashboardController extends GetxController {
     if (profileJson != null && profileJson != false) {
       SimpleModel response = SimpleModel.fromJson(profileJson);
       if (response.status == true) {
-        print(response.message);
+        print(response.message ?? 'No message');
         Get.snackbar("Message", "Video added successfully!",
             snackPosition: SnackPosition.BOTTOM);
         // Update box storage with profile data
@@ -2212,7 +2330,7 @@ class DashboardController extends GetxController {
 
     if (profileJson != null && profileJson != false) {
       InstrucModel response = InstrucModel.fromJson(profileJson);
-      print(response.message);
+      print(response.message ?? 'No message');
       if (response.status == true) {
         instruction = response.data;
 

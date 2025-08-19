@@ -43,7 +43,7 @@ class AuthController extends GetxController {
   List<SubjectList> subjectdataList = [];
   List<InstitutesList> institutiondataList = [];
   List<List1> stateList = [];
-  List<List2> districtList = [];
+  List<DistrictList> districtList = [];
 
   var selectedClassIds = <String>[].obs;
   var selectedSectionIds = <String>[].obs;

@@ -967,8 +967,8 @@ class _ProfileEditState extends State<StudentHome> {
           children: [
             Container(
               alignment: Alignment.center,
-              height: 150,
-              width: 200,
+              height: 90,
+              width: 150,
               child: Image.asset("assets/batch.png"),
             ),
             const SizedBox(height: 10),

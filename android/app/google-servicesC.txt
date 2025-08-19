@@ -1,0 +1,71 @@
+// {
+//   "project_info": {
+//     "project_number": "276680617082",
+//     "project_id": "easy-padhai-f9643",
+//     "storage_bucket": "easy-padhai-f9643.firebasestorage.app"
+//   },
+//   "client": [
+//     {
+//       "client_info": {
+//         "mobilesdk_app_id": "1:276680617082:android:fed50bc40954d207a49fc3",
+//         "android_client_info": {
+//           "package_name": "com.troology.easypadhai"
+//         }
+//       },
+//       "oauth_client": [
+//         {
+//           "client_id": "276680617082-3rotnpilhp475ettgt3rc4sh13hco7be.apps.googleusercontent.com",
+//           "client_type": 1,
+//           "android_info": {
+//             "package_name": "com.troology.easypadhai",
+//             "certificate_hash": "10f2cf38fb3147000e8acd410d9ac887a235d318"
+//           }
+//         },
+//         {
+//           "client_id": "276680617082-7l1ch5bdq9tj2sjqvfeiipcfj8ofsis9.apps.googleusercontent.com",
+//           "client_type": 1,
+//           "android_info": {
+//             "package_name": "com.troology.easypadhai",
+//             "certificate_hash": "2bfd8634bcefa0171397d3aa44cdc005aaa54db7"
+//           }
+//         },
+//         {
+//           "client_id": "276680617082-if45pppvkdj16n4lgsa5td5uhkv7ocq3.apps.googleusercontent.com",
+//           "client_type": 1,
+//           "android_info": {
+//             "package_name": "com.troology.easypadhai",
+//             "certificate_hash": "30c477944e30b6be51127e76c26949f8b442689d"
+//           }
+//         },
+//         {
+//           "client_id": "276680617082-inprthqlhalau4am1i3u6djshtvb2nql.apps.googleusercontent.com",
+//           "client_type": 1,
+//           "android_info": {
+//             "package_name": "com.troology.easypadhai",
+//             "certificate_hash": "c4a23e0741e813b1b0815527e2abeacff19ca110"
+//           }
+//         },
+//         {
+//           "client_id": "276680617082-m3fpdovue3fohgiei8k4d5rpcjjt5kjl.apps.googleusercontent.com",
+//           "client_type": 3
+//         }
+//       ],
+//       "api_key": [
+//         {
+//           "current_key": "AIzaSyBvdfLckHZJVhYBwJxZlAJiUh2nu8sCpXY"
+//         }
+//       ],
+//       "services": {
+//         "appinvite_service": {
+//           "other_platform_oauth_client": [
+//             {
+//               "client_id": "276680617082-m3fpdovue3fohgiei8k4d5rpcjjt5kjl.apps.googleusercontent.com",
+//               "client_type": 3
+//             }
+//           ]
+//         }
+//       }
+//     }
+//   ],
+//   "configuration_version": "1"
+// }

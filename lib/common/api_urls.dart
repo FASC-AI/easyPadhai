@@ -18,7 +18,7 @@ class ApiUrls {
     }
   }
 
-  // Base urlhttps://codesuperb.com/
+  // Base url: https://easypadhai.in/
 
   static const String apiBaseUrl = 'easypadhai.in';
   static const String prodApiBaseUrl = 'https://easypadhai.in/';
@@ -89,6 +89,9 @@ class ApiUrls {
   static const String getnote = 'api/v1/notes/noteslist';
   static const String deletenote = 'api/v1/notes/deletenote/';
   static const String posttest = 'api/v1/offlinetest/previewtest';
+  static const String posttestAlternative1 = 'api/v1/offlinetest/generate';
+  static const String posttestAlternative2 = 'api/v1/offlinetest/create';
+  static const String posttestAlternative3 = 'api/v1/offlinetest/build';
   static const String getofflineTest = 'api/v1/offlinetest/paper';
   static const String deleteOffine = 'api/v1/offlinetest/';
   static const String postvid = 'api/v1/lesson/videolink/';

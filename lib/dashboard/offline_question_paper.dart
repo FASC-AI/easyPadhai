@@ -107,7 +107,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
   }
 
   void showInstructionPopup(BuildContext context) async {
-    selectedInstructions = await showDialog(
+    List<String>? result = await showDialog(
       context: context,
       builder: (context) => InstructionPopup(
         englishInstructions: engIns,
@@ -116,10 +116,19 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
       ),
     );
 
-    if (selectedInstructions != null) {
-      // Use the selected instructions here
-
-      print("Selected: $selectedInstructions");
+    if (result != null) {
+      setState(() {
+        selectedInstructions = result;
+      });
+      print("Selected Instructions: $selectedInstructions");
+    } else {
+      // If dialog is cancelled, keep existing selection or set empty
+      if (selectedInstructions.isEmpty) {
+        setState(() {
+          selectedInstructions = [];
+        });
+      }
+      print("No instructions selected, keeping: $selectedInstructions");
     }
   }
 
@@ -412,15 +421,16 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                               filled: true,
                               fillColor: Colors.white,
                             ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<ClassDetail>(
-                                hint: const Text('Select class'),
-                                style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.black,
-                                    overflow: TextOverflow.ellipsis),
-                                value: selectedClass,
-                                dropdownColor: Colors.lightBlue.shade50,
+                                                    child: DropdownButtonHideUnderline(
+                          child: DropdownButton<ClassDetail>(
+                            hint: const Text('Select class'),
+                            isExpanded: true,
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                                overflow: TextOverflow.ellipsis),
+                            value: selectedClass,
+                            dropdownColor: Colors.lightBlue.shade50,
                                 onChanged: (ClassDetail? value) async {
                                   if (value != null) {
                                     setState(() {
@@ -465,13 +475,16 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                     }
                                   }
                                 },
-                                items: classes.map((ClassDetail cls) {
-                                  return DropdownMenuItem<ClassDetail>(
-                                    value: cls,
-                                    child: Text(cls.class1 ??
-                                        'Unknown'), // Display class name
-                                  );
-                                }).toList(),
+                                                            items: classes.map((ClassDetail cls) {
+                              return DropdownMenuItem<ClassDetail>(
+                                value: cls,
+                                child: Text(
+                                  cls.class1 ?? 'Unknown',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                              );
+                            }).toList(),
                               ),
                             ),
                           ),
@@ -490,15 +503,16 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                     left: 10, top: 0, bottom: 0, right: 10),
                                 filled: true,
                                 fillColor: Colors.white),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton(
-                                hint: const Text('Select book'),
-                                style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.black,
-                                    overflow: TextOverflow.ellipsis),
-                                value: selectedbook,
-                                dropdownColor: Colors.lightBlue.shade50,
+                                                    child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                            hint: const Text('Select book'),
+                            isExpanded: true,
+                            style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                                overflow: TextOverflow.ellipsis),
+                            value: selectedbook,
+                            dropdownColor: Colors.lightBlue.shade50,
                                 onChanged: (Books? value) async {
                                   if (value != null) {
                                     setState(() {
@@ -581,7 +595,12 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                 },
                                 items: booklist
                                     .map((cls) => DropdownMenuItem(
-                                        value: cls, child: Text(cls.book!)))
+                                        value: cls, 
+                                        child: Text(
+                                          cls.book!,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(fontSize: 12),
+                                        )))
                                     .toList(),
                               ),
                             ),
@@ -607,6 +626,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<LData>(
                             hint: const Text('Select lesson'),
+                            isExpanded: true,
                             style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.black,
@@ -687,7 +707,12 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                             },
                             items: lessonList
                                 .map((cls) => DropdownMenuItem(
-                                    value: cls, child: Text(cls.lesson!)))
+                                    value: cls, 
+                                    child: Text(
+                                      cls.lesson!,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(fontSize: 12),
+                                    )))
                                 .toList(),
                           ),
                         ),
@@ -710,6 +735,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<Topics>(
                             hint: const Text('Select topics'),
+                            isExpanded: true,
                             style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.black,
@@ -1075,7 +1101,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                           snackPosition: SnackPosition.BOTTOM);
                       return;
                     } else {
-                      String tid = "";
+                      String tid = "";  // topicId is not mandatory, keep it empty
                       String lid = "";
                       if (selectedtopic != null && selectedtopic!.sId != null) {
                         tid = selectedtopic!.sId!;
@@ -1085,6 +1111,27 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                         lid = selectedlesson!.sId!;
                       }
 
+                      // Generate a unique test ID
+                      String testId = "offline_${DateTime.now().millisecondsSinceEpoch}";
+                      
+                      // Ensure we have valid data before making the API call
+                      if (arr.isEmpty) {
+                        Get.snackbar("Error", "Please select at least one question", 
+                            snackPosition: SnackPosition.BOTTOM);
+                        return;
+                      }
+                      
+                      // Ensure instructions are properly initialized
+                      if (selectedInstructions == null) {
+                        selectedInstructions = [];
+                      }
+                      
+                      print("Final Data Check:");
+                      print("Questions: $arr (${arr.length})");
+                      print("Instructions: $selectedInstructions (${selectedInstructions.length})");
+                      print("Session: ${sessionController.text}");
+                      print("Duration: ${_durationController.text}");
+                      
                       await dashboardController.downloadAndOpenPdf(
                           sub_id,
                           widget.bClassId,
@@ -1094,7 +1141,7 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                           sessionController.text.toString().trim(),
                           _durationController.text.toString().trim(),
                           selectedbook!.sId!,
-                          "",
+                          testId,
                           context,
                           selectedInstructions);
                       // Navigator.pop(context);

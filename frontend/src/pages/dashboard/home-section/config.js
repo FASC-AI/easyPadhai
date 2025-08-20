@@ -14,10 +14,4 @@ export const routeHomes = [
     path: HOME.GET_STARTED,
     component: GetStartedPage,
   },
-  {
-    path: '/',
-    component: GetStartedPage,
-  },
-  
-  
 ];

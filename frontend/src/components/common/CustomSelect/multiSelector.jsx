@@ -146,23 +146,137 @@ const MultipleSelector = ({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <style jsx global>{`
-        .custom-scrollbar {
-          scrollbar-width: thin;
-          scrollbar-color: #1a6fab transparent;
+      <style>{`
+        .custom-select-container {
+          position: relative;
+          width: 100%;
         }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
+        .custom-select {
+          width: 100%;
+          padding: 8px 12px;
+          border: 1px solid #d1d5db;
+          border-radius: 6px;
+          background-color: white;
+          font-size: 14px;
+          line-height: 1.5;
+          cursor: pointer;
+          transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
+        .custom-select:focus {
+          outline: none;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #1a6fab;
+        .custom-select:hover {
+          border-color: #9ca3af;
+        }
+        .custom-select.disabled {
+          background-color: #f9fafb;
+          color: #6b7280;
+          cursor: not-allowed;
+        }
+        .custom-select-arrow {
+          position: absolute;
+          right: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          pointer-events: none;
+          transition: transform 0.15s ease-in-out;
+        }
+        .custom-select.open .custom-select-arrow {
+          transform: translateY(-50%) rotate(180deg);
+        }
+        .custom-select-dropdown {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background-color: white;
+          border: 1px solid #d1d5db;
+          border-radius: 6px;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          z-index: 50;
+          max-height: 200px;
+          overflow-y: auto;
+        }
+        .custom-select-option {
+          padding: 8px 12px;
+          cursor: pointer;
+          transition: background-color 0.15s ease-in-out;
+        }
+        .custom-select-option:hover {
+          background-color: #f3f4f6;
+        }
+        .custom-select-option.selected {
+          background-color: #3b82f6;
+          color: white;
+        }
+        .custom-select-option.disabled {
+          color: #9ca3af;
+          cursor: not-allowed;
+        }
+        .custom-select-option.disabled:hover {
+          background-color: transparent;
+        }
+        .custom-select-search {
+          padding: 8px 12px;
+          border-bottom: 1px solid #e5e7eb;
+        }
+        .custom-select-search input {
+          width: 100%;
+          padding: 6px 8px;
+          border: 1px solid #d1d5db;
           border-radius: 4px;
+          font-size: 14px;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #555;
+        .custom-select-search input:focus {
+          outline: none;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+        .custom-select-no-options {
+          padding: 12px;
+          text-align: center;
+          color: #6b7280;
+          font-style: italic;
+        }
+        .custom-select-loading {
+          padding: 12px;
+          text-align: center;
+          color: #6b7280;
+        }
+        .custom-select-error {
+          padding: 12px;
+          text-align: center;
+          color: #dc2626;
+        }
+        .custom-select-selected {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .custom-select-selected .selected-item {
+          background-color: #3b82f6;
+          color: white;
+          padding: 2px 8px;
+          border-radius: 12px;
+          font-size: 12px;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .custom-select-selected .remove-item {
+          background: none;
+          border: none;
+          color: white;
+          cursor: pointer;
+          font-size: 14px;
+          padding: 0;
+          display: flex;
+          align-items: center;
+        }
+        .custom-select-selected .remove-item:hover {
+          opacity: 0.8;
         }
       `}</style>
       <div className={cn("relative", className)} ref={containerRef}>

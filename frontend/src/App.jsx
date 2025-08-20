@@ -9,7 +9,7 @@ import useStore from "./store";
 import { protectedRoutes, publicRoutes } from "./routes";
 import PublicLayout from "./layouts/public.layout";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import LoadingScreen from "./components/ui/loading-screen";
 import {
   LoaderDisplay,
@@ -32,6 +32,7 @@ function App() {
     useStore();
   const navigate = useNavigate();
   const location = useLocation();
+  const [authLoading, setAuthLoading] = useState(true);
   const { isLoading, refetch } = useQuery({
     queryKey: ["verifyToken"],
     queryFn: async () => {
@@ -40,7 +41,7 @@ function App() {
         const token = localStorage.getItem('token') || getCookie('token');
         if (!token) {
           setIsAuthenticated(false);
-          return;
+          return { success: false, authenticated: false };
         }
 
         const res = await apiService.get("/auth/verifyToken");
@@ -49,13 +50,19 @@ function App() {
           setIsAuthenticated(true);
           setUser(res?.data?.user);
           setUserProfile(res?.data?.userProfile);
+          setAuthLoading(false);
+          return { success: true, authenticated: true, data: res.data };
         } else {
           setIsAuthenticated(false);
           localStorage.removeItem('token');
+          setAuthLoading(false);
+          return { success: false, authenticated: false, error: res.message };
         }
       } catch (error) {
         setIsAuthenticated(false);
         localStorage.removeItem('token');
+        setAuthLoading(false);
+        return { success: false, authenticated: false, error: error.message };
       }
     },
     retry: false,
@@ -65,10 +72,16 @@ function App() {
     enabled: false, // Don't run automatically
   });
   useEffect(() => {
-    if (isAuthenticated && location.pathname.includes("verify-email")) {
+    if (isAuthenticated && location.pathname === "/verify-email") {
       navigate("/dashboard");
     }
-  }, [isAuthenticated, navigate]);
+    
+    // Debug route matching for WhatsApp
+    if (location.pathname === "/whatsapp") {
+      console.log("WhatsApp route accessed:", location.pathname);
+      console.log("isAuthenticated:", isAuthenticated);
+    }
+  }, [isAuthenticated, navigate, location.pathname]);
 
   // Check for existing token on app load
   useEffect(() => {
@@ -76,10 +89,13 @@ function App() {
     if (token && !isAuthenticated) {
       // We have a token but not authenticated, verify it
       refetch();
+    } else {
+      // No token found, set loading to false
+      setAuthLoading(false);
     }
   }, []);
 
-  if (isLoading) {
+  if (isLoading || authLoading) {
     return <LoadingScreen className="h-screen w-screen" />;
   }
   const renderRoutes = (routes, Layout) =>
@@ -102,7 +118,9 @@ function App() {
           {isAuthenticated
             ? renderRoutes(protectedRoutes, PrivatePageLayout)
             : renderRoutes(publicRoutes, PublicLayout)}
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="*" element={
+            isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
+          } />
         </Routes>
       </LoaderProvider>
     </>

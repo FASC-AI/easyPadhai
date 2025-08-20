@@ -128,7 +128,7 @@ export default function PrivacyPolicy() {
               <Typography variant="h4" className="mt-4 mb-2 text-blue-800">8. Changes to This Policy</Typography>
               <Typography variant="p" className="mb-2">
                 We may update this policy and notify you via email or app. Continued use after changes implies acceptance. Check{" "}
-                <a href="https://codesuperb.com/privacy-policy" className="text-blue-600 hover:underline">easy-padhai.com/privacy</a> for updates.
+                <a href="https://easypadhai.in/privacy-policy" className="text-blue-600 hover:underline">easy-padhai.com/privacy</a> for updates.
               </Typography>
             </section>
 

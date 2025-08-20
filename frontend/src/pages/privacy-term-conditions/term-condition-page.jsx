@@ -121,7 +121,7 @@ export default function TermConditions() {
               <Typography variant="h4" className="mt-4 mb-2 text-blue-800">8. Changes to Terms</Typography>
               <Typography variant="p" className="mb-4">
                 We may update these terms. Continued use of Easy Padhai after changes constitutes acceptance. Check{" "}
-                <a href="https://codesuperb.com/terms-conditions" className="text-blue-600 hover:underline">easy-padhai.com/terms</a> for updates.
+                <a href="https://easypadhai.in/terms-conditions" className="text-blue-600 hover:underline">easy-padhai.com/terms</a> for updates.
               </Typography>
             </section>
 

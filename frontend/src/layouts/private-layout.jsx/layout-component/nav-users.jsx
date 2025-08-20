@@ -41,22 +41,38 @@ export function NavUser() {
   }
   const handleLogout = async () => {
     try {
+      console.log("Starting logout process...");
       const user_data = { _id: user?.id }
-      const response = await apiService.post(AUTH_APIS.AUTH_LOGOUT, user_data, {
-        withCredentials: true
-      });
-      if (response?.code === 200 && response?.status === true) {
-        toast.success(response?.message);
-        setUser(null);
-        setIsAuthenticated(false);
-        // Clear token from localStorage
-        localStorage.removeItem('token');
-        navigate('/', { replace: true })
-      } else {
-        toast.error(response?.message);
+      console.log("Logout payload:", user_data);
+      
+      // Try API logout first
+      try {
+        const response = await apiService.post(AUTH_APIS.AUTH_LOGOUT, user_data);
+        console.log("Logout response:", response);
+        
+        if (response?.code === 200 && response?.status === true) {
+          toast.success(response?.message);
+        } else {
+          console.warn("API logout failed, proceeding with local logout");
+        }
+      } catch (apiError) {
+        console.warn("API logout failed, proceeding with local logout:", apiError);
       }
+      
+      // Always perform local logout regardless of API response
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem('token');
+      console.log("Local logout successful, redirecting to login");
+      navigate('/login', { replace: true });
+      
     } catch (error) {
-      toast.error(error?.response?.data?.message);
+      console.error("Logout error:", error);
+      // Even if there's an error, force logout
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem('token');
+      navigate('/login', { replace: true });
     }
   }
   return (
@@ -64,23 +80,23 @@ export function NavUser() {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <Avatar className=" rounded-lg">
-                <AvatarImage src={user?.avatar} alt={user?.name?.english} />
-<Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src='#' alt={user?.name?.english} />
-                  <AvatarFallback className="rounded-lg">{getInitials(user?.name?.english)}</AvatarFallback>
-                </Avatar>
-              </Avatar>
-              <div className="grid flex-1 text-left text-[14px] font-semibold leading-tight">
-                <span className="truncate font-semibold">{user?.name?.english}</span>
-               
-              </div>
-              {/* <ChevronsUpDown className="ml-auto size-4" /> */}
-            </SidebarMenuButton>
+            <div className="w-full">
+              <SidebarMenuButton
+                asChild
+                size="lg"
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground w-full"
+              >
+                <div className="flex items-center gap-2 w-full">
+                  <Avatar className=" rounded-lg">
+                    <AvatarImage src={user?.avatar} alt={user?.name?.english} />
+                    <AvatarFallback className="rounded-lg">{getInitials(user?.name?.english)}</AvatarFallback>
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-[14px] font-semibold leading-tight">
+                    <span className="truncate font-semibold">{user?.name?.english}</span>
+                  </div>
+                </div>
+              </SidebarMenuButton>
+            </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"

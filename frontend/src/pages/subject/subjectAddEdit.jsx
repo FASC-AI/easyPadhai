@@ -58,28 +58,28 @@ const AddSubject = () => {
   useEffect(() => {
     if (id) {
       setLoading(true);
+      console.log("Fetching subject data for ID:", id);
+      
       getApi(APIS.SUBJECT, id)
         .then((res) => {
+          console.log("Subject API response:", res);
           const editData = res?.data;
 
           if (editData) {
             // Update the state with fetched data
-
-          setData({
+            setData({
               nameEn: editData?.nameEn || '',
-            codee: editData?.codee || '',
-            description: editData?.description || '',
-            images: editData?.images || []
+              codee: editData?.codee || '',
+              description: editData?.description || '',
+              images: editData?.images || []
             });
-
-          
-                    } else {
+          } else {
             toast.error('No data found for the provided ID');
           }
         })
         .catch((error) => {
-
-          toast.error('Failed to load data');
+          console.error("Error fetching subject data:", error);
+          toast.error(`Failed to load data: ${error.message}`);
         })
         .finally(() => setLoading(false));
     }

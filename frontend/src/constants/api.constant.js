@@ -60,6 +60,23 @@ export const APIS = {
   TEST_LIST: "/test/list",
 
   Homework: "/homework",
+  
+  // Add missing UPDATE endpoints for edit functionality
+  UPDATE_CLASS: "/class",
+  UPDATE_SUBJECT: "/subject",
+  UPDATE_BOOK: "/book",
+  UPDATE_INSTITUTES: "/institutes",
+  UPDATE_SECTION: "/section",
+  UPDATE_COUNTRY: "/country",
+  UPDATE_STATE: "/state",
+  UPDATE_DISTRICT: "/district",
+  UPDATE_CITY: "/city",
+  UPDATE_INSTRUCTION: "/instruction",
+  UPDATE_BANNER: "/banner",
+  UPDATE_NOTIFICATION: "/notification",
+  UPDATE_LESSON_MASTER: "/lesson-master",
+  UPDATE_TEST: "/test",
+  UPDATE_HOMEWORK: "/homework",
 };
 
 

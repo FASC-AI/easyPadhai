@@ -299,7 +299,7 @@ const TableListView = ({
           </Button>
         </div>
       )}
-      <style jsx>{`
+      <style>{`
         .table-list-view {
           padding: 16px;
         }
@@ -386,7 +386,7 @@ const TableListView = ({
           }
         }
       `}</style>
-      <style jsx global>{`
+      <style>{`
         .responsive-table-wrapper {
           width: 100%;
           overflow-x: auto;

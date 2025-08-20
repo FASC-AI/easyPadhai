@@ -114,6 +114,14 @@ const AddEditBook = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
+        // Check if user is authenticated
+        const token = localStorage.getItem('token');
+        if (!token) {
+          toast.error("Please login to continue");
+          navigate('/login');
+          return;
+        }
+        
         setLoading(true);
 
         // Fetch subjects, classes, and book codes in parallel
@@ -140,28 +148,35 @@ const AddEditBook = () => {
 
         // Fetch book data for editing
         if (id) {
-          const res = await getApi(APIS.BOOK, id);
-          const editData = res?.data;
-          if (editData) {
-            const selectedSubjectId =
-              Array.isArray(editData.subjectId) && editData.subjectId.length > 0
-                ? editData.subjectId[0]
-                : null;
-            const selectedClassId =
-              Array.isArray(editData.classId) && editData.classId.length > 0
-                ? editData.classId[0]
-                : null;
+          try {
+            console.log("Fetching book data for ID:", id);
+            const res = await getApi(APIS.BOOK, id);
+            console.log("Book API response:", res);
+            
+            const editData = res?.data;
+            if (editData) {
+              const selectedSubjectId =
+                Array.isArray(editData.subjectId) && editData.subjectId.length > 0
+                  ? editData.subjectId[0]
+                  : null;
+              const selectedClassId =
+                Array.isArray(editData.classId) && editData.classId.length > 0
+                  ? editData.classId[0]
+                  : null;
 
-            setData({
-              subjectId: selectedSubjectId ? [selectedSubjectId] : [],
-              classId: selectedClassId ? [selectedClassId] : [],
-              nameEn: editData?.nameEn || "",
-
-              description: editData?.description || "",
-              images: editData?.images || [],
-            });
-          } else {
-            toast.error("No data found for the provided ID");
+              setData({
+                subjectId: selectedSubjectId ? [selectedSubjectId] : [],
+                classId: selectedClassId ? [selectedClassId] : [],
+                nameEn: editData?.nameEn || "",
+                description: editData?.description || "",
+                images: editData?.images || [],
+              });
+            } else {
+              toast.error("No data found for the provided ID");
+            }
+          } catch (error) {
+            console.error("Error fetching book data:", error);
+            toast.error(`Failed to load book data: ${error.message}`);
           }
         }
       } catch (error) {

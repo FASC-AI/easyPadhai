@@ -5,8 +5,8 @@ import { routeHomes } from "@/pages/dashboard/home-section/config";
 import GetStartedPage from "@/pages/dashboard/home-section/get-started/home-dashboard.page";
 import { routeUSERSs } from "@/pages/dashboard/users/config";
 import { routePPTCs } from "@/pages/privacy-term-conditions/config";
-import AddClass from '../pages/class/classAddEdit'
-import AddSubject from '../pages/subject/subjectAddEdit'
+import AddClass from '@/pages/class/classAddEdit'
+import AddSubject from '@/pages/subject/subjectAddEdit'
 import ClassListView from "@/pages/class";
 import SubjectListView from "@/pages/subject";
 import Addinstitutes from "@/pages/institutes/institutesAddEdit";
@@ -95,9 +95,10 @@ const protectedRoutes = [
   { path: `${ROUTES.UPDATE_INSTRUCTION}/:id`, component: AddInstruction },
   //section
   { path: ROUTES.BANNER, component: Addbanners },
-  { path: ROUTES.WHATSAPP, component: AddWhatsapp },
   { path: ROUTES.BANNER_LIST, component: bannersListView },
   { path: `${ROUTES.UPDATE_BANNER}/:id`, component: Addbanners },
+  { path: ROUTES.WHATSAPP, component: AddWhatsapp },
+  { path: `${ROUTES.WHATSAPP}/list`, component: AddWhatsapp },
   { path: ROUTES.NOTIFICATION, component: NotificationAddEdit },
   { path: ROUTES.NOTIFICATION_LIST, component: NotificationListView },
   { path: `${ROUTES.UPDATE_NOTIFICATION}/:id`, component: NotificationAddEdit },
@@ -120,7 +121,7 @@ const protectedRoutes = [
   },
   { path: ROUTES.LESSON_MASTER, component: AddEditLessonMaster },
 
-  { path: `${ROUTES.LESSON_MASTER}/:id`, component: AddEditBook },
+  { path: `${ROUTES.UPDATE_LESSON_MASTER}/:id`, component: AddEditLessonMaster },
   //Test
   { path: ROUTES.TEST, component: Addtests },
   { path: ROUTES.TEST_LIST, component: TestListView },

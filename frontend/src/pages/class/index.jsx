@@ -287,7 +287,7 @@ const TableListView = ({
           </Button>
         </div>
       )}
-      <style jsx>{`
+      <style>{`
         .table-list-view {
           padding: 16px;
         }
@@ -337,57 +337,6 @@ const TableListView = ({
           }
           100% {
             transform: rotate(360deg);
-          }
-        }
-      `}</style>
-      <style jsx global>{`
-        .responsive-table-wrapper {
-          width: 100%;
-          overflow-x: auto;
-          -webkit-overflow-scrolling: touch;
-        }
-        .custom-tooltip-content {
-          display: block !important;
-          vertical-align: middle !important;
-          padding: 4px 6px !important;
-          font-size: 0.75em !important;
-          line-height: 1.2 !important;
-          max-width: 300px !important;
-          max-height: 200px !important;
-          overflow-y: auto !important;
-          overflow-x: auto !important;
-          white-space: normal !important;
-        }
-        .responsive-table-wrapper .data-table th,
-        .responsive-table-wrapper .data-table td {
-          padding: 4px 6px !important;
-          font-size: 0.75em !important;
-          line-height: 1.2 !important;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        .responsive-table-wrapper .data-table tr {
-          height: 36px !important;
-        }
-        @media (max-width: 768px) {
-          .responsive-table-wrapper .data-table th,
-          .responsive-table-wrapper .data-table td {
-            padding: 3px 5px !important;
-            font-size: 0.7em !important;
-          }
-          .responsive-table-wrapper .data-table tr {
-            height: 32px !important;
-          }
-        }
-        @media (max-width: 480px) {
-          .responsive-table-wrapper .data-table th,
-          .responsive-table-wrapper .data-table td {
-            padding: 2px 4px !important;
-            font-size: 0.65em !important;
-          }
-          .responsive-table-wrapper .data-table tr {
-            height: 28px !important;
           }
         }
       `}</style>
@@ -755,6 +704,54 @@ const ClassListView = () => {
           />
         )}
       </QueryClientProvider>
+      <style>{`
+        .responsive-table-wrapper {
+          width: 100%;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        .custom-tooltip-content {
+          display: block !important;
+          vertical-align: middle !important;
+          padding: 4px 6px !important;
+          font-size: 0.75em !important;
+          line-height: 1.2 !important;
+          max-width: 300px !important;
+          max-height: 200px !important;
+          overflow-y: auto !important;
+          overflow-x: auto !important;
+          white-space: nowrap;
+        }
+        .responsive-table-wrapper .MuiTableCell-root {
+          padding: 4px 6px !important;
+          font-size: 0.75em !important;
+          line-height: 1.2 !important;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .responsive-table-wrapper .MuiTableRow-root {
+          height: 36px !important;
+        }
+        @media (max-width: 768px) {
+          .responsive-table-wrapper .MuiTableCell-root {
+            padding: 3px 5px !important;
+            font-size: 0.7em !important;
+          }
+          .responsive-table-wrapper .MuiTableRow-root {
+            height: 32px !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .responsive-table-wrapper .MuiTableCell-root {
+            padding: 2px 4px !important;
+            font-size: 0.65em !important;
+          }
+          .responsive-table-wrapper .MuiTableRow-root {
+            height: 28px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };

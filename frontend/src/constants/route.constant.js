@@ -42,6 +42,7 @@ const ROUTES = {
   // section
   BANNER: "/banner",
   WHATSAPP:'/whatsapp',
+  WHATSAPP_LIST: "/whatsapp/list",
   BANNER_LIST: "/banner/list",
   UPDATE_BANNER: "/banner/edit",
   NOTIFICATION: "/notification",

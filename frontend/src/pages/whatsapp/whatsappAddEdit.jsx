@@ -49,7 +49,7 @@ const AddWhatsapp = () => {
   const { updateBreadcrumb } = useBreadcrumb();
 
   useEffect(() => {
-    const breadcrumbData = [{ label: "WhatsApp" }];
+    const breadcrumbData = [{ label: "WhatsApp Management" }];
     updateBreadcrumb(breadcrumbData);
   }, []);
 
@@ -61,7 +61,7 @@ const AddWhatsapp = () => {
         // Handle both array and single object responses
         const whatsappData = Array.isArray(res?.data) ? res.data[0] : res?.data;
 
-        if (whatsappData) {
+        if (whatsappData && Object.keys(whatsappData).length > 0) {
           setInitialData({
             teacherWhatsapp: whatsappData.teacherWhatsapp || "",
             studentWhatsapp: whatsappData.studentWhatsapp || "",
@@ -69,10 +69,21 @@ const AddWhatsapp = () => {
           // Ensure we get the ID as a string
           const id = whatsappData.id || whatsappData._id;
           if (id) setExistingId(String(id));
+        } else {
+          // No existing data, keep default empty values
+          console.log("No existing WhatsApp data found. Starting with empty form.");
         }
       } catch (error) {
         console.error("Error fetching WhatsApp data:", error);
-        toast.error("Failed to load WhatsApp data");
+        
+        // Show more specific error messages
+        if (error.response?.status === 404) {
+          toast.error("No WhatsApp data found. You can create new data.");
+        } else if (error.response?.status === 401) {
+          toast.error("Unauthorized. Please login again.");
+        } else {
+          toast.error("Failed to load WhatsApp data. Please try again.");
+        }
       } finally {
         setIsLoading(false);
       }

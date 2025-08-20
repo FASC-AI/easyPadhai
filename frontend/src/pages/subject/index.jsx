@@ -243,7 +243,7 @@ const TableListView = ({
           </Button>
         </div>
       )}
-      <style jsx>{`
+      <style>{`
         .responsive-table-wrapper {
           width: 100%;
           overflow-x: auto;
@@ -685,7 +685,7 @@ const SubjectListView = () => {
 
   return (
     <div className="responsive-table-wrapper">
-      <style jsx global>{`
+      <style>{`
         .responsive-table-wrapper {
           width: 100%;
           overflow-x: auto;
@@ -701,7 +701,7 @@ const SubjectListView = () => {
           max-height: 200px !important;
           overflow-y: auto !important;
           overflow-x: auto !important;
-          white Ascendant;
+          white-space: nowrap;
         }
         .responsive-table-wrapper .MuiTableCell-root {
           padding: 4px 6px !important;

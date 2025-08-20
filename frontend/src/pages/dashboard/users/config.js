@@ -24,10 +24,6 @@ export const routeUSERSs = [
     component: UsersListView,
   },
   {
-    path: USERS.USERS,
-    component: UsersListView,
-  },
-  {
     path: USERS.ADD_USERS,
     component: AddEditUser,
   },

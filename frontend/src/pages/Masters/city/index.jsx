@@ -191,10 +191,10 @@ const CityListView = () => {
         const isInactive = params.row.status === 'Inactive';
         return (
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button variant="outline" size="icon" className="">
+            <DropdownMenuTrigger asChild>
+              <div className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 w-9">
                 <EllipsisIcon className="text-blue-primary-200 group-hover:text-white" />
-              </Button>
+              </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
              
@@ -312,14 +312,14 @@ const CityListView = () => {
       label: 'More',
       children: (
         <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button variant="outline" size="icon" CityName="group">
-              <EllipsisIcon CityName="text-blue-primary-200 group-hover:text-white" />
-            </Button>
+          <DropdownMenuTrigger asChild>
+            <div className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 w-9 group">
+              <EllipsisIcon className="text-blue-primary-200 group-hover:text-white" />
+            </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => handleExportCSV()}>
-              <FileUpIcon CityName="size-4 mr-2" />
+              <FileUpIcon className="size-4 mr-2" />
               <span>Export CSV</span>
             </DropdownMenuItem>
           </DropdownMenuContent>

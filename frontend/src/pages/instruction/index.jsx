@@ -266,17 +266,17 @@ const InstructionListView = () => {
         const isActive = params.row.status === 'Active';
         return (
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button variant="outline" size="icon" InstructionName="group">
-                <EllipsisIcon InstructionName="text-blue-primary-200" />
-              </Button>
+            <DropdownMenuTrigger asChild>
+              <div className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 w-9 group">
+                <EllipsisIcon className="text-blue-primary-200" />
+              </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
                 onClick={() => navigateToEdit(params.row)}
                 disabled={isInactive}
               >
-                <PencilIcon InstructionName="size-4 mr-2" />
+                <PencilIcon className="size-4 mr-2" />
                 <span>Edit</span>
               </DropdownMenuItem>
               {/* <DropdownMenuItem onClick={() => showConfirmationPopup(params.row, "Active")}
@@ -306,7 +306,7 @@ const InstructionListView = () => {
                 onClick={() => handleDeleteUser(params.row._id)}
                 disabled={isInactive}
               >
-                <TrashIcon InstructionName="size-4 mr-2" />
+                <TrashIcon className="size-4 mr-2" />
                 <span>Delete</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -346,14 +346,14 @@ const InstructionListView = () => {
       label: "More",
       children: (
         <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button variant="outline" size="icon" InstructionName="group">
-              <EllipsisIcon InstructionName="text-blue-primary-200" />
-            </Button>
+          <DropdownMenuTrigger asChild>
+            <div className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 w-9 group">
+              <EllipsisIcon className="text-blue-primary-200" />
+            </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => handleExportCSV()}>
-              <FileUpIcon InstructionName="size-4 mr-2" />
+              <FileUpIcon className="size-4 mr-2" />
               <span>Export CSV</span>
             </DropdownMenuItem>
           </DropdownMenuContent>

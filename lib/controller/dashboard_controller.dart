@@ -1305,12 +1305,9 @@ class DashboardController extends GetxController {
       BuildContext context,
       List<String> selectedInstructions) async {
     
-    // List of endpoints to try
+    // List of endpoints to try - only use valid endpoints
     List<String> endpoints = [
       ApiUrls.posttest,
-      ApiUrls.posttestAlternative1,
-      ApiUrls.posttestAlternative2,
-      ApiUrls.posttestAlternative3,
     ];
     
     Exception? lastException;
@@ -1398,13 +1395,19 @@ class DashboardController extends GetxController {
       // Show loading indicator
       Get.dialog(
         Center(
-          child: Lottie.asset(
-            'assets/loading.json',
-            width: MediaQuery.of(context).size.width * .2,
-            height: MediaQuery.of(context).size.height * .2,
-            repeat: true,
-            animate: true,
-            reverse: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                strokeWidth: 3,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                "Generating PDF...",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+            ],
           ),
         ),
         barrierDismissible: false,

@@ -49,42 +49,7 @@ class SelectSubject extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Hint text based on class selection
-                  Obx(() {
-                    int selectedClassCount = authController.selectedClassIds.length;
-                    String hintText = '';
-                    Color hintColor = Colors.blue;
-                    
-                    if (selectedClassCount > 1) {
-                      hintText = '📚 Multiple classes selected: You can choose exactly 1 subject';
-                      hintColor = Colors.orange;
-                    } else if (selectedClassCount == 1) {
-                      hintText = '📚 Single class selected: Choose 5-7 subjects';
-                      hintColor = Colors.green;
-                    } else {
-                      hintText = '📚 Please select classes first';
-                      hintColor = Colors.grey;
-                    }
-                    
-                    return Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(12),
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: hintColor.withOpacity(0.1),
-                        border: Border.all(color: hintColor.withOpacity(0.3)),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        hintText,
-                        style: TextStyle(
-                          color: hintColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    );
-                  }),
+
                   Expanded(child: SubjectView()),
                 ],
               )),
@@ -95,35 +60,51 @@ class SelectSubject extends StatelessWidget {
             child: CustomButton(
               text: 'Confirm Subject',
               onTap: () async {
-                // Get the number of selected classes
+                // Get the number of selected classes and subjects
                 int selectedClassCount = authController.selectedClassIds.length;
+                int selectedSubjectCount = authController.selectedSubjectIds.length;
                 
-                // Apply different validation rules based on class count
-                if (selectedClassCount > 1) {
-                  // Multiple classes selected - can only select 1 subject
-                  if (authController.selectedSubjectIds.length != 1) {
+                // Determine role based on selection pattern
+                String userRole = '';
+                
+                if (selectedClassCount == 1 && selectedSubjectCount >= 5 && selectedSubjectCount <= 7) {
+                  userRole = 'student';
+                  print("🎓 Role determined: STUDENT (1 class, $selectedSubjectCount subjects)");
+                } else if (selectedClassCount > 1 && selectedSubjectCount == 1) {
+                  userRole = 'teacher';
+                  print("👨‍🏫 Role determined: TEACHER ($selectedClassCount classes, 1 subject)");
+                } else {
+                  // Invalid selection pattern
+                  if (selectedClassCount == 1) {
+                    if (selectedSubjectCount < 5) {
+                      Get.snackbar(
+                          "Message", "When selecting 1 class, you must choose at least 5 subjects",
+                          snackPosition: SnackPosition.BOTTOM);
+                    } else if (selectedSubjectCount > 7) {
+                      Get.snackbar(
+                          "Message", "When selecting 1 class, you can choose up to 7 subjects",
+                          snackPosition: SnackPosition.BOTTOM);
+                    }
+                  } else if (selectedClassCount > 1) {
+                    if (selectedSubjectCount != 1) {
+                      Get.snackbar(
+                          "Message", "When selecting multiple classes, please choose exactly one subject",
+                          snackPosition: SnackPosition.BOTTOM);
+                    }
+                  } else {
                     Get.snackbar(
-                        "Message", "When selecting multiple classes, you can only choose exactly 1 subject",
+                        "Message", "Please select at least 1 class",
                         snackPosition: SnackPosition.BOTTOM);
-                    return;
                   }
-                } else if (selectedClassCount == 1) {
-                  // Single class selected - min 5, max 7 subjects
-                  if (authController.selectedSubjectIds.length < 5) {
-                    Get.snackbar(
-                        "Message", "When selecting 1 class, you must choose at least 5 subjects",
-                        snackPosition: SnackPosition.BOTTOM);
-                    return;
-                  }
-                  if (authController.selectedSubjectIds.length > 7) {
-                    Get.snackbar(
-                        "Message", "When selecting 1 class, you can choose maximum 7 subjects",
-                        snackPosition: SnackPosition.BOTTOM);
-                    return;
-                  }
+                  return;
                 }
                 
                 // Validation passed - proceed with subject confirmation
+                print("✅ Validation passed! User role: $userRole");
+                
+                // Store the determined role in the controller for later use
+                authController.userRole.value = userRole;
+                
                 authController.selectedSubjectIds.isNotEmpty
                     ? {
                         await authController.getInstitutes(),

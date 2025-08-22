@@ -735,8 +735,8 @@ class _ProfileEditState1 extends State<AssignmentsTab> {
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Only one PDF is allowed.\nMake sure it includes the entire syllabus.\nUp to 10 mb file size\nare allowed.",
-                  style: TextStyle(color: AppColors.red, fontSize: 13),
+                  "Only 1 PDF allowed (up to 10 MB). Ensure it contains the entire syllabus",
+                  style: TextStyle(color: AppColors.red, fontWeight: FontWeight.w600, fontSize: 10),
                 ),
               ),
               // const SizedBox(height: 5),

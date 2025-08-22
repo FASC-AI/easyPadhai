@@ -528,12 +528,15 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                       lessonList =
                                           dashboardController.lessonlist;
                                     });
+                                    print("🔍 Fetching questions for Book: ${value.book} (${value.sId})");
                                     await dashboardController.getOfflineQ1(
                                         selectedClass!.sId!,
                                         sub_id,
                                         selectedbook!.sId!,
                                         "",
                                         "");
+                                    print("🔍 Questions fetched: ${dashboardController.OffquesList.length} question groups");
+                                    
                                     // Fetching books based on selected class
                                     setState(() {
                                       questions.clear();
@@ -544,53 +547,36 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                                       questions =
                                           dashboardController.OffquesList;
                                       if (questions.isNotEmpty) {
+                                        print("🔍 Processing ${questions.length} question groups:");
                                         for (int i = 0;
                                             i < questions.length;
                                             i++) {
+                                          print("  📝 Group ${i+1}: ${questions[i].sId} - ${questions[i].tests?.length ?? 0} questions");
                                           if (questions[i].sId ==
                                               "Assertion-Reason") {
                                             ARQuestions = questions[i].tests!;
+                                            print("    ✅ AR Questions: ${ARQuestions.length}");
                                           } else if (questions[i].sId ==
                                               "Descriptive") {
                                             DSQuestions = questions[i].tests!;
+                                            print("    ✅ Descriptive Questions: ${DSQuestions.length}");
                                           } else if (questions[i].sId ==
                                               "MCQ") {
                                             mcqQuestions = questions[i].tests!;
+                                            print("    ✅ MCQ Questions: ${mcqQuestions.length}");
                                           } else if (questions[i].sId ==
                                               "True/False") {
                                             TFQuestions = questions[i].tests!;
+                                            print("    ✅ True/False Questions: ${TFQuestions.length}");
                                           }
                                         }
+                                      } else {
+                                        print("⚠️ No questions found for this book");
                                       }
                                     });
 
-                                    if (!classes.contains(selectedClass)) {
-                                      setState(() {
-                                        selectedClass = null;
-                                        selectedbook = null;
-                                        selectedlesson = null;
-                                        selectedtopic = null;
-                                      });
-                                    }
-                                    if (!booklist.contains(selectedbook)) {
-                                      setState(() {
-                                        selectedbook = null;
-                                        selectedlesson = null;
-                                        selectedtopic = null;
-                                      });
-                                    }
-
-                                    if (!lessonList.contains(selectedlesson)) {
-                                      setState(() {
-                                        selectedlesson = null;
-                                        selectedtopic = null;
-                                      });
-                                    }
-                                    if (!topics.contains(selectedtopic)) {
-                                      setState(() {
-                                        selectedtopic = null;
-                                      });
-                                    }
+                                    // Removed overly aggressive validation that was causing crashes
+                                    // The selected values are already validated when they're set
                                   }
                                 },
                                 items: booklist
@@ -1087,6 +1073,16 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                         selectedQuestionAR +
                         selectedQuestionTF +
                         selectedQuestionDS;
+                        
+                    // Debug question selection
+                    print("🔍 === QUESTION SELECTION DEBUG ===");
+                    print("📝 MCQ Questions: ${selectedQuestionIds.length} - $selectedQuestionIds");
+                    print("📝 True/False Questions: ${selectedQuestionTF.length} - $selectedQuestionTF");
+                    print("📝 AR Questions: ${selectedQuestionAR.length} - $selectedQuestionAR");
+                    print("📝 Descriptive Questions: ${selectedQuestionDS.length} - $selectedQuestionDS");
+                    print("📊 Total Questions: ${arr.length} - $arr");
+                    print("🔍 === QUESTION SELECTION DEBUG END ===");
+                    
                     if (arr.isEmpty) {
                       Get.snackbar("Message", "Please select questions.",
                           snackPosition: SnackPosition.BOTTOM);
@@ -1122,17 +1118,71 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                       }
                       
                       // Ensure instructions are properly initialized
-                      if (selectedInstructions == null) {
-                        selectedInstructions = [];
+                      selectedInstructions ??= [];
+                      
+                      // Additional safety checks to prevent crashes
+                      if (selectedbook == null || selectedbook!.sId == null) {
+                        Get.snackbar("Error", "Please select a book", 
+                            snackPosition: SnackPosition.BOTTOM);
+                        return;
                       }
                       
-                      print("Final Data Check:");
-                      print("Questions: $arr (${arr.length})");
-                      print("Instructions: $selectedInstructions (${selectedInstructions.length})");
-                      print("Session: ${sessionController.text}");
-                      print("Duration: ${_durationController.text}");
+                      if (selectedClass == null || selectedClass!.sId == null) {
+                        Get.snackbar("Error", "Please select a class", 
+                            snackPosition: SnackPosition.BOTTOM);
+                        return;
+                      }
                       
-                      await dashboardController.downloadAndOpenPdf(
+                      // Enhanced debugging and validation
+                      print("🔍 === PDF DOWNLOAD DEBUG START ===");
+                      print("📚 Selected Book: ${selectedbook!.book} (ID: ${selectedbook!.sId})");
+                      print("🏫 Selected Class: ${selectedClass!.class1} (ID: ${selectedClass!.sId})");
+                      print("📖 Subject ID: $sub_id");
+                      print("📋 Questions Array: $arr");
+                      print("📊 Questions Count: ${arr.length}");
+                      print("📝 Instructions: $selectedInstructions");
+                      print("📊 Instructions Count: ${selectedInstructions.length}");
+                      print("⏰ Session: ${sessionController.text}");
+                      print("⏱️ Duration: ${_durationController.text}");
+                      print("🔍 === PDF DOWNLOAD DEBUG END ===");
+                      
+                      // Validate all required data before proceeding
+                      if (sessionController.text.trim().isEmpty) {
+                        Get.snackbar("Error", "Please enter a session number", 
+                            snackPosition: SnackPosition.BOTTOM);
+                        return;
+                      }
+                      
+                      if (_durationController.text.trim().isEmpty) {
+                        Get.snackbar("Error", "Please set the test duration", 
+                            snackPosition: SnackPosition.BOTTOM);
+                        return;
+                      }
+                      
+                      // Show loading indicator
+                      Get.dialog(
+                        Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.theme),
+                                strokeWidth: 3,
+                              ),
+                              const SizedBox(height: 16),
+                              const Text(
+                                "Generating PDF...",
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                        ),
+                        barrierDismissible: false,
+                      );
+                      
+                      try {
+                        print("🚀 Starting PDF download process...");
+                        await dashboardController.downloadAndOpenPdf(
                           sub_id,
                           widget.bClassId,
                           tid,
@@ -1144,10 +1194,38 @@ class _CreateTestScreenState extends State<CreateOfflineTestScreen> {
                           testId,
                           context,
                           selectedInstructions);
-                      // Navigator.pop(context);
-                      // if (res != false) {
-                      //   Navigator.pop(context);
-                      // }
+                          
+                        print("✅ PDF download process completed successfully");
+                        
+                      } catch (e) {
+                        print("❌ PDF download failed with error: $e");
+                        
+                        // Remove loading dialog
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                        }
+                        
+                        // Show user-friendly error message
+                        Get.snackbar(
+                          "PDF Generation Failed", 
+                          "Failed to generate PDF: ${e.toString()}",
+                          snackPosition: SnackPosition.BOTTOM,
+                          duration: Duration(seconds: 5),
+                          backgroundColor: Colors.red[100],
+                          colorText: Colors.red[900],
+                        );
+                        
+                        return;
+                      } finally {
+                        // Always remove loading dialog
+                        try {
+                          if (context.mounted) {
+                            Navigator.pop(context);
+                          }
+                        } catch (e) {
+                          print("Warning: Could not remove loading dialog: $e");
+                        }
+                      }
                     }
                   },
                   style: ElevatedButton.styleFrom(

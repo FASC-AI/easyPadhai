@@ -43,17 +43,18 @@ class ModeSelectionPopup extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
             /// Buttons Row
             Center(
               child: Wrap(
-                spacing: 12,
-                runSpacing: 12,
+                spacing: 2,
+                runSpacing: 2,
                 alignment: WrapAlignment.center,
                 children: [
-                  SizedBox(
-                    width: screenWidth * 0.4,
+                  Container(
+                    width: screenWidth * 0.8,
+                    margin: const EdgeInsets.symmetric(vertical: 0),
                     child: ElevatedButton(
                       onPressed: onQuestionPaper,
                       style: ElevatedButton.styleFrom(
@@ -65,13 +66,13 @@ class ModeSelectionPopup extends StatelessWidget {
                       child: const Text(
                         'Question Paper',
                         textAlign: TextAlign.center,
-                        
                         style: TextStyle(color: AppColors.white),
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: screenWidth * 0.4,
+                  Container(
+                    width: screenWidth * 0.8,
+                    margin: const EdgeInsets.symmetric(vertical: 0),
                     child: OutlinedButton(
                       onPressed: onOnlineTest,
                       style: OutlinedButton.styleFrom(
@@ -83,7 +84,7 @@ class ModeSelectionPopup extends StatelessWidget {
                       ),
                       child: const Text(
                         'Online Test',
-                         textAlign: TextAlign.center,
+                        textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.black),
                       ),
                     ),

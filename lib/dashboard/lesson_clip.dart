@@ -176,7 +176,7 @@ class _LessonClipsScreenState extends State<LessonClipsScreen> {
     final String? videoId = YoutubePlayerController.convertUrlToId(link);
     _controller.loadVideoById(videoId: videoId!);
     return SizedBox(
-      height: 280,
+      height: 260,
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         elevation: 4,
@@ -220,7 +220,7 @@ class _LessonClipsScreenState extends State<LessonClipsScreen> {
               // ),
               title: Text(
                 title,
-                maxLines: 2,
+                maxLines: 1,
                 style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,

@@ -18,7 +18,7 @@ class ApiUrls {
     }
   }
 
-  // Base url: https://easypadhai.in/
+  // Base url https://codesuperb.com/
 
   static const String apiBaseUrl = 'easypadhai.in';
   static const String prodApiBaseUrl = 'https://easypadhai.in/';
@@ -79,19 +79,14 @@ class ApiUrls {
   static const String sendMsg = 'api/v1/studentnotification/sendmessage';
   static const String getleaderBoard = 'api/v1/test/leaderboard';
   static const String postmpin = 'api/v1/auth/reset-mpin';
-  static const String updateNoti =
-      'api/v1/studentnotification/readnotification';
-  static const String countNoti =
-      'api/v1/studentnotification/notificationcount';
+  static const String updateNoti ='api/v1/studentnotification/readnotification';
+  static const String countNoti ='api/v1/studentnotification/notificationcount';
   static const String getOnques = 'api/v1/test/userpublishtest';
   static const String deletetest = 'api/v1/test/deletepublishedtest';
   static const String addnote = 'api/v1/notes';
   static const String getnote = 'api/v1/notes/noteslist';
   static const String deletenote = 'api/v1/notes/deletenote/';
   static const String posttest = 'api/v1/offlinetest/previewtest';
-  static const String posttestAlternative1 = 'api/v1/offlinetest/generate';
-  static const String posttestAlternative2 = 'api/v1/offlinetest/create';
-  static const String posttestAlternative3 = 'api/v1/offlinetest/build';
   static const String getofflineTest = 'api/v1/offlinetest/paper';
   static const String deleteOffine = 'api/v1/offlinetest/';
   static const String postvid = 'api/v1/lesson/videolink/';

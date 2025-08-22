@@ -37,6 +37,7 @@ class AuthController extends GetxController {
   RxString stateName = ''.obs;
   RxString districtId = ''.obs;
   RxString districtName = ''.obs;
+  RxString userRole = ''.obs;
 
   List<ClassesData> classesdataList = [];
   List<SectionData> sectiondataList = [];

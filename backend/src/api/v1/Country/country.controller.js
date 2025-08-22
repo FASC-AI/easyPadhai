@@ -1,15 +1,15 @@
-import Country from './country.model';
+import Country from './country.model.js';
 
 import {
   getUserIdFromRequest,
   extractCommonQueryParams,
   getIdFromParams,
-} from '../../../utils/requestHelper';
+} from '../../../utils/requestHelper.js';
 import {
   sendErrorResponse,
   sendSuccessResponse,
-} from '../../../utils/responseHelper';
-import { getCommonSearchConditionForMasters } from '../../../utils/commonHelper';
+} from '../../../utils/responseHelper.js';
+import { getCommonSearchConditionForMasters } from '../../../utils/commonHelper.js';
 
 const errorMessages = {
   NOT_FOUND: 'Country not found',

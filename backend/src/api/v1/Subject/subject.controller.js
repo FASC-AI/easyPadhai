@@ -1,16 +1,16 @@
 /* eslint-disable import/prefer-default-export */
 import httpStatus from 'http-status';
-import Subject from './subject.model';
+import Subject from './subject.model.js';
 
-import createResponse from '../../../utils/response';
+import createResponse from '../../../utils/response.js';
 
 import {
   extractCommonQueryParams,
   getIdFromParams,
   getUserIdFromRequest,
   extractQueryParams,
-} from '../../../utils/requestHelper';
-import userprofileModel from '../User-Profile/userprofile.model';
+} from '../../../utils/requestHelper.js';
+import userprofileModel from '../User-Profile/userprofile.model.js';
 
 const errorMessages = {
   NOT_FOUND: 'Subject not found',

@@ -1,14 +1,14 @@
 /* eslint-disable import/prefer-default-export */
 import httpStatus from 'http-status';
-import LessonMaster from './lessonMaster.model';
-import createResponse from '../../../utils/response';
+import LessonMaster from './lessonMaster.model.js';
+import createResponse from '../../../utils/response.js';
 import { Types } from 'mongoose';
 import {
   extractCommonQueryParams,
   getIdFromParams,
   getUserIdFromRequest,
   extractQueryParams,
-} from '../../../utils/requestHelper';
+} from '../../../utils/requestHelper.js';
 
 const errorMessages = {
   NOT_FOUND: 'Lesson not found',

@@ -1,11 +1,11 @@
 import httpStatus from 'http-status';
-import Notification from './notification.model';
-import createResponse from '../../../utils/response';
+import Notification from './notification.model.js';
+import createResponse from '../../../utils/response.js';
 import {
   extractCommonQueryParams,
   getIdFromParams,
   getUserIdFromRequest,
-} from '../../../utils/requestHelper';
+} from '../../../utils/requestHelper.js';
 
 const errorMessages = {
   NOT_FOUND: 'Notification not found',

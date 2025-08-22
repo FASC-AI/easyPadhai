@@ -1,6 +1,6 @@
 import morgan from 'morgan';
-import config from '../config';
-import logger from './logger';
+import config from '../config/index.js';
+import logger from './logger.js';
 
 /**
  * Morgan token to extract error message from response locals

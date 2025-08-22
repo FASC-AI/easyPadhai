@@ -1,8 +1,8 @@
 
 /* eslint-disable import/prefer-default-export */
 import httpStatus from 'http-status';
-import LessonTest from './lesson-test.model';
-import createResponse from '../../../utils/response';
+import LessonTest from './lesson-test.model.js';
+import createResponse from '../../../utils/response.js';
 
 import mongoose from 'mongoose';
 

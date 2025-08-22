@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const batchRequestSchema = new mongoose.Schema(
   {
@@ -22,4 +22,4 @@ const batchRequestSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model('BatchRequest', batchRequestSchema);
+export default mongoose.model('BatchRequest', batchRequestSchema);

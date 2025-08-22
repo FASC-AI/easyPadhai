@@ -1,20 +1,20 @@
-import City from './city.model';
+import City from './city.model.js';
 import mongoose from 'mongoose';
 import {
   getUserIdFromRequest,
   extractCommonQueryParams,
   getIdFromParams,
-} from '../../../utils/requestHelper';
+} from '../../../utils/requestHelper.js';
 import {
   sendErrorResponse,
   sendSuccessResponse,
-} from '../../../utils/responseHelper';
+} from '../../../utils/responseHelper.js';
 
 import {
   getCommonSearchConditionForMasters,
   capitalizeFirstLetter,
-} from '../../../utils/commonHelper';
-import State from '../state/state.model';
+} from '../../../utils/commonHelper.js';
+import State from '../state/state.model.js';
 
 const errorMessages = {
   NOT_FOUND: 'City not found',

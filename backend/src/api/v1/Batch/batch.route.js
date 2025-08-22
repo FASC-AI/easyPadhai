@@ -1,6 +1,6 @@
 import express from 'express';
-import auth from '../../../middlewares/auth.middleware';
-import { BatchController } from './batch.controller';
+import auth from '../../../middlewares/auth.middleware.js';
+import { BatchController } from './batch.controller.js';
 const router = express.Router();
 
 router.post('/',auth, BatchController.createBatch);

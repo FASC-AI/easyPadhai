@@ -1,23 +1,23 @@
 /* eslint-disable import/prefer-default-export */
 import httpStatus from 'http-status';
-import Test from './test.model';
+import Test from './test.model.js';
 import moment from 'moment-timezone';
 import mongoose from 'mongoose';
-import createResponse from '../../../utils/response';
-import batchModel from '../Batch/batch.model';
-import requestModel from '../BatchRequest/request.model';
-import SubmitTest from '../Submitted-Test/submitted.model';
+import createResponse from '../../../utils/response.js';
+import batchModel from '../Batch/batch.model.js';
+import requestModel from '../BatchRequest/request.model.js';
+import SubmitTest from '../Submitted-Test/submitted.model.js';
 import {
   extractCommonQueryParams,
   getIdFromParams,
   getUserIdFromRequest,
   extractQueryParams,
-} from '../../../utils/requestHelper';
-import userprofileModel from '../User-Profile/userprofile.model';
-import studentNotification from '../StudentNotification/studentnotification.model';
-import profileModel from '../User-Profile/userprofile.model';
-import User from '../User/user.model';
-import homeworkModel from '../Homework/homework.model';
+} from '../../../utils/requestHelper.js';
+import userprofileModel from '../User-Profile/userprofile.model.js';
+import studentNotification from '../StudentNotification/studentnotification.model.js';
+import profileModel from '../User-Profile/userprofile.model.js';
+import User from '../User/user.model.js';
+import homeworkModel from '../Homework/homework.model.js';
 const { ObjectId } = mongoose.Types;
 const errorMessages = {
   NOT_FOUND: 'Test not found',

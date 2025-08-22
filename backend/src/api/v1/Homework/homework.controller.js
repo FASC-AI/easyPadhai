@@ -1,21 +1,21 @@
 /* eslint-disable import/prefer-default-export */
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
-import homeworkModel from './homework.model';
-import requestModel from '../BatchRequest/request.model';
+import homeworkModel from './homework.model.js';
+import requestModel from '../BatchRequest/request.model.js';
 import striptags from 'striptags';
-import createResponse from '../../../utils/response';
-import homeworkValidationSchema from './homework.validator';
-import batchModel from '../Batch/batch.model';
-import studentNotification from '../StudentNotification/studentnotification.model';
-import userprofileModel from '../User-Profile/userprofile.model';
+import createResponse from '../../../utils/response.js';
+import homeworkValidationSchema from './homework.validator.js';
+import batchModel from '../Batch/batch.model.js';
+import studentNotification from '../StudentNotification/studentnotification.model.js';
+import userprofileModel from '../User-Profile/userprofile.model.js';
 import {
   extractCommonQueryParams,
   getIdFromParams,
   getUserIdFromRequest,
   extractQueryParams,
-} from '../../../utils/requestHelper';
-import User from '../User/user.model';
+} from '../../../utils/requestHelper.js';
+import User from '../User/user.model.js';
 const errorMessages = {
   NOT_FOUND: 'Homework not found',
   ID_REQUIRED: 'ID is required',

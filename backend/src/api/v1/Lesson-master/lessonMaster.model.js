@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 
 import uniqueValidator from 'mongoose-unique-validator';
 
-const AutoIncrement = require('mongoose-sequence')(mongoose);
-import { getFormattedCodee } from '../../../utils/commonHelper';
-import { updateTestReferences } from '../Test/test.controller';
+import AutoIncrement from 'mongoose-sequence';
+import { getFormattedCodee } from '../../../utils/commonHelper.js';
+import { updateTestReferences } from '../Test/test.controller.js';
 const { Schema, model } = mongoose;
 
 const lessonMaster = new Schema(
@@ -93,7 +93,7 @@ lessonMaster.post('findOneAndUpdate', async function (result) {
   }
 });
 
-lessonMaster.plugin(AutoIncrement, { inc_field: 'lessonCode', id: 'lesson' });
+lessonMaster.plugin(AutoIncrement(mongoose), { inc_field: 'lessonCode', id: 'lesson' });
 const LessonMaster = model('LessonMaster', lessonMaster);
 
 export default LessonMaster;

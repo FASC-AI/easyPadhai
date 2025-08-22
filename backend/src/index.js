@@ -1,7 +1,7 @@
-import config from './config';
-import logger from './core/logger';
-import { createServer } from './core/server';
-import connectDB from './utils/db';
+import config from './config/index.js';
+import logger from './core/logger.js';
+import { createServer } from './core/server.js';
+import connectDB from './utils/db.js';
 import dotenv from 'dotenv';
 
 dotenv.config();

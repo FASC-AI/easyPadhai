@@ -1,21 +1,21 @@
 /* eslint-disable import/prefer-default-export */
 import httpStatus from 'http-status';
-import profileModel from './userprofile.model';
-import User from '../User/user.model';
-import createResponse from '../../../utils/response';
-import validateProfile from './userprofile.validator';
+import profileModel from './userprofile.model.js';
+import User from '../User/user.model.js';
+import createResponse from '../../../utils/response.js';
+import validateProfile from './userprofile.validator.js';
 import bcrypt from 'bcryptjs';
-import batchModel from '../Batch/batch.model';
-import batchRequestModel from '../BatchRequest/request.model';
+import batchModel from '../Batch/batch.model.js';
+import batchRequestModel from '../BatchRequest/request.model.js';
 
 import {
   extractCommonQueryParams,
   getIdFromParams,
   getUserIdFromRequest,
   extractQueryParams,
-} from '../../../utils/requestHelper';
-import sendEmail from '../../../utils/mailer';
-import userprofileModel from './userprofile.model';
+} from '../../../utils/requestHelper.js';
+import sendEmail from '../../../utils/mailer.js';
+import userprofileModel from './userprofile.model.js';
 import mongoose from 'mongoose';
 const errorMessages = {
   NOT_FOUND: 'Profile not found',

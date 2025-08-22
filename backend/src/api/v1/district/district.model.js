@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
-import { getFormattedCode } from '../../../utils/commonHelper';
+import { getFormattedCode } from '../../../utils/commonHelper.js';
 const { Schema, model } = mongoose;
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+import AutoIncrement from 'mongoose-sequence';
 
 const districtSchema = new Schema(
   {
@@ -74,7 +74,7 @@ const districtSchema = new Schema(
   }
 );
 districtSchema.plugin(uniqueValidator, { message: 'District Name should be unique.' });
-districtSchema.plugin(AutoIncrement, {
+districtSchema.plugin(AutoIncrement(mongoose), {
   inc_field: 'code',
   id: 'district',
 });

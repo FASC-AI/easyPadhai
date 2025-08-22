@@ -1,11 +1,11 @@
 import httpStatus from "http-status";
-import Notes from './notes.model'
-import createResponse from "../../../utils/response";
+import Notes from './notes.model.js'
+import createResponse from "../../../utils/response.js";
 import mongoose from "mongoose";
-import User from "../User/user.model";
-import batchModel from "../Batch/batch.model";
-import requestModel from "../BatchRequest/request.model";
-import userprofileModel from "../User-Profile/userprofile.model";
+import User from "../User/user.model.js";
+import batchModel from "../Batch/batch.model.js";
+import requestModel from "../BatchRequest/request.model.js";
+import userprofileModel from "../User-Profile/userprofile.model.js";
 const uploadNotes = async (req, res) => {
   try {
     const { classIds, subjectIds, fileUrl,title } = req.body;

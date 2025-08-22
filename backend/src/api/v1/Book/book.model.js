@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+import AutoIncrement from 'mongoose-sequence';
 import uniqueValidator from 'mongoose-unique-validator';
-import { getFormattedCodee } from '../../../utils/commonHelper';
-import { updateTestReferences } from '../Test/test.controller';
+import { getFormattedCodee } from '../../../utils/commonHelper.js';
+import { updateTestReferences } from '../Test/test.controller.js';
 const { Schema, model } = mongoose;
 
 const bookSchema = new Schema(
@@ -103,7 +103,7 @@ bookSchema.post('findOneAndUpdate', async function (result) {
   }
 });
 
-bookSchema.plugin(AutoIncrement, { inc_field: 'bookCode', id: 'book' });
+bookSchema.plugin(AutoIncrement(mongoose), { inc_field: 'bookCode', id: 'book' });
 
 const Book = model('Book', bookSchema);
 

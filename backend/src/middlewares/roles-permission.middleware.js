@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import UserRole from '../modelsV2/masters/UserRole';
+import UserRole from '../modelsV2/masters/UserRole.js';
 import httpStatus, { FORBIDDEN } from 'http-status';
-import createResponse from '../utils/response';
+import createResponse from '../utils/response.js';
 
 const errorMessages = {
   FORBIDDEN: 'Unauthorized user',

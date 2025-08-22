@@ -1,19 +1,19 @@
 /* eslint-disable import/prefer-default-export */
 import httpStatus from 'http-status';
-import lessonModel from './lesson.model';
-import User from '../User/user.model';
+import lessonModel from './lesson.model.js';
+import User from '../User/user.model.js';
 import striptags from 'striptags';
-import createResponse from '../../../utils/response';
-import { lessonValidationSchema } from './lesson.validator';
-import LessonTopicStatus from '../Topic/topic.model';
+import createResponse from '../../../utils/response.js';
+import { lessonValidationSchema } from './lesson.validator.js';
+import LessonTopicStatus from '../Topic/topic.model.js';
 import mongoose from 'mongoose';
 import {
   extractCommonQueryParams,
   getIdFromParams,
   getUserIdFromRequest,
   extractQueryParams,
-} from '../../../utils/requestHelper';
-import userprofileModel from '../User-Profile/userprofile.model';
+} from '../../../utils/requestHelper.js';
+import userprofileModel from '../User-Profile/userprofile.model.js';
 
 const errorMessages = {
   NOT_FOUND: 'Lesson not found',

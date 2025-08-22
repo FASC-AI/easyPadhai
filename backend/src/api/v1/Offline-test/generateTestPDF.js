@@ -1,11 +1,11 @@
-import paperModel from '../Paper/paper.model';
-import { generatePDF } from './pdfGenerator';
-import createResponse from '../../../utils/response';
+import paperModel from '../Paper/paper.model.js';
+import { generatePDF } from './pdfGenerator.js';
+import createResponse from '../../../utils/response.js';
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
 
-import Test from '../Test/test.model';
-import Instruction from '../Instruction/Instruction.model';
+import Test from '../Test/test.model.js';
+import Instruction from '../Instruction/Instruction.model.js';
 
 const { ObjectId } = mongoose.Types;
 /**

@@ -1,7 +1,8 @@
 {
-  "name": "upsdma",
+  "name": "EasyPadhai",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "nodemon --exec babel-node src/index.js",
     "build": "mkdir -p build && ./node_modules/.bin/babel src --out-dir build --extensions \".js,.mjs\"",
@@ -32,7 +33,7 @@
     "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^7.5.0",
     "express-session": "^1.18.1",
-    "forever": "^1.0.1",
+    "forever": "^4.0.3",
     "google-auth-library": "^9.15.1",
     "helmet": "^8.0.0",
     "html-to-text": "^9.0.5",

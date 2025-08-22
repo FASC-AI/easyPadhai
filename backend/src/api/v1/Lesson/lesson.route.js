@@ -1,6 +1,6 @@
 import express from 'express';
-import auth from '../../../middlewares/auth.middleware';
-import { lessonController } from './lesson.controller';
+import auth from '../../../middlewares/auth.middleware.js';
+import { lessonController } from './lesson.controller.js';
 const router = express.Router();
 router.post('/', auth, lessonController.createLesson);
 router.get('/', auth, lessonController.getLessons);

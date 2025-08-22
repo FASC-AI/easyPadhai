@@ -1,9 +1,9 @@
 import path from 'path';
 import express from 'express';
 import cors from 'cors';
-import morgan from './morgan';
-import apiRoutes from '../api/index.routes';
-import { parseCookies } from '../utils/index';
+import morgan from './morgan.js';
+import apiRoutes from '../api/index.routes.js';
+import { parseCookies } from '../utils/index.js';
 import logger from './logger.js';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -12,7 +12,7 @@ import session from 'express-session';
 import config from '../config/index.js';
 import MongoStore from 'connect-mongo';
 import { errorConverter, errorHandler } from '../middlewares/error.middleware.js';
-// import setupSwagger from './config/swagger';
+// import setupSwagger from './config/swagger.js';
 
 
 const baseDir = path.resolve();

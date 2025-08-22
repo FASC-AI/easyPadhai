@@ -1,6 +1,6 @@
 import express from 'express';
-import auth from '../../../middlewares/auth.middleware';
-import { profileController } from './userprofile.controller';
+import auth from '../../../middlewares/auth.middleware.js';
+import { profileController } from './userprofile.controller.js';
 const router = express.Router();
 
 router.get('/user-info', auth, profileController.getProfile);

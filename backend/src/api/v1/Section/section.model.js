@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
-import { getFormattedCodee } from '../../../utils/commonHelper';
+import { getFormattedCodee } from '../../../utils/commonHelper.js';
 
 const { Schema, model } = mongoose;
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+import AutoIncrement from 'mongoose-sequence';
 
 const sectionSchema = new Schema(
   {
@@ -44,7 +44,7 @@ sectionSchema.pre('save', async function (next) {
   }
 });
 sectionSchema.plugin(uniqueValidator);
-sectionSchema.plugin(AutoIncrement, {
+sectionSchema.plugin(AutoIncrement(mongoose), {
   inc_field: 'sectionCode',
   id: 'section',
 });

@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import config from '../config';
+import config from '../config/index.js';
 
 /**
  * Utility for hashing and comparing values using bcrypt

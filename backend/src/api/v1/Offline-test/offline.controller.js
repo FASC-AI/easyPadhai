@@ -1,26 +1,26 @@
 /* eslint-disable import/prefer-default-export */
 import httpStatus from 'http-status';
-import OfflineTest from './offline.model';
+import OfflineTest from './offline.model.js';
 import striptags from 'striptags';
-import createResponse from '../../../utils/response';
-import Test from '../Test/test.model';
-import Instruction from '../Instruction/Instruction.model';
-const PDFDocument = require('pdfkit');
-const { PassThrough } = require('stream');
+import createResponse from '../../../utils/response.js';
+import Test from '../Test/test.model.js';
+import Instruction from '../Instruction/Instruction.model.js';
+import PDFDocument from 'pdfkit';
+import {  PassThrough  } from 'stream';
 import mongoose from 'mongoose';
-import Paper from '../Paper/paper.model';
+import Paper from '../Paper/paper.model.js';
 import { convert } from 'html-to-text';
-const { ObjectId } = require('mongoose').Types;
-const sharp = require('sharp');
-const fs = require('fs');
+import { ObjectId } from 'mongoose';
+import sharp from 'sharp';
+import fs from 'fs';
 import {
   extractCommonQueryParams,
   getIdFromParams,
   getUserIdFromRequest,
   extractQueryParams,
-} from '../../../utils/requestHelper';
-const axios = require('axios');
-const { Buffer } = require('buffer');
+} from '../../../utils/requestHelper.js';
+import axios from 'axios';
+import { Buffer } from 'buffer';
 
 const errorMessages = {
   NOT_FOUND: 'Offline Test not found',
@@ -30,7 +30,6 @@ const errorMessages = {
 const offlineTest = async (req, res) => {
   try {
     const { subjectId, topicId, lessonId, classId, bookId } = req.query;
-    const { ObjectId } = require('mongoose').Types;
 
     let matchQuery = { testType: 'offline', isLast: true };
 
@@ -871,7 +870,6 @@ const paperList = async (req, res) => {
 const deletePaper = async (req, res) => {
   try {
     const { id } = req.params;
-    const { ObjectId } = require('mongoose').Types;
 
     // Validate paper ID
     let paperId;

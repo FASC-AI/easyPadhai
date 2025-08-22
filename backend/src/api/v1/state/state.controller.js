@@ -1,17 +1,17 @@
-import State from './state.model';
+import State from './state.model.js';
 import {
   getCommonSearchConditionForMasters,
   capitalizeFirstLetter,
-} from '../../../utils/commonHelper';
+} from '../../../utils/commonHelper.js';
 import {
   getUserIdFromRequest,
   extractCommonQueryParams,
   getIdFromParams,
-} from '../../../utils/requestHelper';
+} from '../../../utils/requestHelper.js';
 import {
   sendErrorResponse,
   sendSuccessResponse,
-} from '../../../utils/responseHelper';
+} from '../../../utils/responseHelper.js';
 
 
 const errorMessages = {

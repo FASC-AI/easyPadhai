@@ -1,14 +1,14 @@
-import studentNotification from './studentnotification.model';
-import createResponse from '../../../utils/response';
-import httpStatus from '../../../utils/httpStatus';
+import studentNotification from './studentnotification.model.js';
+import createResponse from '../../../utils/response.js';
+import httpStatus from '../../../utils/httpStatus.js';
 import mongoose from 'mongoose';
 import {
   sendErrorResponse,
   sendSuccessResponse,
-} from '../../../utils/responseHelper';
-import homeworkModel from '../Homework/homework.model';
-import Test from '../Test/test.model';
-import userprofileModel from '../User-Profile/userprofile.model';
+} from '../../../utils/responseHelper.js';
+import homeworkModel from '../Homework/homework.model.js';
+import Test from '../Test/test.model.js';
+import userprofileModel from '../User-Profile/userprofile.model.js';
 
 const errorMessages = {
   NOT_FOUND: 'Notification not found',

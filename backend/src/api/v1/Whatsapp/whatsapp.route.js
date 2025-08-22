@@ -1,6 +1,6 @@
 import express from 'express';
-import auth from '../../../middlewares/auth.middleware';
-import { whatsAppController } from './whatsapp.controller';
+import auth from '../../../middlewares/auth.middleware.js';
+import { whatsAppController } from './whatsapp.controller.js';
 
 
 const router = express.Router();

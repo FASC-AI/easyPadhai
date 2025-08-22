@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import profileModel from './userprofile.model';
+import profileModel from './userprofile.model.js';
 
 const nameRegex = /^[A-Za-z\s]{1,50}$/;
 const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;

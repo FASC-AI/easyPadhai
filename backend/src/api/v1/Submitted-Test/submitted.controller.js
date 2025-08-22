@@ -1,15 +1,15 @@
 /* eslint-disable import/prefer-default-export */
 import httpStatus from 'http-status';
-import SubmitTest from './submitted.model';
+import SubmitTest from './submitted.model.js';
 
-import createResponse from '../../../utils/response';
+import createResponse from '../../../utils/response.js';
 
 import {
   extractCommonQueryParams,
   getIdFromParams,
   getUserIdFromRequest,
   extractQueryParams,
-} from '../../../utils/requestHelper';
+} from '../../../utils/requestHelper.js';
 
 const errorMessages = {
   NOT_FOUND: 'Test not found',

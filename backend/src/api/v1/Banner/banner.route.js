@@ -1,6 +1,6 @@
 import express from 'express';
-import auth from '../../../middlewares/auth.middleware';
-import { BannerController } from './banner.controller';
+import auth from '../../../middlewares/auth.middleware.js';
+import { BannerController } from './banner.controller.js';
 
 const router = express.Router();
 

@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
-import { getFormattedCodee } from '../../../utils/commonHelper';
-import { updateTestReferences } from '../Test/test.controller';
-import { updateInstructionReferences } from '../Instruction/Instruction.controller';
+import { getFormattedCodee } from '../../../utils/commonHelper.js';
+import { updateTestReferences } from '../Test/test.controller.js';
+import { updateInstructionReferences } from '../Instruction/Instruction.controller.js';
 const { Schema, model } = mongoose;
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+import AutoIncrement from 'mongoose-sequence';
 
 const classSchema = new Schema(
   {
@@ -80,7 +80,7 @@ classSchema.post('findOneAndUpdate', async function (result) {
   }
 });
 
-classSchema.plugin(AutoIncrement, { inc_field: 'classCode', id: 'class' });
+classSchema.plugin(AutoIncrement(mongoose), { inc_field: 'classCode', id: 'class' });
 const Class = model('Class', classSchema);
 
 export default Class;

@@ -1,11 +1,11 @@
-// import Profile from './profile.model';
-// import userprofileModel from '../User-Profile/userprofile.model';
-// import User from '../User/user.model';
+// import Profile from './profile.model.js';
+// import userprofileModel from '../User-Profile/userprofile.model.js';
+// import User from '../User/user.model.js';
 // import httpStatus from 'http-status';
-// import createResponse from '../../../utils/response';
+// import createResponse from '../../../utils/response.js';
 
-// import { profileCreateSchema, profileUpdateSchema } from './profile.validator';
-// import validateProfile from '../User-Profile/userprofile.validator';
+// import { profileCreateSchema, profileUpdateSchema } from './profile.validator.js';
+// import validateProfile from '../User-Profile/userprofile.validator.js';
 
 
 

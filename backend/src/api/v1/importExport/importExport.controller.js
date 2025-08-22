@@ -2,8 +2,8 @@ import httpStatus from 'http-status';
 import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
-import { parseCSV, exportToCSV, bulkUpsert } from '../utils/csvHelper';
-import Class from '../models/class.model'; // You can generalize this later
+import { parseCSV, exportToCSV, bulkUpsert } from '../utils/csvHelper.js';
+import Class from '../models/class.model.js'; // You can generalize this later
 
 const upload = multer({ dest: 'uploads/' });
 

@@ -1,9 +1,9 @@
 import express from 'express';
-import createResponse from '../utils/response';
+import createResponse from '../utils/response.js';
 const router = express.Router();
-import v1Routes from './v1/index.routes';
-import httpStatus from '../utils/httpStatus';
-// import imageRoutes from './imageRoutes'
+import v1Routes from './v1/index.routes.js';
+import httpStatus from '../utils/httpStatus.js';
+// import imageRoutes from './imageRoutes.js'
 /**
  * Root route that provides basic information about the application.
  */

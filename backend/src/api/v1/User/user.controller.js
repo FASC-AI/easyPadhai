@@ -4,29 +4,29 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcryptjs';
 import moment from 'moment';
 import nodemailer from 'nodemailer';
-import userprofileModel from '../User-Profile/userprofile.model';
-const { OAuth2Client } = require('google-auth-library');
+import userprofileModel from '../User-Profile/userprofile.model.js';
+import {  OAuth2Client  } from 'google-auth-library';
 const client = new OAuth2Client(config.googleClientId);
 
 //utilities
-import createResponse from '../../../utils/response';
+import createResponse from '../../../utils/response.js';
 import {
   extractCommonQueryParams,
   extractQueryParams,
-} from '../../../utils/requestHelper';
-import validateTime from '../../../utils/timeValidation';
-import hashUtils from '../../../utils/hashHelper';
-import jwtUtils from '../../../utils/jwtHelper';
-import { getClientIp } from '../../../utils/ipUtil';
-import sendEmail from '../../../utils/mailer';
-import aesUtils from '../../../utils/cryptoHash';
-import { miscellaneousUtils } from '../../../utils/miscellaneous';
-import { getCommonSearchConditionForMasters } from '../../../utils/commonHelper';
-import profileModel from '../User-Profile/userprofile.model';
+} from '../../../utils/requestHelper.js';
+import validateTime from '../../../utils/timeValidation.js';
+import hashUtils from '../../../utils/hashHelper.js';
+import jwtUtils from '../../../utils/jwtHelper.js';
+import { getClientIp } from '../../../utils/ipUtil.js';
+import sendEmail from '../../../utils/mailer.js';
+import aesUtils from '../../../utils/cryptoHash.js';
+import { miscellaneousUtils } from '../../../utils/miscellaneous.js';
+import { getCommonSearchConditionForMasters } from '../../../utils/commonHelper.js';
+import profileModel from '../User-Profile/userprofile.model.js';
 //models
-import User from './user.model';
-import UserOtp from '../common/otp.model';
-import Profile from '../Profile/profile.model';
+import User from './user.model.js';
+import UserOtp from '../common/otp.model.js';
+import Profile from '../Profile/profile.model.js';
 
 //misc
 import {
@@ -37,9 +37,9 @@ import {
   mobileLoginUserValidation,
   resetpasswordValidation,
   verifyOtpValidation,
-} from './user.validator';
-import CookieService from '../../../services/cookie.service';
-import config from '../../../config';
+} from './user.validator.js';
+import CookieService from '../../../services/cookie.service.js';
+import config from '../../../config/index.js';
 
 const register = async (req, res) => {
   try {

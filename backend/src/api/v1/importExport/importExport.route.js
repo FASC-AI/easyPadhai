@@ -1,5 +1,5 @@
 import express from 'express';
-import { uploadCSV, downloadCSV, csvUploadMiddleware } from '../controllers/importExport.controller';
+import { uploadCSV, downloadCSV, csvUploadMiddleware } from '../controllers/importExport.controller.js';
 
 const router = express.Router();
 

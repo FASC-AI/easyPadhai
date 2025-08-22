@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
-import config from '../config';
-import logger from '../core/logger';
-import createResponse from '../utils/response';
+import config from '../config/index.js';
+import logger from '../core/logger.js';
+import createResponse from '../utils/response.js';
 
 /**
  * Custom error class for API errors.

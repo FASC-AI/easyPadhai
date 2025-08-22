@@ -1,7 +1,7 @@
-import User from '../api/v1/User/user.model';
-import jwtUtils from '../utils/jwtHelper';
-import CookieService from '../services/cookie.service';
-import createResponse from '../utils/response';
+import User from '../api/v1/User/user.model.js';
+import jwtUtils from '../utils/jwtHelper.js';
+import CookieService from '../services/cookie.service.js';
+import createResponse from '../utils/response.js';
 
 // eslint-disable-next-line consistent-return
 const auth = async (req, res, next) => {

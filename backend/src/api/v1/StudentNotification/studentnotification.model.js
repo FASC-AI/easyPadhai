@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
-import { getFormattedCode } from '../../../utils/commonHelper';
+import { getFormattedCode } from '../../../utils/commonHelper.js';
 const { Schema, model } = mongoose;
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+import AutoIncrement from 'mongoose-sequence';
 
 const studentNotificationSchema = new Schema(
   {

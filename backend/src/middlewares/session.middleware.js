@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
-import createResponse from '../utils/response';
-import User from '../services/user/user.model';
-import Candidate from '../services/hrms/Candidate/Candidate.model';
+import createResponse from '../utils/response.js';
+import User from '../services/user/user.model.js';
+import Candidate from '../services/hrms/Candidate/Candidate.model.js';
 
 // eslint-disable-next-line consistent-return
 const sessionValidation = async (req, res, next) => {

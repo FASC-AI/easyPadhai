@@ -1,6 +1,6 @@
 import express from 'express';
-import auth from '../../../middlewares/auth.middleware';
-import { homeworkController } from './homework.controller';
+import auth from '../../../middlewares/auth.middleware.js';
+import { homeworkController } from './homework.controller.js';
 const router = express.Router();
 router.post('/', auth, homeworkController.createHomework);
 router.get('/', auth, homeworkController.getHomeWork);

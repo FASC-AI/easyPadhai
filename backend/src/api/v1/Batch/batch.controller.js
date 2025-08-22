@@ -1,18 +1,18 @@
 /* eslint-disable import/prefer-default-export */
 import httpStatus from 'http-status';
-import batchSchema from './batch.model';
-import requestModel from '../BatchRequest/request.model';
+import batchSchema from './batch.model.js';
+import requestModel from '../BatchRequest/request.model.js';
 import mongoose from 'mongoose';
-import userprofileModel from '../User-Profile/userprofile.model';
-import createResponse from '../../../utils/response';
-import { format_dd_mmm_yyyy } from '../../../utils/date-format';
+import userprofileModel from '../User-Profile/userprofile.model.js';
+import createResponse from '../../../utils/response.js';
+import { format_dd_mmm_yyyy } from '../../../utils/date-format.js';
 import {
   extractCommonQueryParams,
   getIdFromParams,
   getUserIdFromRequest,
   extractQueryParams,
-} from '../../../utils/requestHelper';
-import batchModel from './batch.model';
+} from '../../../utils/requestHelper.js';
+import batchModel from './batch.model.js';
 
 const errorMessages = {
   NOT_FOUND: 'Batch not found',

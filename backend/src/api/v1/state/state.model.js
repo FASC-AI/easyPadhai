@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
-import { getFormattedCode } from '../../../utils/commonHelper';
+import { getFormattedCode } from '../../../utils/commonHelper.js';
 const { Schema, model } = mongoose;
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+import AutoIncrement from 'mongoose-sequence';
 
 const stateSchema = new Schema(
   {
@@ -66,7 +66,7 @@ const stateSchema = new Schema(
   }
 );
 stateSchema.plugin(uniqueValidator, { message: 'State Name should be unique.' });
-stateSchema.plugin(AutoIncrement, {
+stateSchema.plugin(AutoIncrement(mongoose), {
   inc_field: 'code',
   id: 'state',
 });

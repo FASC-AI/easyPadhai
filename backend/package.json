@@ -2,11 +2,10 @@
   "name": "EasyPadhai",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "dev": "nodemon --exec babel-node src/index.js",
     "build": "mkdir -p build && ./node_modules/.bin/babel src --out-dir build --extensions \".js,.mjs\"",
-    "serve": "node dist/index.js",
+    "serve": "node build/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

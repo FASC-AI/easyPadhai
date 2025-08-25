@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #ffffff;
+      background-color: #007bff;
+      text-decoration: none;
+      border-radius: 5px;
+      text-align: center;
+    }
+    .button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome, {{userName}}!</h1>
+  <p>Thank you for joining our platform with email: {{email}}.</p>
+  <p>Please click the button below to accept your invitation:</p>
+  <a href="{{invitationUrl}}" class="button">Accept Invitation</a>
+</body>
+</html>

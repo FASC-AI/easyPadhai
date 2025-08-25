@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const unauthorizedCode = [401];
 
-const BASE_URL = 'http://localhost:3000/api/v1';
+const BASE_URL = 'https://codesuperb.com/api/v1';
 
 const HttpFileClient = axios.create({
   timeout: 60000,
